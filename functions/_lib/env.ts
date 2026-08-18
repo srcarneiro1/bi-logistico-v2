@@ -5,6 +5,7 @@ export interface Env {
   SUPABASE_SECRET_KEY: string
   HUB_API_URL: string
   HUB_API_TOKEN: string
+  ASSETS: Fetcher
 }
 
 export function assertEnv(env: Env) {
