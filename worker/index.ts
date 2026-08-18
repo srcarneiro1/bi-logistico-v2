@@ -49,14 +49,18 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url)
 
-    if (request.method === 'GET' && url.pathname === '/api/health') {
-      return handleHealth()
+    if (url.pathname.startsWith('/api/')) {
+      if (request.method === 'GET' && url.pathname === '/api/health') {
+        return handleHealth()
+      }
+
+      if (request.method === 'GET' && url.pathname === '/api/hub/bootstrap') {
+        return handleHubBootstrap(request, env)
+      }
+
+      return json({ error: 'Endpoint não encontrado.' }, { status: 404 })
     }
 
-    if (request.method === 'GET' && url.pathname === '/api/hub/bootstrap') {
-      return handleHubBootstrap(request, env)
-    }
-
-    return json({ error: 'Endpoint não encontrado.' }, { status: 404 })
+    return env.ASSETS.fetch(request)
   },
 } satisfies ExportedHandler<Env>
