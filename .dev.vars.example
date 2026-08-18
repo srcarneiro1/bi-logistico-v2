@@ -1,0 +1,5 @@
+# Cloudflare Pages Functions - copie para .dev.vars e NAO versione o arquivo real.
+# O Supabase URL e a chave publicável ficam no código porque são valores públicos.
+SUPABASE_SECRET_KEY=sb_secret_SUBSTITUIR
+HUB_API_URL=https://script.google.com/macros/s/SEU_DEPLOYMENT_ID/exec
+HUB_API_TOKEN=SUBSTITUIR_POR_TOKEN_FORTE
