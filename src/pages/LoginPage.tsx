@@ -3,29 +3,21 @@ import { supabase } from '../lib/supabase'
 
 export function LoginPage() {
   const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [message, setMessage] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
     setLoading(true)
-    setMessage(null)
     setError(null)
 
-    const { error: authError } = await supabase.auth.signInWithOtp({
+    const { error: authError } = await supabase.auth.signInWithPassword({
       email: email.trim().toLowerCase(),
-      options: {
-        emailRedirectTo: window.location.origin,
-        shouldCreateUser: true,
-      },
+      password,
     })
 
-    if (authError) {
-      setError(authError.message)
-    } else {
-      setMessage('Link de acesso enviado. Abra o e-mail e conclua a autenticação.')
-    }
+    if (authError) setError(authError.message)
     setLoading(false)
   }
 
@@ -40,7 +32,7 @@ export function LoginPage() {
           </div>
         </div>
         <h1>Acesso ao sistema</h1>
-        <p>Use o mesmo e-mail cadastrado na HUB. O acesso será validado pelo perfil do supervisor.</p>
+        <p>Entre com o mesmo e-mail cadastrado na HUB.</p>
         <form onSubmit={handleSubmit}>
           <label htmlFor="email">E-mail</label>
           <input
@@ -52,11 +44,22 @@ export function LoginPage() {
             required
             autoComplete="email"
           />
+
+          <label htmlFor="password">Senha</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="Sua senha"
+            required
+            autoComplete="current-password"
+          />
+
           <button className="button button-primary" type="submit" disabled={loading}>
-            {loading ? 'Enviando…' : 'Enviar link de acesso'}
+            {loading ? 'Entrando…' : 'Entrar'}
           </button>
         </form>
-        {message && <div className="notice notice-success">{message}</div>}
         {error && <div className="notice notice-error">{error}</div>}
       </div>
     </div>
