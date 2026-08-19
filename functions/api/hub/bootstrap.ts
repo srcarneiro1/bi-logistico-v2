@@ -21,6 +21,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     return json(response)
   } catch (error) {
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
+
     if (message === 'AUTH_INVALID' || message === 'AUTH_EMAIL_MISSING') {
       return json({ error: 'Sessão inválida. Entre novamente.' }, { status: 401 })
     }
@@ -30,7 +31,33 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     if (message === 'HUB_PROFILE_INVALID') {
       return json({ error: 'Seu cadastro não possui PerfilAcesso válido (ADMIN ou USUARIO).' }, { status: 403 })
     }
+
     console.error('hub/bootstrap', message)
+
+    if (message.startsWith('Variáveis obrigatórias ausentes:')) {
+      return json({ error: `Configuração do Cloudflare incompleta. ${message}` }, { status: 500 })
+    }
+    if (message.startsWith('HUB_BRIDGE_FAILED:')) {
+      const status = message.split(':')[1] || 'desconhecido'
+      return json({ error: `A ponte do Apps Script respondeu com erro HTTP ${status}. Verifique a URL /exec e a permissão da implantação.` }, { status: 500 })
+    }
+    if (message === 'HUB_BRIDGE_REJECTED:UNAUTHORIZED') {
+      return json({ error: 'O Apps Script rejeitou o HUB_API_TOKEN. O token do Cloudflare e o da Propriedade do Script precisam ser idênticos.' }, { status: 500 })
+    }
+    if (message === 'HUB_BRIDGE_REJECTED:TOKEN_NOT_CONFIGURED') {
+      return json({ error: 'HUB_API_TOKEN não está configurado nas Propriedades do Script do Apps Script.' }, { status: 500 })
+    }
+    if (message.startsWith('HUB_BRIDGE_REJECTED:SHEET_NOT_FOUND:')) {
+      const sheet = message.slice('HUB_BRIDGE_REJECTED:SHEET_NOT_FOUND:'.length)
+      return json({ error: `A ponte encontrou a planilha, mas não encontrou a aba ${sheet}.` }, { status: 500 })
+    }
+    if (message === 'HUB_BRIDGE_REJECTED:SPREADSHEET_NOT_BOUND') {
+      return json({ error: 'O Apps Script não está vinculado à HUB revisada.' }, { status: 500 })
+    }
+    if (message === 'HUB_BRIDGE_INVALID_PAYLOAD') {
+      return json({ error: 'A ponte do Apps Script respondeu, mas o conteúdo recebido não está no formato esperado.' }, { status: 500 })
+    }
+
     return json({ error: 'Falha ao carregar a HUB. Verifique a integração do Google e tente novamente.' }, { status: 500 })
   }
 }
