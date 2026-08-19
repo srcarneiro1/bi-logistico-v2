@@ -8,16 +8,27 @@ export interface HubRawData {
   depositantes: SheetValues
   indicadores: SheetValues
   substituicoes: SheetValues
+  kpiGeral?: SheetValues
+  kpiInventario?: SheetValues
+  kpiOperacional?: SheetValues
+  kpiInventarioDepositante?: SheetValues
+  receita?: SheetValues
+  despesa?: SheetValues
 }
 
 interface HubApiResponse extends HubRawData {
   ok?: boolean
   error?: string
+  bridgeVersion?: number
   generatedAt?: string
 }
 
 function isSheetValues(value: unknown): value is SheetValues {
   return Array.isArray(value) && value.every((row) => Array.isArray(row))
+}
+
+function optionalSheet(value: unknown): SheetValues {
+  return isSheetValues(value) ? value : []
 }
 
 export async function readHub(env: Env): Promise<HubRawData> {
@@ -54,5 +65,11 @@ export async function readHub(env: Env): Promise<HubRawData> {
     depositantes: payload.depositantes,
     indicadores: payload.indicadores,
     substituicoes: payload.substituicoes,
+    kpiGeral: optionalSheet(payload.kpiGeral),
+    kpiInventario: optionalSheet(payload.kpiInventario),
+    kpiOperacional: optionalSheet(payload.kpiOperacional),
+    kpiInventarioDepositante: optionalSheet(payload.kpiInventarioDepositante),
+    receita: optionalSheet(payload.receita),
+    despesa: optionalSheet(payload.despesa),
   }
 }

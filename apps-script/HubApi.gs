@@ -19,10 +19,16 @@ const HUB_SHEETS = Object.freeze({
   depositantes: 'dDepositantes',
   indicadores: 'dIndicadores',
   substituicoes: 'fSubstituicaoSupervisor',
+  kpiGeral: 'fKPI_Geral',
+  kpiInventario: 'fKPI_Inventario',
+  kpiOperacional: 'fKPI_Operacional',
+  kpiInventarioDepositante: 'fKPI_InventarioDepositante',
+  receita: 'fReceita',
+  despesa: 'fDespesa',
 });
 
 function doGet() {
-  return jsonResponse_({ ok: true, service: 'bi-logistico-v2-hub-bridge' });
+  return jsonResponse_({ ok: true, service: 'bi-logistico-v2-hub-bridge', version: 2 });
 }
 
 function doPost(e) {
@@ -36,7 +42,7 @@ function doPost(e) {
     }
 
     const cache = CacheService.getScriptCache();
-    const cached = cache.get('hub_v2_read_payload');
+    const cached = cache.get('hub_v2_read_payload_v2');
     if (cached) return ContentService.createTextOutput(cached).setMimeType(ContentService.MimeType.JSON);
 
     const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -44,16 +50,23 @@ function doPost(e) {
 
     const payload = {
       ok: true,
+      bridgeVersion: 2,
       generatedAt: new Date().toISOString(),
       supervisors: readSheet_(ss, HUB_SHEETS.supervisors),
       supervisorModules: readSheet_(ss, HUB_SHEETS.supervisorModules),
       depositantes: readSheet_(ss, HUB_SHEETS.depositantes),
       indicadores: readSheet_(ss, HUB_SHEETS.indicadores),
       substituicoes: readSheet_(ss, HUB_SHEETS.substituicoes),
+      kpiGeral: readSheet_(ss, HUB_SHEETS.kpiGeral),
+      kpiInventario: readSheet_(ss, HUB_SHEETS.kpiInventario),
+      kpiOperacional: readSheet_(ss, HUB_SHEETS.kpiOperacional),
+      kpiInventarioDepositante: readSheet_(ss, HUB_SHEETS.kpiInventarioDepositante),
+      receita: readSheet_(ss, HUB_SHEETS.receita),
+      despesa: readSheet_(ss, HUB_SHEETS.despesa),
     };
 
     const serialized = JSON.stringify(payload);
-    cache.put('hub_v2_read_payload', serialized, 120);
+    cache.put('hub_v2_read_payload_v2', serialized, 120);
     return ContentService.createTextOutput(serialized).setMimeType(ContentService.MimeType.JSON);
   } catch (error) {
     return jsonResponse_({ ok: false, error: String(error && error.message ? error.message : error) });
