@@ -4,6 +4,8 @@ import { getAvailablePeriods } from '../lib/dashboard'
 import type { DashboardFilters } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
 
+const BRAND_LOGO='https://raw.githubusercontent.com/srcarneiro1/forecast-planner/main/public/brand/unilog-logo-white-transparent.svg'
+
 const items=[
   {to:'/',label:'Visão geral',icon:'space_dashboard'},
   {to:'/kpis',label:'KPIs',icon:'monitoring'},
@@ -18,7 +20,7 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
   const current=items.find(i=>i.to==='/'?location.pathname==='/':location.pathname.startsWith(i.to))
   return <div className="app-shell">
     <aside className="sidebar">
-      <div className="sidebar-brand"><img src="/brand/unilog-logo-white.png" alt="Unilog Express"/><span>BI LOGÍSTICO</span></div>
+      <div className="sidebar-brand"><img src={BRAND_LOGO} alt="Unilog Express"/><span>BI LOGÍSTICO</span></div>
       <nav className="sidebar-nav">{items.map(item=><NavLink key={item.to} to={item.to} end={item.to==='/' }><span className="material-symbols-rounded">{item.icon}</span><span>{item.label}</span></NavLink>)}</nav>
       <div className="sidebar-user"><div className="user-avatar">{hub.profile.nome.slice(0,1).toUpperCase()}</div><div><strong>{hub.profile.nome}</strong><span>{hub.profile.perfil}</span></div><button onClick={()=>void onSignOut()} title="Sair"><span className="material-symbols-rounded">logout</span></button></div>
     </aside>
