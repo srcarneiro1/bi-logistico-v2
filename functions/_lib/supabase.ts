@@ -2,7 +2,7 @@ import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL, type Env } from './env'
 
 interface SupabaseAuthUser { id: string; email?: string }
 
-export interface SupabaseSubstitute { id: string; codigo: string; nome: string; email: string | null; foto_url: string | null; ativo: boolean }
+export interface SupabaseSubstitute { id: string; codigo: string; nome: string; email: string | null; fotoUrl: string | null; ativo: boolean }
 export interface SupabaseCoverage {
   id: string; legacy_substituicao_id: string | null; supervisor_titular_id: string; supervisor_titular_nome: string;
   substituto_master_id: string; substituto_codigo_snapshot: string; substituto_nome_snapshot: string;
@@ -33,7 +33,7 @@ async function userGet<T>(accessToken: string, path: string): Promise<T> {
 
 export async function getSupervisorCoverageData(accessToken: string) {
   const [substitutes, coverages] = await Promise.all([
-    userGet<SupabaseSubstitute[]>(accessToken,'supervisor_substitutos?select=id,codigo,nome,email,foto_url,ativo&order=nome.asc'),
+    userGet<SupabaseSubstitute[]>(accessToken,'supervisor_substitutos?select=id,codigo,nome,email,fotoUrl:foto_url,ativo&order=nome.asc'),
     userGet<SupabaseCoverage[]>(accessToken,'supervisor_substituicoes?select=id,legacy_substituicao_id,supervisor_titular_id,supervisor_titular_nome,substituto_master_id,substituto_codigo_snapshot,substituto_nome_snapshot,substituto_email_snapshot,substituto_foto_url_snapshot,modulo_id,data_inicio,data_fim,motivo,status&order=data_inicio.desc'),
   ])
   return { substitutes, coverages }
