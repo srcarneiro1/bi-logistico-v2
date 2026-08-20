@@ -44,13 +44,17 @@ export async function getAuthenticatedUser(_env: Env, accessToken: string): Prom
   return user
 }
 
+function secretHeaders(env: Env, extra?: Record<string, string>): Record<string, string> {
+  return {
+    apikey: env.SUPABASE_SECRET_KEY,
+    Accept: 'application/json',
+    ...extra,
+  }
+}
+
 async function secretGet<T>(env: Env, path: string): Promise<T> {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
-    headers: {
-      apikey: env.SUPABASE_SECRET_KEY,
-      Authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`,
-      Accept: 'application/json',
-    },
+    headers: secretHeaders(env),
   })
   if (!response.ok) {
     const detail = await response.text()
@@ -80,12 +84,10 @@ export async function upsertProfile(
 ) {
   const response = await fetch(`${SUPABASE_URL}/rest/v1/profiles?on_conflict=id`, {
     method: 'POST',
-    headers: {
-      apikey: env.SUPABASE_SECRET_KEY,
-      Authorization: `Bearer ${env.SUPABASE_SECRET_KEY}`,
+    headers: secretHeaders(env, {
       'Content-Type': 'application/json',
       Prefer: 'resolution=merge-duplicates,return=minimal',
-    },
+    }),
     body: JSON.stringify(profile),
   })
 
