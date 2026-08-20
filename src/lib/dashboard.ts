@@ -4,12 +4,18 @@ import type { HubBootstrap, HubIndicador, HubKpiGeral, HubKpiInventario, HubKpiI
 const monthMap: Record<string, number> = { jan:1, fev:2, mar:3, abr:4, mai:5, jun:6, jul:7, ago:8, set:9, out:10, nov:11, dez:12 }
 
 export function periodKey(periodo:string) {
-  const text = periodo.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-  const m = text.match(/([a-z]{3})\.?\/?(\d{4})/)
-  if (!m) return periodo
+  const raw = String(periodo ?? '').trim()
+  if (!raw) return ''
+  if (/^\d{4}-\d{2}$/.test(raw)) return raw
+  const iso = raw.match(/^(\d{4})-(\d{2})(?:-\d{2})?$/)
+  if (iso) return `${iso[1]}-${iso[2]}`
+  const text = raw.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+  const m = text.match(/([a-z]{3})\.?\s*[\/-]?\s*(\d{4})/)
+  if (!m) return raw
   const month = monthMap[m[1]] ?? 0
-  return `${m[2]}-${String(month).padStart(2,'0')}`
+  return month ? `${m[2]}-${String(month).padStart(2,'0')}` : raw
 }
+export function periodEquals(a:string,b:string){return !a||!b?true:periodKey(a)===periodKey(b)}
 export function periodLabel(periodo:string) {
   const key = periodKey(periodo)
   if (!/^\d{4}-\d{2}$/.test(key)) return periodo
@@ -21,7 +27,15 @@ export function getAvailablePeriods(hub:HubBootstrap) {
     ...hub.facts.kpiOperacional.map(x=>x.periodo), ...hub.facts.kpiInventarioDepositante.map(x=>x.periodo),
     ...hub.facts.receita.map(x=>x.periodo), ...hub.facts.despesa.map(x=>x.periodo),
   ]
-  return Array.from(new Set(all)).map(value=>({value,key:periodKey(value),label:periodLabel(value)})).sort((a,b)=>b.key.localeCompare(a.key))
+  const byKey=new Map<string,string>()
+  all.forEach(value=>{const key=periodKey(value);if(key&&!byKey.has(key))byKey.set(key,value)})
+  return Array.from(byKey,([key,value])=>({value,key,label:periodLabel(value)})).sort((a,b)=>b.key.localeCompare(a.key))
+}
+export function defaultPeriod(hub:HubBootstrap, now=new Date()){
+  const periods=getAvailablePeriods(hub)
+  if(!periods.length)return ''
+  const current=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit'}).format(now)
+  return periods.find(p=>p.key===current)?.value ?? periods.find(p=>p.key<current)?.value ?? periods[0].value
 }
 export const pct = (value:number|null|undefined, digits=1) => value == null ? '—' : value.toLocaleString('pt-BR',{style:'percent',minimumFractionDigits:digits,maximumFractionDigits:digits})
 export const pp = (value:number|null|undefined) => value == null ? '—' : `${value>=0?'+':''}${(value*100).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})} p.p.`
@@ -30,7 +44,7 @@ export function avg(values:Array<number|null|undefined>) { const valid=values.fi
 export function sum(values:Array<number|null|undefined>) { return values.reduce<number>((total,v)=>total+(typeof v==='number'&&Number.isFinite(v)?v:0),0) }
 
 export function scoped<T extends {periodo:string; supervisorId?:string; moduloId?:string}>(rows:T[], filters:DashboardFilters) {
-  return rows.filter(row => (!filters.periodo || row.periodo===filters.periodo) && (!filters.supervisorId || row.supervisorId===filters.supervisorId) && (!filters.moduloId || row.moduloId===filters.moduloId))
+  return rows.filter(row => (!filters.periodo || periodKey(row.periodo)===periodKey(filters.periodo)) && (!filters.supervisorId || row.supervisorId===filters.supervisorId) && (!filters.moduloId || row.moduloId===filters.moduloId))
 }
 export function indicatorMeta(hub:HubBootstrap, name:string): HubIndicador | undefined {
   const key = normalize(name)
@@ -45,7 +59,7 @@ export function metricStatus(value:number|null|undefined, meta?:HubIndicador):Me
   return 'warn'
 }
 export function mainKpis(hub:HubBootstrap, filters:DashboardFilters) {
-  const global = hub.facts.kpiGeral.filter(r=>!filters.periodo||r.periodo===filters.periodo)
+  const global = hub.facts.kpiGeral.filter(r=>!filters.periodo||periodKey(r.periodo)===periodKey(filters.periodo))
   if (global.length && hub.profile.perfil==='ADMIN' && !filters.supervisorId && !filters.moduloId) return global.map(r=>({label:r.kpi,value:r.valorPct,meta:indicatorMeta(hub,r.kpi)}))
   const op=scoped(hub.facts.kpiOperacional,filters), inv=scoped(hub.facts.kpiInventarioDepositante,filters)
   return [
@@ -64,15 +78,15 @@ export function trendGlobal(rows:HubKpiGeral[], name:string){ return rows.filter
 export function trendInventory(rows:HubKpiInventario[], name:string){ return rows.filter(r=>normalize(r.kpiTipo)===normalize(name)).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo))).map(r=>({periodo:r.periodo,value:r.valorPct})) }
 export function trendScopedOperational(rows:HubKpiOperacional[], field:'producaoPct'|'recebimentoPct',filters:DashboardFilters){
   const filtered=rows.filter(r=>(!filters.supervisorId||r.supervisorId===filters.supervisorId)&&(!filters.moduloId||r.moduloId===filters.moduloId))
-  const grouped=new Map<string,number[]>()
-  filtered.forEach(r=>{const v=r[field]; if(v!=null){const a=grouped.get(r.periodo)||[]; a.push(v); grouped.set(r.periodo,a)}})
-  return Array.from(grouped,([periodo,values])=>({periodo,value:avg(values)})).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo)))
+  const grouped=new Map<string,{periodo:string;values:number[]}>()
+  filtered.forEach(r=>{const v=r[field]; if(v!=null){const key=periodKey(r.periodo);const g=grouped.get(key)??{periodo:r.periodo,values:[]};g.values.push(v);grouped.set(key,g)}})
+  return Array.from(grouped.values(),g=>({periodo:g.periodo,value:avg(g.values)})).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo)))
 }
 export function trendScopedInventory(rows:HubKpiInventarioDepositante[],filters:DashboardFilters){
   const filtered=rows.filter(r=>(!filters.supervisorId||r.supervisorId===filters.supervisorId)&&(!filters.moduloId||r.moduloId===filters.moduloId))
-  const grouped=new Map<string,number[]>()
-  filtered.forEach(r=>{if(r.totalPct!=null){const a=grouped.get(r.periodo)||[];a.push(r.totalPct);grouped.set(r.periodo,a)}})
-  return Array.from(grouped,([periodo,values])=>({periodo,value:avg(values)})).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo)))
+  const grouped=new Map<string,{periodo:string;values:number[]}>()
+  filtered.forEach(r=>{if(r.totalPct!=null){const key=periodKey(r.periodo);const g=grouped.get(key)??{periodo:r.periodo,values:[]};g.values.push(r.totalPct);grouped.set(key,g)}})
+  return Array.from(grouped.values(),g=>({periodo:g.periodo,value:avg(g.values)})).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo)))
 }
 export function inventoryAggregate(rows:HubKpiInventarioDepositante[],filters:DashboardFilters){const r=scoped(rows,filters);return {prazo:avg(r.map(x=>x.prazoPct)),endereco:avg(r.map(x=>x.enderecoPct)),unidade:avg(r.map(x=>x.unidadePct)),sku:avg(r.map(x=>x.skuPct)),total:avg(r.map(x=>x.totalPct))}}
 
