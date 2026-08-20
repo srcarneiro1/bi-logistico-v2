@@ -4,181 +4,24 @@ import type { HubBootstrap } from '../types/hub'
 import type { FcaActionStatus, NewFcaAction } from '../types/fca'
 import { createFca } from '../lib/fca'
 
-const emptyAction = (): NewFcaAction => ({ acao: '', responsavel: '', prazo: '', status: 'ABERTO' })
+const emptyAction=():NewFcaAction=>({acao:'',responsavel:'',prazo:'',status:'ABERTO'})
+const todaySaoPaulo=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date())
 
-export function NewFcaPage({ hub }: { hub: HubBootstrap }) {
-  const navigate = useNavigate()
-  const isAdmin = hub.profile.perfil === 'ADMIN'
-  const defaultSupervisorId = isAdmin ? '' : (hub.profile.supervisorId ?? '')
-  const [dataReuniao, setDataReuniao] = useState(new Date().toISOString().slice(0, 10))
-  const [supervisorId, setSupervisorId] = useState(defaultSupervisorId)
-  const [moduloId, setModuloId] = useState('')
-  const [depositanteCnpj, setDepositanteCnpj] = useState('')
-  const [indicadorCodigo, setIndicadorCodigo] = useState('')
-  const [causa, setCausa] = useState('')
-  const [acoes, setAcoes] = useState<NewFcaAction[]>([emptyAction()])
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const modules = useMemo(() => {
-    const ids = hub.supervisorModules
-      .filter((item) => !supervisorId || item.supervisorId === supervisorId)
-      .map((item) => item.moduloId)
-    return Array.from(new Set(ids)).sort()
-  }, [hub.supervisorModules, supervisorId])
-
-  const depositantes = useMemo(() => hub.depositantes.filter((item) => {
-    if (supervisorId && item.supervisorId !== supervisorId && item.moduloId !== moduloId) return false
-    if (moduloId && item.moduloId !== moduloId) return false
-    return true
-  }).sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR')), [hub.depositantes, supervisorId, moduloId])
-
-  const indicadores = useMemo(() => hub.indicadores
-    .filter((item) => item.grupo.trim().toUpperCase() === 'KPI')
-    .sort((a, b) => a.indicador.localeCompare(b.indicador, 'pt-BR')), [hub.indicadores])
-
-  function changeSupervisor(value: string) {
-    setSupervisorId(value)
-    setModuloId('')
-    setDepositanteCnpj('')
-  }
-
-  function changeModule(value: string) {
-    setModuloId(value)
-    setDepositanteCnpj('')
-  }
-
-  function updateAction(index: number, field: keyof NewFcaAction, value: string) {
-    setAcoes((current) => current.map((acao, i) => i === index ? { ...acao, [field]: value } : acao))
-  }
-
-  function removeAction(index: number) {
-    setAcoes((current) => current.length === 1 ? current : current.filter((_, i) => i !== index))
-  }
-
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault()
-    setError(null)
-
-    const depositante = depositantes.find((item) => item.cnpj === depositanteCnpj)
-    const indicador = indicadores.find((item) => item.codigo === indicadorCodigo)
-    const supervisor = hub.supervisors.find((item) => item.supervisorId === depositante?.supervisorId)
-    if (!depositante || !indicador || !supervisor || !moduloId) {
-      setError('Preencha supervisor, módulo, depositante e indicador.')
-      return
-    }
-    if (!causa.trim()) {
-      setError('Informe a causa do FCA.')
-      return
-    }
-    const validActions = acoes.filter((acao) => acao.acao.trim())
-    if (acoes.some((acao) => !acao.acao.trim() && (acao.responsavel || acao.prazo))) {
-      setError('Há uma ação incompleta. Informe a descrição ou remova a linha.')
-      return
-    }
-
-    const substitution = hub.substituicoes.find((item) => item.ativo && item.moduloId === moduloId && (
-      item.supervisorTitularId === supervisorId || item.supervisorSubstitutoId === supervisorId
-    ))
-
-    setSaving(true)
-    try {
-      const created = await createFca({
-        dataReuniao,
-        supervisorId: depositante.supervisorId,
-        supervisorNome: supervisor.supervisor,
-        moduloId,
-        depositanteCnpj: depositante.cnpj,
-        depositanteNome: depositante.nome,
-        indicadorCodigo: indicador.codigo,
-        indicadorNome: indicador.indicador,
-        causa: causa.trim(),
-        substituicaoId: substitution?.substituicaoId ?? null,
-        substitutoId: substitution?.supervisorSubstitutoId ?? null,
-        substitutoNome: substitution?.supervisorSubstituto ?? null,
-        acoes: validActions,
-      })
-      navigate(`/fca/${created.id}`, { state: { justCreated: created.numero } })
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Não foi possível salvar o FCA.')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  return (
-    <section>
-      <div className="page-header page-header-row">
-        <div>
-          <span className="eyebrow">FCA · NOVO</span>
-          <h1>Novo FCA</h1>
-          <p>Os dados de supervisor, módulo, depositante e indicador vêm da HUB.</p>
-        </div>
-        <Link className="button" to="/fca">Voltar</Link>
-      </div>
-
-      <form className="form-panel" onSubmit={handleSubmit}>
-        <div className="form-section">
-          <h2>Identificação</h2>
-          <div className="form-grid form-grid-3">
-            <div><label>Data da reunião</label><input type="date" value={dataReuniao} onChange={(e) => setDataReuniao(e.target.value)} required /></div>
-            <div>
-              <label>Supervisor</label>
-              <select value={supervisorId} onChange={(e) => changeSupervisor(e.target.value)} disabled={!isAdmin} required>
-                <option value="">Selecione</option>
-                {hub.supervisors.map((item) => <option key={item.supervisorId} value={item.supervisorId}>{item.nomeExibicao}</option>)}
-              </select>
-            </div>
-            <div>
-              <label>Módulo</label>
-              <select value={moduloId} onChange={(e) => changeModule(e.target.value)} required>
-                <option value="">Selecione</option>
-                {modules.map((item) => <option key={item} value={item}>{item}</option>)}
-              </select>
-            </div>
-            <div className="span-2">
-              <label>Depositante</label>
-              <select value={depositanteCnpj} onChange={(e) => setDepositanteCnpj(e.target.value)} required>
-                <option value="">Selecione pelo nome</option>
-                {depositantes.map((item) => <option key={item.cnpj} value={item.cnpj}>{item.nome} · {item.cnpj}</option>)}
-              </select>
-            </div>
-            <div>
-              <label>Indicador</label>
-              <select value={indicadorCodigo} onChange={(e) => setIndicadorCodigo(e.target.value)} required>
-                <option value="">Selecione</option>
-                {indicadores.map((item) => <option key={item.codigo} value={item.codigo}>{item.indicador}</option>)}
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div className="form-section">
-          <h2>Análise da causa</h2>
-          <label>Causa / desvio identificado</label>
-          <textarea value={causa} onChange={(e) => setCausa(e.target.value)} rows={6} placeholder="Descreva o problema e a causa identificada…" required />
-        </div>
-
-        <div className="form-section">
-          <div className="section-title-row"><h2>Plano de ação</h2><button type="button" className="button" onClick={() => setAcoes((current) => [...current, emptyAction()])}>+ Adicionar ação</button></div>
-          <div className="actions-stack">
-            {acoes.map((acao, index) => (
-              <div className="action-card" key={index}>
-                <div className="action-card-title"><strong>Ação {String(index + 1).padStart(2, '0')}</strong><button type="button" className="text-button" onClick={() => removeAction(index)} disabled={acoes.length === 1}>Remover</button></div>
-                <div className="form-grid form-grid-action">
-                  <div className="span-2"><label>Ação</label><textarea rows={3} value={acao.acao} onChange={(e) => updateAction(index, 'acao', e.target.value)} /></div>
-                  <div><label>Responsável</label><input value={acao.responsavel} onChange={(e) => updateAction(index, 'responsavel', e.target.value)} /></div>
-                  <div><label>Prazo</label><input type="date" value={acao.prazo} onChange={(e) => updateAction(index, 'prazo', e.target.value)} /></div>
-                  <div><label>Status</label><select value={acao.status} onChange={(e) => updateAction(index, 'status', e.target.value as FcaActionStatus)}><option value="ABERTO">Aberto</option><option value="EM_ANDAMENTO">Em andamento</option><option value="CONCLUIDO">Concluído</option><option value="CANCELADO">Cancelado</option></select></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {error && <div className="notice notice-error">{error}</div>}
-        <div className="form-actions"><Link className="button" to="/fca">Cancelar</Link><button className="button button-primary" type="submit" disabled={saving}>{saving ? 'Salvando…' : 'Salvar FCA'}</button></div>
-      </form>
-    </section>
-  )
+export function NewFcaPage({hub}:{hub:HubBootstrap}){
+ const navigate=useNavigate(),isAdmin=hub.profile.perfil==='ADMIN',defaultSupervisorId=isAdmin?'':(hub.profile.supervisorId??'')
+ const[dataReuniao,setDataReuniao]=useState(todaySaoPaulo()),[supervisorId,setSupervisorId]=useState(defaultSupervisorId),[moduloId,setModuloId]=useState(''),[depositanteCnpj,setDepositanteCnpj]=useState(''),[indicadorCodigo,setIndicadorCodigo]=useState(''),[causa,setCausa]=useState(''),[acoes,setAcoes]=useState<NewFcaAction[]>([emptyAction()]),[saving,setSaving]=useState(false),[error,setError]=useState<string|null>(null)
+ const modules=useMemo(()=>Array.from(new Set(hub.supervisorModules.filter(i=>!supervisorId||i.supervisorId===supervisorId).map(i=>i.moduloId))).sort(),[hub.supervisorModules,supervisorId])
+ const depositantes=useMemo(()=>hub.depositantes.filter(i=>(!supervisorId||i.supervisorId===supervisorId||i.moduloId===moduloId)&&(!moduloId||i.moduloId===moduloId)).sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR')),[hub.depositantes,supervisorId,moduloId])
+ const indicadores=useMemo(()=>hub.indicadores.filter(i=>i.grupo.trim().toUpperCase()==='KPI').sort((a,b)=>a.indicador.localeCompare(b.indicador,'pt-BR')),[hub.indicadores])
+ function updateAction(index:number,field:keyof NewFcaAction,value:string){setAcoes(c=>c.map((a,i)=>i===index?{...a,[field]:value}:a))}
+ async function handleSubmit(event:FormEvent){event.preventDefault();setError(null);const dep=depositantes.find(i=>i.cnpj===depositanteCnpj),ind=indicadores.find(i=>i.codigo===indicadorCodigo),sup=hub.supervisors.find(i=>i.supervisorId===dep?.supervisorId);if(!dep||!ind||!sup||!moduloId){setError('Preencha supervisor, módulo, depositante e indicador.');return}if(!causa.trim()){setError('Informe a causa do FCA.');return}const validActions=acoes.filter(a=>a.acao.trim());if(acoes.some(a=>!a.acao.trim()&&(a.responsavel||a.prazo))){setError('Há uma ação incompleta. Informe a descrição ou remova a linha.');return}const substitution=hub.substituicoes.find(i=>i.ativo&&i.moduloId===moduloId&&(i.supervisorTitularId===dep.supervisorId||i.supervisorSubstitutoId===dep.supervisorId));setSaving(true);try{const created=await createFca({dataReuniao,supervisorId:dep.supervisorId,supervisorNome:sup.supervisor,moduloId,depositanteCnpj:dep.cnpj,depositanteNome:dep.nome,indicadorCodigo:ind.codigo,indicadorNome:ind.indicador,causa:causa.trim(),substituicaoId:substitution?.substituicaoId??null,substitutoId:substitution?.supervisorSubstitutoId??null,substitutoNome:substitution?.supervisorSubstituto??null,acoes:validActions});navigate(`/fca/${created.id}`,{state:{justCreated:created.numero}})}catch(err){setError(err instanceof Error?err.message:'Não foi possível salvar o FCA.')}finally{setSaving(false)}}
+ return <section>
+  <div className="page-header page-header-row fca-page-header"><div><span className="eyebrow">FCA · NOVO REGISTRO</span><h1>Novo FCA</h1><p>Registre o desvio, sua causa e as ações corretivas. Supervisor, módulo, depositante e indicador são validados pelo cadastro autorizado.</p></div><Link className="button" to="/fca"><span className="material-symbols-rounded">arrow_back</span>Voltar</Link></div>
+  <form className="form-panel fca-form" onSubmit={handleSubmit}>
+   <div className="form-section"><div className="form-section-heading"><span className="material-symbols-rounded">badge</span><div><h2>Identificação</h2><p>Contexto operacional do FCA.</p></div></div><div className="form-grid form-grid-3"><div><label>Data da reunião</label><input type="date" value={dataReuniao} onChange={e=>setDataReuniao(e.target.value)} required/></div><div><label>Supervisor</label><select value={supervisorId} onChange={e=>{setSupervisorId(e.target.value);setModuloId('');setDepositanteCnpj('')}} disabled={!isAdmin} required><option value="">Selecione</option>{hub.supervisors.map(i=><option key={i.supervisorId} value={i.supervisorId}>{i.nomeExibicao}</option>)}</select></div><div><label>Módulo</label><select value={moduloId} onChange={e=>{setModuloId(e.target.value);setDepositanteCnpj('')}} required><option value="">Selecione</option>{modules.map(i=><option key={i}>{i}</option>)}</select></div><div className="span-2"><label>Depositante</label><select value={depositanteCnpj} onChange={e=>setDepositanteCnpj(e.target.value)} required><option value="">Selecione pelo nome</option>{depositantes.map(i=><option key={i.cnpj} value={i.cnpj}>{i.nome} · {i.cnpj}</option>)}</select></div><div><label>Indicador</label><select value={indicadorCodigo} onChange={e=>setIndicadorCodigo(e.target.value)} required><option value="">Selecione</option>{indicadores.map(i=><option key={i.codigo} value={i.codigo}>{i.indicador}</option>)}</select></div></div></div>
+   <div className="form-section"><div className="form-section-heading"><span className="material-symbols-rounded">troubleshoot</span><div><h2>Análise da causa</h2><p>Descreva o desvio e o que foi identificado como causa.</p></div></div><label>Causa / desvio identificado</label><textarea value={causa} onChange={e=>setCausa(e.target.value)} rows={6} placeholder="Descreva o problema, o impacto e a causa identificada…" required/></div>
+   <div className="form-section"><div className="section-title-row form-section-heading-row"><div className="form-section-heading"><span className="material-symbols-rounded">task_alt</span><div><h2>Plano de ação</h2><p>Transforme a análise em responsáveis, prazos e acompanhamento.</p></div></div><button type="button" className="add-action-button" onClick={()=>setAcoes(c=>[...c,emptyAction()])}><span className="material-symbols-rounded">add</span>Nova ação</button></div><div className="actions-stack">{acoes.map((acao,index)=><div className="action-card" key={index}><div className="action-card-title"><span className="action-number">{String(index+1).padStart(2,'0')}</span><strong>Ação</strong><button type="button" className="action-remove" onClick={()=>setAcoes(c=>c.length===1?c:c.filter((_,i)=>i!==index))} disabled={acoes.length===1}><span className="material-symbols-rounded">delete</span>Remover</button></div><div className="form-grid form-grid-action"><div className="span-2"><label>Descrição da ação</label><textarea rows={3} value={acao.acao} onChange={e=>updateAction(index,'acao',e.target.value)}/></div><div><label>Responsável</label><input value={acao.responsavel} onChange={e=>updateAction(index,'responsavel',e.target.value)}/></div><div><label>Prazo</label><input type="date" value={acao.prazo} onChange={e=>updateAction(index,'prazo',e.target.value)}/></div><div><label>Status</label><select value={acao.status} onChange={e=>updateAction(index,'status',e.target.value as FcaActionStatus)}><option value="ABERTO">Aberto</option><option value="EM_ANDAMENTO">Em andamento</option><option value="CONCLUIDO">Concluído</option><option value="CANCELADO">Cancelado</option></select></div></div></div>)}</div></div>
+   {error&&<div className="notice notice-error">{error}</div>}<div className="form-actions sticky-form-actions"><Link className="button" to="/fca">Cancelar</Link><button className="button button-primary" type="submit" disabled={saving}>{saving?'Salvando…':'Salvar FCA'}</button></div>
+  </form>
+ </section>
 }

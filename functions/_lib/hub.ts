@@ -1,4 +1,5 @@
 import type { HubRawData } from './google'
+import type { SupabaseCoverage, SupabaseSubstitute } from './supabase'
 
 type Perfil = 'ADMIN' | 'USUARIO'
 
@@ -41,16 +42,32 @@ function isCurrent(start: string, end: string, currentDate: string) {
 }
 function rows(raw: string[][] | undefined) { return Array.isArray(raw) ? raw.slice(1) : [] }
 
-export function buildHubBootstrap(raw: HubRawData, user: { id: string; email: string }, now = new Date()) {
+export function buildHubBootstrap(
+  raw: HubRawData,
+  user: { id: string; email: string },
+  now = new Date(),
+  coverageData?: { substitutes: SupabaseSubstitute[]; coverages: SupabaseCoverage[] },
+) {
   const supervisorRows = raw.supervisors.slice(1).filter((row) => val(row, 0))
   const matched = supervisorRows.find((row) => emailKey(val(row, 3)) === emailKey(user.email))
-  if (!matched) throw new Error('HUB_USER_NOT_FOUND')
+  const currentDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(now)
+  const userEmail = emailKey(user.email)
 
-  const perfil = val(matched, 7).toUpperCase() as Perfil
+  const supabaseCoverages = coverageData?.coverages ?? []
+  const activeCoverageForEmail = supabaseCoverages.filter((coverage) => (
+    coverage.status === 'ATIVA' &&
+    emailKey(coverage.substituto_email_snapshot ?? '') === userEmail &&
+    isCurrent(coverage.data_inicio, coverage.data_fim, currentDate)
+  ))
+  const substituteMaster = coverageData?.substitutes.find((item) => item.ativo && emailKey(item.email ?? '') === userEmail)
+
+  if (!matched && (!substituteMaster || activeCoverageForEmail.length === 0)) throw new Error('HUB_USER_NOT_FOUND')
+
+  const perfil = matched ? val(matched, 7).toUpperCase() as Perfil : 'USUARIO'
   if (perfil !== 'ADMIN' && perfil !== 'USUARIO') throw new Error('HUB_PROFILE_INVALID')
 
-  const supervisorId = val(matched, 0) || null
-  const currentDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(now)
+  const supervisorId = matched ? (val(matched, 0) || null) : null
+  const profileName = matched ? (val(matched, 2) || val(matched, 1)) : (substituteMaster?.nome || 'Substituto')
 
   const allSupervisors = supervisorRows.map((row) => ({
     supervisorId: val(row, 0), supervisor: val(row, 1), nomeExibicao: val(row, 2) || val(row, 1), email: val(row, 3), fotoUrl: val(row, 4) || null,
@@ -59,13 +76,33 @@ export function buildHubBootstrap(raw: HubRawData, user: { id: string; email: st
 
   const allModules = raw.supervisorModules.slice(1).filter((row) => val(row, 0) && val(row, 1)).map((row) => ({ supervisorId: val(row, 0), moduloId: val(row, 1), ativo: yes(val(row, 2)) }))
 
-  const allSubstitutions = raw.substituicoes.slice(1).filter((row) => val(row, 0)).map((row) => ({
-    substituicaoId: val(row, 0), supervisorTitularId: val(row, 1), supervisorSubstitutoId: val(row, 2), supervisorSubstituto: val(row, 3), moduloId: val(row, 4),
+  const legacySubstitutions = raw.substituicoes.slice(1).filter((row) => val(row, 0)).map((row) => ({
+    substituicaoId: val(row, 0), legacySubstituicaoId: val(row, 0), supervisorTitularId: val(row, 1), supervisorSubstitutoId: val(row, 2), supervisorSubstituto: val(row, 3), supervisorSubstitutoEmail: null as string | null, substitutoMasterId: null as string | null, moduloId: val(row, 4),
     dataInicio: parseBrDate(val(row, 5)), dataFim: parseBrDate(val(row, 6)), motivo: val(row, 7) || null,
-    ativo: yes(val(row, 8)) && isCurrent(val(row, 5), val(row, 6), currentDate),
+    ativo: yes(val(row, 8)) && isCurrent(val(row, 5), val(row, 6), currentDate), status: yes(val(row, 8)) ? 'ATIVA' : 'ENCERRADA', origem: 'HUB' as const,
   }))
+  const managedSubstitutions = supabaseCoverages.map((coverage) => ({
+    substituicaoId: coverage.id,
+    legacySubstituicaoId: coverage.legacy_substituicao_id,
+    supervisorTitularId: coverage.supervisor_titular_id,
+    supervisorSubstitutoId: coverage.substituto_codigo_snapshot,
+    supervisorSubstituto: coverage.substituto_nome_snapshot,
+    supervisorSubstitutoEmail: coverage.substituto_email_snapshot,
+    substitutoMasterId: coverage.substituto_master_id,
+    moduloId: coverage.modulo_id,
+    dataInicio: coverage.data_inicio,
+    dataFim: coverage.data_fim,
+    motivo: coverage.motivo,
+    status: coverage.status,
+    ativo: coverage.status === 'ATIVA' && isCurrent(coverage.data_inicio, coverage.data_fim, currentDate),
+    origem: 'SUPABASE' as const,
+  }))
+  const allSubstitutions = managedSubstitutions.length ? managedSubstitutions : legacySubstitutions
   const activeSubstitutions = allSubstitutions.filter((sub) => sub.ativo)
-  const substitutedModules = new Set(activeSubstitutions.filter((sub) => sub.supervisorSubstitutoId === supervisorId).map((sub) => sub.moduloId))
+  const userIsSubstitute = (sub: typeof allSubstitutions[number]) => (
+    (supervisorId && sub.supervisorSubstitutoId === supervisorId) || emailKey(sub.supervisorSubstitutoEmail ?? '') === userEmail
+  )
+  const substitutedModules = new Set(activeSubstitutions.filter(userIsSubstitute).map((sub) => sub.moduloId))
 
   const allDepositantes = raw.depositantes.slice(1).filter((row) => val(row, 0) && val(row, 1)).map((row) => ({
     cnpj: cnpj14(val(row, 0)), nome: val(row, 1), codAllStrategy: val(row, 2) || null, supervisorId: val(row, 3), moduloId: val(row, 4), ativo: yes(val(row, 5)),
@@ -76,7 +113,7 @@ export function buildHubBootstrap(raw: HubRawData, user: { id: string; email: st
   })).filter((item) => item.ativo)
 
   const isAdmin = perfil === 'ADMIN'
-  const substitutionTitularIds = new Set(activeSubstitutions.filter((sub) => sub.supervisorSubstitutoId === supervisorId).map((sub) => sub.supervisorTitularId))
+  const substitutionTitularIds = new Set(activeSubstitutions.filter(userIsSubstitute).map((sub) => sub.supervisorTitularId))
   const supervisors = isAdmin ? allSupervisors.filter((item) => item.ativo) : allSupervisors.filter((item) => item.supervisorId === supervisorId || substitutionTitularIds.has(item.supervisorId))
   const supervisorModules = isAdmin ? allModules.filter((item) => item.ativo) : allModules.filter((item) => item.ativo && (item.supervisorId === supervisorId || substitutedModules.has(item.moduloId)))
   const depositantes = allDepositantes.filter((item) => item.ativo && (isAdmin || item.supervisorId === supervisorId || substitutedModules.has(item.moduloId)))
@@ -95,12 +132,14 @@ export function buildHubBootstrap(raw: HubRawData, user: { id: string; email: st
   })).filter((item) => canSeeScopedRow(item.supervisorId, item.moduloId))
   const despesa = isAdmin ? rows(raw.despesa).filter((row) => val(row, 0) && val(row, 1)).map((row) => ({ periodo: val(row, 0), codAllStrategy: val(row, 1), despesaPlanejada: parseMoney(val(row, 2)), despesaRealizada: parseMoney(val(row, 3)) })) : []
 
-  const visibleSubstitutions = isAdmin ? allSubstitutions : allSubstitutions.filter((item) => item.supervisorTitularId === supervisorId || item.supervisorSubstitutoId === supervisorId)
+  const visibleSubstitutions = isAdmin ? allSubstitutions : allSubstitutions.filter((item) => item.supervisorTitularId === supervisorId || userIsSubstitute(item))
 
   return {
-    profile: { id: user.id, email: emailKey(user.email), nome: val(matched, 2) || val(matched, 1), perfil, supervisorId: isAdmin ? null : supervisorId },
-    profileRow: { id: user.id, email: emailKey(user.email), nome: val(matched, 2) || val(matched, 1), perfil, supervisor_id: isAdmin ? null : supervisorId, ativo: true },
-    supervisors, supervisorModules, depositantes, indicadores: indicators, substituicoes: visibleSubstitutions,
+    profile: { id: user.id, email: userEmail, nome: profileName, perfil, supervisorId: isAdmin ? null : supervisorId },
+    profileRow: { id: user.id, email: userEmail, nome: profileName, perfil, supervisor_id: isAdmin ? null : supervisorId, ativo: true },
+    supervisors, supervisorModules, depositantes, indicadores: indicators,
+    substitutos: isAdmin ? (coverageData?.substitutes ?? []) : [],
+    substituicoes: visibleSubstitutions,
     facts: { kpiGeral, kpiInventario, kpiOperacional, kpiInventarioDepositante, receita, despesa },
     analyticsReady: Boolean(raw.kpiOperacional?.length || raw.kpiGeral?.length || raw.receita?.length),
     sourceUpdatedAt: now.toISOString(),
