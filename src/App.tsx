@@ -16,6 +16,7 @@ import { FinanceiroPage } from './pages/FinanceiroPage'
 import { FcaListPage } from './pages/FcaListPage'
 import { NewFcaPage } from './pages/NewFcaPage'
 import { FcaDetailPage } from './pages/FcaDetailPage'
+import { FcaEditPage } from './pages/FcaEditPage'
 
 const emptyFilters:DashboardFilters={periodo:'',supervisorId:'',moduloId:''}
 const BRAND_LOGO='https://raw.githubusercontent.com/srcarneiro1/forecast-planner/main/public/brand/unilog-logo-white-transparent.svg'
@@ -30,5 +31,5 @@ export default function App(){
  if(!session)return <LoginPage/>
  if(loading)return <div className="center-state"><div className="loading-brand"><img src={BRAND_LOGO} alt="Unilog Express"/><span className="loading-spinner"/></div><strong>Carregando BI Logístico…</strong><p>Validando acesso e preparando indicadores.</p></div>
  if(error||!hub)return <div className="center-state center-state-error"><strong>Acesso não liberado</strong><p>{error??'Seu e-mail não possui um perfil válido na HUB.'}</p><button className="button" onClick={()=>void signOut()}>Voltar ao login</button></div>
- return <BrowserRouter><AppShell hub={hub} filters={filters} onFiltersChange={setFilters} onSignOut={signOut}><Routes><Route path="/" element={<HomePage hub={hub} filters={filters}/>}/><Route path="/kpis" element={<KpisPage hub={hub} filters={filters}/>}/><Route path="/supervisores" element={<SupervisorsPage hub={hub} filters={filters} onRefresh={refreshHub}/>}/><Route path="/depositantes" element={<DepositantesPage hub={hub} filters={filters}/>}/><Route path="/financeiro" element={<FinanceiroPage hub={hub} filters={filters}/>}/><Route path="/fca" element={<FcaListPage hub={hub}/>}/><Route path="/fca/novo" element={<NewFcaPage hub={hub}/>}/><Route path="/fca/:id" element={<FcaDetailPage/>}/><Route path="*" element={<HomePage hub={hub} filters={filters}/>}/></Routes></AppShell></BrowserRouter>
+ return <BrowserRouter><AppShell hub={hub} filters={filters} onFiltersChange={setFilters} onSignOut={signOut}><Routes><Route path="/" element={<HomePage hub={hub} filters={filters}/>}/><Route path="/kpis" element={<KpisPage hub={hub} filters={filters}/>}/><Route path="/supervisores" element={<SupervisorsPage hub={hub} filters={filters} onRefresh={refreshHub}/>}/><Route path="/depositantes" element={<DepositantesPage hub={hub} filters={filters}/>}/><Route path="/financeiro" element={<FinanceiroPage hub={hub} filters={filters}/>}/><Route path="/fca" element={<FcaListPage hub={hub}/>}/><Route path="/fca/novo" element={<NewFcaPage hub={hub}/>}/><Route path="/fca/:id/editar" element={<FcaEditPage hub={hub}/>}/><Route path="/fca/:id" element={<FcaDetailPage/>}/><Route path="*" element={<HomePage hub={hub} filters={filters}/>}/></Routes></AppShell></BrowserRouter>
 }
