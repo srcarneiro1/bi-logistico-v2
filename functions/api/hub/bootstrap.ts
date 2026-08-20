@@ -1,7 +1,7 @@
 import type { PagesFunction } from '@cloudflare/workers-types'
 import { assertEnv, type Env } from '../../_lib/env'
 import { bearerToken, json } from '../../_lib/http'
-import { getAuthenticatedUser, upsertProfile } from '../../_lib/supabase'
+import { getAuthenticatedUser, getSupervisorCoverageData, upsertProfile } from '../../_lib/supabase'
 import { readHub } from '../../_lib/google'
 import { buildHubBootstrap } from '../../_lib/hub'
 
@@ -12,8 +12,11 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     if (!token) return json({ error: 'Sessão não informada.' }, { status: 401 })
 
     const authUser = await getAuthenticatedUser(env, token)
-    const rawHub = await readHub(env)
-    const bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! })
+    const [rawHub, coverageData] = await Promise.all([
+      readHub(env),
+      getSupervisorCoverageData(env),
+    ])
+    const bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData)
 
     await upsertProfile(env, bootstrap.profileRow)
 
@@ -26,7 +29,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       return json({ error: 'Sessão inválida. Entre novamente.' }, { status: 401 })
     }
     if (message === 'HUB_USER_NOT_FOUND') {
-      return json({ error: 'Seu e-mail não está cadastrado na dSupervisores da HUB.' }, { status: 403 })
+      return json({ error: 'Seu e-mail não está cadastrado na HUB nem possui uma cobertura de supervisor vigente.' }, { status: 403 })
     }
     if (message === 'HUB_PROFILE_INVALID') {
       return json({ error: 'Seu cadastro não possui PerfilAcesso válido (ADMIN ou USUARIO).' }, { status: 403 })
@@ -56,6 +59,9 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     }
     if (message === 'HUB_BRIDGE_INVALID_PAYLOAD') {
       return json({ error: 'A ponte do Apps Script respondeu, mas o conteúdo recebido não está no formato esperado.' }, { status: 500 })
+    }
+    if (message.startsWith('SUPABASE_READ_FAILED:')) {
+      return json({ error: 'Falha ao carregar as coberturas de supervisão no Supabase.' }, { status: 500 })
     }
 
     return json({ error: 'Falha ao carregar a HUB. Verifique a integração do Google e tente novamente.' }, { status: 500 })
