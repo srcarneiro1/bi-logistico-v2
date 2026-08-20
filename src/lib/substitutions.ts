@@ -1,8 +1,8 @@
 import { supabase } from './supabase'
 import type { HubSubstituicao, HubSubstituto } from '../types/hub'
 
-export async function saveSubstitute(input:{id?:string;codigo:string;nome:string;email:string;ativo:boolean}){
-  const payload={codigo:input.codigo.trim(),nome:input.nome.trim(),email:input.email.trim().toLowerCase()||null,ativo:input.ativo,alterado_por:(await supabase.auth.getUser()).data.user?.id??null,alterado_em:new Date().toISOString()}
+export async function saveSubstitute(input:{id?:string;codigo:string;nome:string;email:string;fotoUrl:string;ativo:boolean}){
+  const payload={codigo:input.codigo.trim(),nome:input.nome.trim(),email:input.email.trim().toLowerCase()||null,foto_url:input.fotoUrl.trim()||null,ativo:input.ativo,alterado_por:(await supabase.auth.getUser()).data.user?.id??null,alterado_em:new Date().toISOString()}
   if(input.id){const{error}=await supabase.from('supervisor_substitutos').update(payload).eq('id',input.id);if(error)throw new Error(error.message);return input.id}
   const user=(await supabase.auth.getUser()).data.user
   const{data,error}=await supabase.from('supervisor_substitutos').insert({...payload,criado_por:user?.id??null}).select('id').single()
@@ -19,6 +19,7 @@ export async function saveCoverage(input:{id?:string;titularId:string;titularNom
     substituto_codigo_snapshot:input.substituto.codigo,
     substituto_nome_snapshot:input.substituto.nome,
     substituto_email_snapshot:input.substituto.email,
+    substituto_foto_url_snapshot:input.substituto.fotoUrl,
     modulo_id:input.moduloId,
     data_inicio:input.dataInicio,
     data_fim:input.dataFim,
