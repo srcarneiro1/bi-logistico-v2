@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { defaultPeriod, getAvailablePeriods } from '../lib/dashboard'
+import { defaultPeriod, getAvailablePeriods, periodLabel } from '../lib/dashboard'
 import type { DashboardFilters } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
 
@@ -23,8 +23,7 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
   const current=items.find(i=>i.to==='/'?location.pathname==='/':location.pathname.startsWith(i.to))
   const contextualRoute=location.pathname.startsWith('/administracao/')||location.pathname==='/fca/novo'||/^\/fca\/[^/]+(?:\/editar)?$/.test(location.pathname)
   const supervisorName=filters.supervisorId?hub.supervisors.find(s=>s.supervisorId===filters.supervisorId)?.nomeExibicao:''
-  const periodName=filters.periodo?periods.find(p=>p.key===periods.find(x=>x.value===filters.periodo)?.key)?.label:''
-  const scope=[periodName,supervisorName,filters.moduloId].filter(Boolean).join(' · ')||'Histórico completo'
+  const scope=[filters.periodo?periodLabel(filters.periodo):'',supervisorName,filters.moduloId].filter(Boolean).join(' · ')||'Histórico completo'
   function toggleCollapsed(){setCollapsed(v=>{const next=!v;localStorage.setItem('bi-logistico-v2:sidebar',next?'collapsed':'expanded');return next})}
   function resetFilters(){onFiltersChange({periodo:defaultPeriod(hub),supervisorId:'',moduloId:''})}
   return <div className={`app-shell ${collapsed?'sidebar-collapsed':''}`}>
