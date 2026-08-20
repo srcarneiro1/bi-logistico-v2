@@ -24,6 +24,7 @@ export function getAvailablePeriods(hub:HubBootstrap) {
   return Array.from(new Set(all)).map(value=>({value,key:periodKey(value),label:periodLabel(value)})).sort((a,b)=>b.key.localeCompare(a.key))
 }
 export const pct = (value:number|null|undefined, digits=1) => value == null ? '—' : value.toLocaleString('pt-BR',{style:'percent',minimumFractionDigits:digits,maximumFractionDigits:digits})
+export const pp = (value:number|null|undefined) => value == null ? '—' : `${value>=0?'+':''}${(value*100).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})} p.p.`
 export const money = (value:number|null|undefined) => value == null ? '—' : value.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0})
 export function avg(values:Array<number|null|undefined>) { const valid=values.filter((v):v is number=>typeof v==='number'&&Number.isFinite(v)); return valid.length ? valid.reduce((a,b)=>a+b,0)/valid.length : null }
 export function sum(values:Array<number|null|undefined>) { return values.reduce<number>((total,v)=>total+(typeof v==='number'&&Number.isFinite(v)?v:0),0) }
@@ -67,4 +68,25 @@ export function trendScopedOperational(rows:HubKpiOperacional[], field:'producao
   filtered.forEach(r=>{const v=r[field]; if(v!=null){const a=grouped.get(r.periodo)||[]; a.push(v); grouped.set(r.periodo,a)}})
   return Array.from(grouped,([periodo,values])=>({periodo,value:avg(values)})).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo)))
 }
+export function trendScopedInventory(rows:HubKpiInventarioDepositante[],filters:DashboardFilters){
+  const filtered=rows.filter(r=>(!filters.supervisorId||r.supervisorId===filters.supervisorId)&&(!filters.moduloId||r.moduloId===filters.moduloId))
+  const grouped=new Map<string,number[]>()
+  filtered.forEach(r=>{if(r.totalPct!=null){const a=grouped.get(r.periodo)||[];a.push(r.totalPct);grouped.set(r.periodo,a)}})
+  return Array.from(grouped,([periodo,values])=>({periodo,value:avg(values)})).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo)))
+}
 export function inventoryAggregate(rows:HubKpiInventarioDepositante[],filters:DashboardFilters){const r=scoped(rows,filters);return {prazo:avg(r.map(x=>x.prazoPct)),endereco:avg(r.map(x=>x.enderecoPct)),unidade:avg(r.map(x=>x.unidadePct)),sku:avg(r.map(x=>x.skuPct)),total:avg(r.map(x=>x.totalPct))}}
+
+export function kpiComparison(hub:HubBootstrap,filters:DashboardFilters,name:string,current:number|null|undefined){
+  const global=hub.profile.perfil==='ADMIN'&&!filters.supervisorId&&!filters.moduloId
+  let series:Array<{periodo:string;value:number|null}>=[]
+  if(normalize(name)===normalize('Lead Time Produção')) series=global?trendGlobal(hub.facts.kpiGeral,name):trendScopedOperational(hub.facts.kpiOperacional,'producaoPct',filters)
+  else if(normalize(name)===normalize('Lead Time Recebimento')) series=global?trendGlobal(hub.facts.kpiGeral,name):trendScopedOperational(hub.facts.kpiOperacional,'recebimentoPct',filters)
+  else if(normalize(name)===normalize('Inventário')) series=global?trendGlobal(hub.facts.kpiGeral,name):trendScopedInventory(hub.facts.kpiInventarioDepositante,filters)
+  else if(global) series=trendGlobal(hub.facts.kpiGeral,name)
+  const sorted=series.slice().sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo)))
+  const targetKey=filters.periodo?periodKey(filters.periodo):(sorted.at(-1)?.periodo?periodKey(sorted.at(-1)!.periodo):'')
+  const idx=sorted.findIndex(x=>periodKey(x.periodo)===targetKey)
+  const previous=idx>0?sorted[idx-1]?.value:null
+  const meta=indicatorMeta(hub,name)?.metaPct??null
+  return {previous,delta:current!=null&&previous!=null?current-previous:null,gap:current!=null&&meta!=null?current-meta:null}
+}
