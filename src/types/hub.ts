@@ -5,7 +5,7 @@ export interface HubSupervisor { supervisorId:string; supervisor:string; nomeExi
 export interface HubSupervisorModulo { supervisorId:string; moduloId:string; ativo:boolean }
 export interface HubDepositante { cnpj:string; nome:string; codAllStrategy:string|null; supervisorId:string; moduloId:string; ativo:boolean }
 export interface HubIndicador { codigo:string; grupo:string; indicador:string; metaPct:number|null; criticoPct:number|null; ativo:boolean }
-export interface HubSubstituto { id:string; codigo:string; nome:string; email:string|null; ativo:boolean }
+export interface HubSubstituto { id:string; codigo:string; nome:string; email:string|null; fotoUrl:string|null; ativo:boolean }
 export interface HubSubstituicao {
   substituicaoId:string
   legacySubstituicaoId?:string|null
@@ -13,6 +13,7 @@ export interface HubSubstituicao {
   supervisorSubstitutoId:string
   supervisorSubstituto:string
   supervisorSubstitutoEmail?:string|null
+  supervisorSubstitutoFotoUrl?:string|null
   substitutoMasterId?:string|null
   moduloId:string
   dataInicio:string
