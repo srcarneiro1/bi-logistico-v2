@@ -11,7 +11,34 @@ export function FcaEditPage({hub}:{hub:HubBootstrap}){
  const{id}=useParams(),navigate=useNavigate(),isAdmin=hub.profile.perfil==='ADMIN',isSubstitute=!isAdmin&&!hub.profile.supervisorId,canChooseSupervisor=isAdmin||isSubstitute
  const[row,setRow]=useState<FcaWithActions|null>(null),[loading,setLoading]=useState(true),[saving,setSaving]=useState(false),[error,setError]=useState<string|null>(null)
  const[dataReuniao,setDataReuniao]=useState(''),[supervisorId,setSupervisorId]=useState(''),[moduloId,setModuloId]=useState(''),[depositanteCnpj,setDepositanteCnpj]=useState(''),[indicadorCodigo,setIndicadorCodigo]=useState(''),[causa,setCausa]=useState(''),[acoes,setAcoes]=useState<EditFcaAction[]>([])
- useEffect(()=>{if(!id)return;setLoading(true);void supabase.from('fca').select('*, fca_acoes(*)').eq('id',id).single().then(({data,error})=>{if(error)throw error;const f=data as unknown as FcaWithActions;setRow(f);setDataReuniao(f.data_reuniao);setSupervisorId(f.supervisor_id);setModuloId(f.modulo_id);setDepositanteCnpj(f.depositante_cnpj);setIndicadorCodigo(f.indicador_codigo);setCausa(f.causa);setAcoes((f.fca_acoes??[]).filter(a=>a.status!=='CANCELADO').sort((a,b)=>a.ordem-b.ordem).map(a=>({id:a.id,acao:a.acao,responsavel:a.responsavel??'',prazo:a.prazo??'',status:a.status})));}).catch((e:unknown)=>setError(e instanceof Error?e.message:'Falha ao carregar FCA.')).finally(()=>setLoading(false))},[id])
+ useEffect(()=>{
+  if(!id)return
+  let active=true
+  async function loadFca(){
+   setLoading(true)
+   setError(null)
+   try{
+    const{data,error}=await supabase.from('fca').select('*, fca_acoes(*)').eq('id',id).single()
+    if(error)throw error
+    if(!active)return
+    const f=data as unknown as FcaWithActions
+    setRow(f)
+    setDataReuniao(f.data_reuniao)
+    setSupervisorId(f.supervisor_id)
+    setModuloId(f.modulo_id)
+    setDepositanteCnpj(f.depositante_cnpj)
+    setIndicadorCodigo(f.indicador_codigo)
+    setCausa(f.causa)
+    setAcoes((f.fca_acoes??[]).filter(a=>a.status!=='CANCELADO').sort((a,b)=>a.ordem-b.ordem).map(a=>({id:a.id,acao:a.acao,responsavel:a.responsavel??'',prazo:a.prazo??'',status:a.status})))
+   }catch(e:unknown){
+    if(active)setError(e instanceof Error?e.message:'Falha ao carregar FCA.')
+   }finally{
+    if(active)setLoading(false)
+   }
+  }
+  void loadFca()
+  return()=>{active=false}
+ },[id])
  const modules=useMemo(()=>Array.from(new Set(hub.supervisorModules.filter(m=>!supervisorId||m.supervisorId===supervisorId).map(m=>m.moduloId))).sort(),[hub.supervisorModules,supervisorId])
  const depositantes=useMemo(()=>hub.depositantes.filter(d=>(!supervisorId||d.supervisorId===supervisorId)&&(!moduloId||d.moduloId===moduloId)).sort((a,b)=>a.nome.localeCompare(b.nome,'pt-BR')),[hub.depositantes,supervisorId,moduloId])
  const indicadores=useMemo(()=>hub.indicadores.filter(i=>i.grupo.trim().toUpperCase()==='KPI').sort((a,b)=>a.indicador.localeCompare(b.indicador,'pt-BR')),[hub.indicadores])
