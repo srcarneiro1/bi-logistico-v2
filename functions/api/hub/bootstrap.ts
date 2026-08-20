@@ -12,13 +12,27 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     if (!token) return json({ error: 'Sessão não informada.' }, { status: 401 })
 
     const authUser = await getAuthenticatedUser(env, token)
-    const [rawHub, coverageData] = await Promise.all([
-      readHub(env),
-      getSupervisorCoverageData(env),
-    ])
-    const bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData)
+    const rawHub = await readHub(env)
 
+    let coverageData: Awaited<ReturnType<typeof getSupervisorCoverageData>> | undefined
+    try {
+      coverageData = await getSupervisorCoverageData(token)
+    } catch (coverageError) {
+      console.error('hub/bootstrap coverage enrichment', coverageError instanceof Error ? coverageError.message : coverageError)
+    }
+
+    let bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData)
     await upsertProfile(env, bootstrap.profileRow)
+
+    // On a first login, ADMIN policies may only become available after profile synchronization.
+    if (!coverageData && bootstrap.profile.perfil === 'ADMIN') {
+      try {
+        coverageData = await getSupervisorCoverageData(token)
+        bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData)
+      } catch (coverageRetryError) {
+        console.error('hub/bootstrap coverage retry', coverageRetryError instanceof Error ? coverageRetryError.message : coverageRetryError)
+      }
+    }
 
     const { profileRow: _internal, ...response } = bootstrap
     return json(response)
@@ -59,9 +73,6 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     }
     if (message === 'HUB_BRIDGE_INVALID_PAYLOAD') {
       return json({ error: 'A ponte do Apps Script respondeu, mas o conteúdo recebido não está no formato esperado.' }, { status: 500 })
-    }
-    if (message.startsWith('SUPABASE_READ_FAILED:')) {
-      return json({ error: 'Falha ao carregar as coberturas de supervisão no Supabase.' }, { status: 500 })
     }
 
     return json({ error: 'Falha ao carregar a HUB. Verifique a integração do Google e tente novamente.' }, { status: 500 })
