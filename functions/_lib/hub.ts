@@ -61,7 +61,8 @@ export function buildHubBootstrap(raw: HubRawData, user: { id: string; email: st
 
   const allSubstitutions = raw.substituicoes.slice(1).filter((row) => val(row, 0)).map((row) => ({
     substituicaoId: val(row, 0), supervisorTitularId: val(row, 1), supervisorSubstitutoId: val(row, 2), supervisorSubstituto: val(row, 3), moduloId: val(row, 4),
-    dataInicio: parseBrDate(val(row, 5)), dataFim: parseBrDate(val(row, 6)), ativo: yes(val(row, 8)) && isCurrent(val(row, 5), val(row, 6), currentDate),
+    dataInicio: parseBrDate(val(row, 5)), dataFim: parseBrDate(val(row, 6)), motivo: val(row, 7) || null,
+    ativo: yes(val(row, 8)) && isCurrent(val(row, 5), val(row, 6), currentDate),
   }))
   const activeSubstitutions = allSubstitutions.filter((sub) => sub.ativo)
   const substitutedModules = new Set(activeSubstitutions.filter((sub) => sub.supervisorSubstitutoId === supervisorId).map((sub) => sub.moduloId))
@@ -94,11 +95,12 @@ export function buildHubBootstrap(raw: HubRawData, user: { id: string; email: st
   })).filter((item) => canSeeScopedRow(item.supervisorId, item.moduloId))
   const despesa = isAdmin ? rows(raw.despesa).filter((row) => val(row, 0) && val(row, 1)).map((row) => ({ periodo: val(row, 0), codAllStrategy: val(row, 1), despesaPlanejada: parseMoney(val(row, 2)), despesaRealizada: parseMoney(val(row, 3)) })) : []
 
+  const visibleSubstitutions = isAdmin ? allSubstitutions : allSubstitutions.filter((item) => item.supervisorTitularId === supervisorId || item.supervisorSubstitutoId === supervisorId)
+
   return {
     profile: { id: user.id, email: emailKey(user.email), nome: val(matched, 2) || val(matched, 1), perfil, supervisorId: isAdmin ? null : supervisorId },
     profileRow: { id: user.id, email: emailKey(user.email), nome: val(matched, 2) || val(matched, 1), perfil, supervisor_id: isAdmin ? null : supervisorId, ativo: true },
-    supervisors, supervisorModules, depositantes, indicadores: indicators,
-    substituicoes: isAdmin ? activeSubstitutions : activeSubstitutions.filter((item) => item.supervisorTitularId === supervisorId || item.supervisorSubstitutoId === supervisorId),
+    supervisors, supervisorModules, depositantes, indicadores: indicators, substituicoes: visibleSubstitutions,
     facts: { kpiGeral, kpiInventario, kpiOperacional, kpiInventarioDepositante, receita, despesa },
     analyticsReady: Boolean(raw.kpiOperacional?.length || raw.kpiGeral?.length || raw.receita?.length),
     sourceUpdatedAt: now.toISOString(),
