@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
-const BRAND_LOGO='https://raw.githubusercontent.com/srcarneiro1/forecast-planner/main/public/brand/unilog-logo-white-transparent.svg'
+const BRAND_LOGO='/brand/unilog-logo-white.png'
 
 interface SetPasswordPageProps {
   onComplete: () => void
