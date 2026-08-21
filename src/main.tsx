@@ -5,6 +5,7 @@ import './styles.css'
 import './ux-polish.css'
 import './functional-polish.css'
 import './audit-polish.css'
+import './design-system.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
