@@ -150,7 +150,10 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .depositor-table th:nth-child(4),.depositor-table th:nth-child(5),.depositor-table th:nth-child(6),
 .depositor-table td:nth-child(4),.depositor-table td:nth-child(5),.depositor-table td:nth-child(6){text-align:right}
 .status-table th:nth-child(2),.status-table td:nth-child(2),
-.depositor-table th:nth-child(3),.depositor-table td:nth-child(3){text-align:center}
+.depositor-table th:nth-child(3),.depositor-table td:nth-child(3),
+.status-table th:last-child,.status-table td:last-child,
+.fca-table th:nth-child(6),.fca-table td:nth-child(6),
+.fca-table th:last-child,.fca-table td:last-child{text-align:center}
 .depositor-open-button{width:100%;display:block;text-align:left;border-radius:6px;padding:2px 0}
 .depositor-open-button:hover strong{color:var(--brand-primary)}
 
