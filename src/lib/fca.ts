@@ -68,6 +68,12 @@ export async function listFcas(): Promise<FcaWithActions[]> {
   return (data ?? []) as unknown as FcaWithActions[]
 }
 
+export async function listFcaPeriods(): Promise<string[]> {
+  const { data, error } = await supabase.from('fca').select('data_reuniao').order('data_reuniao', { ascending: false })
+  if (error) throw new Error(error.message)
+  return Array.from(new Set((data ?? []).map(row=>String(row.data_reuniao).slice(0,7)).filter(period=>/^\d{4}-\d{2}$/.test(period))))
+}
+
 export function deriveFcaStatus(fca: FcaWithActions) {
   if (fca.status_registro === 'CANCELADO') return 'CANCELADO'
   const relevant = (fca.fca_acoes ?? []).filter((acao) => acao.status !== 'CANCELADO')
