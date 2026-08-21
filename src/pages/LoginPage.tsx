@@ -2,7 +2,7 @@ import { FormEvent, useState } from 'react'
 import { requestAccessEmail, type AccessEmailAction } from '../lib/api'
 import { supabase } from '../lib/supabase'
 
-const BRAND_LOGO='https://raw.githubusercontent.com/srcarneiro1/forecast-planner/main/public/brand/unilog-logo-white-transparent.svg'
+const BRAND_LOGO='/brand/unilog-logo-white-transparent.svg'
 type LoginMode = 'login' | AccessEmailAction
 
 function loginErrorMessage(code?: string) {
