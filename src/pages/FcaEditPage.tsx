@@ -1,5 +1,6 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { PageHeader } from '../components/PageHeader'
 import { supabase } from '../lib/supabase'
 import { updateFca, type EditFcaAction } from '../lib/fca'
 import type { FcaActionStatus, FcaWithActions } from '../types/fca'
@@ -48,7 +49,7 @@ export function FcaEditPage({hub}:{hub:HubBootstrap}){
  if(error&&!row)return <div className="notice notice-error">{error}</div>
  if(!row)return null
  return <section>
-  <div className="page-header page-header-row"><div><span className="eyebrow">FCA · EDIÇÃO</span><h1>Editar FCA #{String(row.numero).padStart(5,'0')}</h1><p>Atualize identificação, causa e plano de ação. Todas as alterações permanecem registradas no histórico.</p></div><Link className="button" to={`/fca/${id}`}><span className="material-symbols-rounded">close</span>Cancelar edição</Link></div>
+  <PageHeader eyebrow="FCA · EDIÇÃO" title={`Editar FCA #${String(row.numero).padStart(5,'0')}`} description="Atualize identificação, causa e plano de ação. Todas as alterações permanecem registradas no histórico." actions={<Link className="button" to={`/fca/${id}`}><span className="material-symbols-rounded">close</span>Cancelar edição</Link>}/>
   {isSubstitute&&<div className="substitute-context"><span className="material-symbols-rounded">event_repeat</span><div><strong>Edição por cobertura temporária</strong><p>O FCA só pode permanecer dentro de um titular e módulo que estejam no seu escopo vigente.</p></div></div>}
   <form className="form-panel fca-form" onSubmit={submit}>
    <div className="form-section"><div className="form-section-heading"><span className="material-symbols-rounded">badge</span><div><h2>Identificação</h2><p>Contexto operacional do registro.</p></div></div><div className="form-grid form-grid-3"><div><label>Data da reunião</label><input type="date" value={dataReuniao} onChange={e=>setDataReuniao(e.target.value)} required/></div><div><label>Supervisor titular</label><select value={supervisorId} onChange={e=>{setSupervisorId(e.target.value);setModuloId('');setDepositanteCnpj('')}} disabled={!canChooseSupervisor} required><option value="">Selecione</option>{hub.supervisors.map(s=><option key={s.supervisorId} value={s.supervisorId}>{s.nomeExibicao}</option>)}</select></div><div><label>Módulo</label><select value={moduloId} onChange={e=>{setModuloId(e.target.value);setDepositanteCnpj('')}} required><option value="">Selecione</option>{modules.map(m=><option key={m}>{m}</option>)}</select></div><div className="span-2"><label>Depositante</label><select value={depositanteCnpj} onChange={e=>setDepositanteCnpj(e.target.value)} required><option value="">Selecione</option>{depositantes.map(d=><option key={d.cnpj} value={d.cnpj}>{d.nome} · {d.cnpj}</option>)}</select></div><div><label>Indicador</label><select value={indicadorCodigo} onChange={e=>setIndicadorCodigo(e.target.value)} required><option value="">Selecione</option>{indicadores.map(i=><option key={i.codigo} value={i.codigo}>{i.indicador}</option>)}</select></div></div></div>
