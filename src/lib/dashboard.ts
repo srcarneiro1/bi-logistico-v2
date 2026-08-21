@@ -71,7 +71,7 @@ export function mainKpis(hub:HubBootstrap, filters:DashboardFilters) {
 export function operationalRows(hub:HubBootstrap, filters:DashboardFilters) {
   const op=scoped(hub.facts.kpiOperacional,filters), inv=scoped(hub.facts.kpiInventarioDepositante,filters)
   const invBy=new Map(inv.map(r=>[r.cnpj,r]))
-  return op.map(row=>({ ...row, inventario:invBy.get(row.cnpj) })).sort((a,b)=>Math.min(a.producaoPct??2,a.recebimentoPct??2,a.inventario?.totalPct??2)-Math.min(b.producaoPct??2,b.recebimentoPct??2,a.inventario?.totalPct??2))
+  return op.map(row=>({ ...row, inventario:invBy.get(row.cnpj) })).sort((a,b)=>Math.min(a.producaoPct??2,a.recebimentoPct??2,a.inventario?.totalPct??2)-Math.min(b.producaoPct??2,b.recebimentoPct??2,b.inventario?.totalPct??2))
 }
 export function revenueRows(hub:HubBootstrap,filters:DashboardFilters):HubReceita[]{return scoped(hub.facts.receita,filters).sort((a,b)=>(b.receitaRealizada??0)-(a.receitaRealizada??0))}
 export function trendGlobal(rows:HubKpiGeral[], name:string){ return rows.filter(r=>normalize(r.kpi)===normalize(name)).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo))).map(r=>({periodo:r.periodo,value:r.valorPct})) }
