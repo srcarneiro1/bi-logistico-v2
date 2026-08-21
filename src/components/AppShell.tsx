@@ -5,7 +5,7 @@ import { listFcaPeriods } from '../lib/fca'
 import type { DashboardFilters } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
 
-const BRAND_LOGO='https://raw.githubusercontent.com/srcarneiro1/forecast-planner/main/public/brand/unilog-logo-white-transparent.svg'
+const BRAND_LOGO='/brand/unilog-logo-white-transparent.svg'
 const baseItems=[
   {to:'/',label:'Visão geral',icon:'space_dashboard'},
   {to:'/kpis',label:'KPIs',icon:'monitoring'},
