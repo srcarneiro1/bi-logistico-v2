@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PageHeader } from '../components/PageHeader'
-import { periodKey } from '../lib/dashboard'
 import { deriveFcaStatus, isFcaOverdue, listFcas } from '../lib/fca'
 import type { DashboardFilters } from '../types/dashboard'
 import type { FcaWithActions } from '../types/fca'
@@ -23,7 +22,7 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
   },[])
 
   const scopedRows=useMemo(()=>rows.filter(row=>{
-    if(filters.periodo&&row.data_reuniao.slice(0,7)!==periodKey(filters.periodo))return false
+    if(filters.fcaPeriodo!=='ALL'&&row.data_reuniao.slice(0,7)!==filters.fcaPeriodo)return false
     if(filters.supervisorId&&row.supervisor_id!==filters.supervisorId&&row.substituto_id!==filters.supervisorId)return false
     if(filters.moduloId&&row.modulo_id!==filters.moduloId)return false
     if(search.trim()){
@@ -32,7 +31,7 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
       if(!hay.includes(q))return false
     }
     return true
-  }),[rows,filters.periodo,filters.supervisorId,filters.moduloId,search])
+  }),[rows,filters.fcaPeriodo,filters.supervisorId,filters.moduloId,search])
 
   const counts=useMemo(()=>scopedRows.reduce((acc,row)=>{
     const key=isFcaOverdue(row)?'VENCIDO':deriveFcaStatus(row)
@@ -49,7 +48,7 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
   }),[scopedRows,status])
 
   return <section>
-    <PageHeader eyebrow="FCA" title="Fatos, causas e ações" description="Consulte o histórico no escopo definido no cabeçalho. Em Período, selecione uma competência ou Todos os meses." actions={<Link className="button button-primary" to="/fca/novo"><span className="material-symbols-rounded">add</span>Novo FCA</Link>}/>
+    <PageHeader eyebrow="FCA" title="Fatos, causas e ações" description="Consulte uma competência específica ou mantenha Todos os meses sem alterar o período das demais áreas do BI." actions={<Link className="button button-primary" to="/fca/novo"><span className="material-symbols-rounded">add</span>Novo FCA</Link>}/>
     <div className="fca-status-summary" aria-label="Resumo por status"><button className={!status?'active':''} onClick={()=>setStatus('')}><strong>{scopedRows.length}</strong><span>Todos</span></button><button className={status==='ABERTO'?'active':''} onClick={()=>setStatus('ABERTO')}><strong>{counts.ABERTO??0}</strong><span>Abertos</span></button><button className={status==='EM_ANDAMENTO'?'active':''} onClick={()=>setStatus('EM_ANDAMENTO')}><strong>{counts.EM_ANDAMENTO??0}</strong><span>Em andamento</span></button><button className={status==='VENCIDO'?'active':''} onClick={()=>setStatus('VENCIDO')}><strong>{counts.VENCIDO??0}</strong><span>Vencidos</span></button><button className={status==='CONCLUIDO'?'active':''} onClick={()=>setStatus('CONCLUIDO')}><strong>{counts.CONCLUIDO??0}</strong><span>Concluídos</span></button></div>
     <div className="filters-panel fca-scope-filters" role="region" aria-label="Filtros da FCA">
       <div className="search-box"><span className="material-symbols-rounded">search</span><input aria-label="Pesquisar FCA" placeholder="Pesquisar FCA, depositante, causa…" value={search} onChange={e=>setSearch(e.target.value)}/></div>
