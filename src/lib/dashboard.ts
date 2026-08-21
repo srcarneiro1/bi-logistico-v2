@@ -37,8 +37,8 @@ export function defaultPeriod(hub:HubBootstrap, now=new Date()){
   const current=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit'}).format(now)
   return periods.find(p=>p.key===current)?.value ?? periods.find(p=>p.key<current)?.value ?? periods[0].value
 }
-export const pct = (value:number|null|undefined, digits=1) => value == null ? '—' : value.toLocaleString('pt-BR',{style:'percent',minimumFractionDigits:digits,maximumFractionDigits:digits})
-export const pp = (value:number|null|undefined) => value == null ? '—' : `${value>=0?'+':''}${(value*100).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})} p.p.`
+export const pct = (value:number|null|undefined, digits=2) => value == null ? '—' : value.toLocaleString('pt-BR',{style:'percent',minimumFractionDigits:digits,maximumFractionDigits:digits})
+export const pp = (value:number|null|undefined) => value == null ? '—' : `${value>=0?'+':''}${(value*100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})} p.p.`
 export const money = (value:number|null|undefined) => value == null ? '—' : value.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0})
 export function avg(values:Array<number|null|undefined>) { const valid=values.filter((v):v is number=>typeof v==='number'&&Number.isFinite(v)); return valid.length ? valid.reduce((a,b)=>a+b,0)/valid.length : null }
 export function sum(values:Array<number|null|undefined>) { return values.reduce<number>((total,v)=>total+(typeof v==='number'&&Number.isFinite(v)?v:0),0) }
@@ -71,7 +71,7 @@ export function mainKpis(hub:HubBootstrap, filters:DashboardFilters) {
 export function operationalRows(hub:HubBootstrap, filters:DashboardFilters) {
   const op=scoped(hub.facts.kpiOperacional,filters), inv=scoped(hub.facts.kpiInventarioDepositante,filters)
   const invBy=new Map(inv.map(r=>[r.cnpj,r]))
-  return op.map(row=>({ ...row, inventario:invBy.get(row.cnpj) })).sort((a,b)=>Math.min(a.producaoPct??2,a.recebimentoPct??2,a.inventario?.totalPct??2)-Math.min(b.producaoPct??2,b.recebimentoPct??2,b.inventario?.totalPct??2))
+  return op.map(row=>({ ...row, inventario:invBy.get(row.cnpj) })).sort((a,b)=>Math.min(a.producaoPct??2,a.recebimentoPct??2,a.inventario?.totalPct??2)-Math.min(b.producaoPct??2,b.recebimentoPct??2,a.inventario?.totalPct??2))
 }
 export function revenueRows(hub:HubBootstrap,filters:DashboardFilters):HubReceita[]{return scoped(hub.facts.receita,filters).sort((a,b)=>(b.receitaRealizada??0)-(a.receitaRealizada??0))}
 export function trendGlobal(rows:HubKpiGeral[], name:string){ return rows.filter(r=>normalize(r.kpi)===normalize(name)).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo))).map(r=>({periodo:r.periodo,value:r.valorPct})) }
