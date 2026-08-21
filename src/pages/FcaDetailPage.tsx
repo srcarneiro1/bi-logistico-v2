@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useParams } from 'react-router-dom'
+import { PageHeader } from '../components/PageHeader'
 import { supabase } from '../lib/supabase'
 import { deriveFcaStatus, isFcaOverdue } from '../lib/fca'
 import type { FcaWithActions } from '../types/fca'
@@ -26,13 +27,13 @@ export function FcaDetailPage() {
   }, [id])
 
   if (error) return <div className="notice notice-error">{error}</div>
-  if (!row) return <div className="panel">Carregando FCA…</div>
+  if (!row) return <div className="panel loading-panel">Carregando FCA…</div>
   const derived = deriveFcaStatus(row)
   const overdue = isFcaOverdue(row)
   const actions=[...(row.fca_acoes??[])].sort((a,b)=>a.ordem-b.ordem)
 
   return <section>
-    <div className="page-header page-header-row"><div><span className="eyebrow">FCA #{String(row.numero).padStart(5,'0')}</span><h1>{row.depositante_nome}</h1><p>{row.indicador_nome} · {row.modulo_id} · {row.supervisor_nome}</p></div><div className="page-actions"><Link className="button" to="/fca">Voltar</Link><Link className="button button-primary" to={`/fca/${row.id}/editar`}><span className="material-symbols-rounded">edit</span>Editar FCA</Link></div></div>
+    <PageHeader eyebrow={`FCA #${String(row.numero).padStart(5,'0')}`} title={row.depositante_nome} description={`${row.indicador_nome} · ${row.modulo_id} · ${row.supervisor_nome}`} actions={<><Link className="button" to="/fca"><span className="material-symbols-rounded">arrow_back</span>Voltar</Link><Link className="button button-primary" to={`/fca/${row.id}/editar`}><span className="material-symbols-rounded">edit</span>Editar FCA</Link></>}/>
     {state?.justCreated&&<div className="notice notice-success">FCA #{String(state.justCreated).padStart(5,'0')} criado com sucesso.</div>}
     {state?.updated&&<div className="notice notice-success">FCA atualizado com sucesso.</div>}
     <div className="detail-grid"><article className="panel"><div className="section-title-row"><h2>Identificação</h2><span className={`status-badge status-${overdue?'VENCIDO':derived}`}>{overdue?'VENCIDO':derived.replace('_',' ')}</span></div><dl className="details-grid"><div><dt>Data da reunião</dt><dd>{new Date(`${row.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</dd></div><div><dt>Supervisor</dt><dd>{row.supervisor_nome}</dd></div><div><dt>Depositante</dt><dd>{row.depositante_nome}</dd></div><div><dt>CNPJ</dt><dd>{row.depositante_cnpj}</dd></div></dl></article><article className="panel"><h2>Causa</h2><p className="long-text">{row.causa}</p></article></div>
