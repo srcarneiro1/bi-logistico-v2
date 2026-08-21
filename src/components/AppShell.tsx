@@ -20,21 +20,21 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
   const isAdmin=hub.profile.perfil==='ADMIN'
   const isFcaRoute=location.pathname==='/fca'||location.pathname.startsWith('/fca/')
   const isFcaList=location.pathname==='/fca'
+  const contextualRoute=location.pathname.startsWith('/administracao/')||location.pathname==='/fca/novo'||/^\/fca\/[^/]+(?:\/editar)?$/.test(location.pathname)
   const items=isAdmin?[...baseItems,{to:'/administracao/substituicoes',label:'Substituições',icon:'event_repeat'}]:baseItems
   const[collapsed,setCollapsed]=useState(()=>localStorage.getItem('bi-logistico-v2:sidebar')==='collapsed')
   const[mobileOpen,setMobileOpen]=useState(false)
 
   useEffect(()=>setMobileOpen(false),[location.pathname])
   useEffect(()=>{
-    if(!isFcaRoute&&!filters.periodo){
+    if(!isFcaRoute&&!contextualRoute&&!filters.periodo){
       const fallback=defaultPeriod(hub)
       if(fallback)onFiltersChange({...filters,periodo:fallback})
     }
-  },[isFcaRoute,filters.periodo,hub])
+  },[isFcaRoute,contextualRoute,filters.periodo,hub])
 
   const modules=Array.from(new Set(hub.supervisorModules.filter(x=>!filters.supervisorId||x.supervisorId===filters.supervisorId).map(x=>x.moduloId))).sort()
   const current=items.find(i=>i.to==='/'?location.pathname==='/':location.pathname.startsWith(i.to))
-  const contextualRoute=location.pathname.startsWith('/administracao/')||location.pathname==='/fca/novo'||/^\/fca\/[^/]+(?:\/editar)?$/.test(location.pathname)
   const supervisorName=filters.supervisorId?hub.supervisors.find(s=>s.supervisorId===filters.supervisorId)?.nomeExibicao:''
   const periodScope=isFcaRoute&&!filters.periodo?'Todos os meses':filters.periodo?periodLabel(filters.periodo):''
   const scope=[periodScope,supervisorName,filters.moduloId].filter(Boolean).join(' · ')||'Escopo completo'
