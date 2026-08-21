@@ -56,6 +56,32 @@ function publicAuthClient() {
   })
 }
 
+async function authorizedActiveSubstitute(env: Env, email: string) {
+  const admin = adminClient(env)
+  const { data: substitute, error: substituteError } = await admin
+    .from('supervisor_substitutos')
+    .select('id,email,ativo')
+    .ilike('email', email)
+    .eq('ativo', true)
+    .maybeSingle()
+  if (substituteError) throw new Error(`AUTH_COVERAGE_LOOKUP_FAILED:${substituteError.message}`)
+  if (!substitute) return false
+
+  const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo' }).format(new Date())
+  const { data: coverage, error: coverageError } = await admin
+    .from('supervisor_substituicoes')
+    .select('id')
+    .eq('substituto_master_id', substitute.id)
+    .ilike('substituto_email_snapshot', email)
+    .eq('status', 'ATIVA')
+    .lte('data_inicio', today)
+    .gte('data_fim', today)
+    .limit(1)
+    .maybeSingle()
+  if (coverageError) throw new Error(`AUTH_COVERAGE_LOOKUP_FAILED:${coverageError.message}`)
+  return Boolean(coverage)
+}
+
 async function findAuthUserByEmail(env: Env, email: string) {
   const admin = adminClient(env)
   let page = 1
@@ -104,7 +130,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     }
 
     const rawHub = await readHub(env)
-    if (!authorizedSupervisor(rawHub, email)) {
+    const supervisorAuthorized = authorizedSupervisor(rawHub, email)
+    const substituteAuthorized = supervisorAuthorized ? false : await authorizedActiveSubstitute(env, email)
+    if (!supervisorAuthorized && !substituteAuthorized) {
       return json({ ok: true, message: GENERIC_MESSAGE })
     }
 
@@ -130,6 +158,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     }
     if (message.startsWith('HUB_BRIDGE_FAILED:') || message.startsWith('HUB_BRIDGE_REJECTED:') || message === 'HUB_BRIDGE_INVALID_PAYLOAD') {
       return json({ error: 'Não foi possível validar o acesso na HUB. Tente novamente em instantes.' }, { status: 503 })
+    }
+    if (message.startsWith('AUTH_COVERAGE_LOOKUP_FAILED:')) {
+      return json({ error: 'Não foi possível validar a cobertura temporária no momento. Tente novamente em instantes.' }, { status: 503 })
     }
     if (message.startsWith('AUTH_RECOVERY_FAILED:')) {
       return json({ error: 'Não foi possível enviar o e-mail agora. Aguarde alguns minutos e tente novamente.' }, { status: 429 })

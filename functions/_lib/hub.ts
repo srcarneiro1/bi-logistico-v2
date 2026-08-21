@@ -41,6 +41,7 @@ function isCurrent(start: string, end: string, currentDate: string) {
   return (!from || from <= currentDate) && (!to || to >= currentDate)
 }
 function rows(raw: string[][] | undefined) { return Array.isArray(raw) ? raw.slice(1) : [] }
+function coverageKey(supervisorId: string, moduloId: string) { return `${supervisorId}\u0000${moduloId}` }
 
 export function buildHubBootstrap(
   raw: HubRawData,
@@ -102,7 +103,9 @@ export function buildHubBootstrap(
   const userIsSubstitute = (sub: typeof allSubstitutions[number]) => (
     (supervisorId && sub.supervisorSubstitutoId === supervisorId) || emailKey(sub.supervisorSubstitutoEmail ?? '') === userEmail
   )
-  const substitutedModules = new Set(activeSubstitutions.filter(userIsSubstitute).map((sub) => sub.moduloId))
+  const userCoverages = activeSubstitutions.filter(userIsSubstitute)
+  const coveredScopes = new Set(userCoverages.map((sub) => coverageKey(sub.supervisorTitularId, sub.moduloId)))
+  const hasCoveredScope = (rowSupervisorId: string, moduloId: string) => coveredScopes.has(coverageKey(rowSupervisorId, moduloId))
 
   const allDepositantes = raw.depositantes.slice(1).filter((row) => val(row, 0) && val(row, 1)).map((row) => ({
     cnpj: cnpj14(val(row, 0)), nome: val(row, 1), codAllStrategy: val(row, 2) || null, supervisorId: val(row, 3), moduloId: val(row, 4), ativo: yes(val(row, 5)),
@@ -113,11 +116,11 @@ export function buildHubBootstrap(
   })).filter((item) => item.ativo)
 
   const isAdmin = perfil === 'ADMIN'
-  const substitutionTitularIds = new Set(activeSubstitutions.filter(userIsSubstitute).map((sub) => sub.supervisorTitularId))
+  const substitutionTitularIds = new Set(userCoverages.map((sub) => sub.supervisorTitularId))
   const supervisors = isAdmin ? allSupervisors.filter((item) => item.ativo) : allSupervisors.filter((item) => item.supervisorId === supervisorId || substitutionTitularIds.has(item.supervisorId))
-  const supervisorModules = isAdmin ? allModules.filter((item) => item.ativo) : allModules.filter((item) => item.ativo && (item.supervisorId === supervisorId || substitutedModules.has(item.moduloId)))
-  const depositantes = allDepositantes.filter((item) => item.ativo && (isAdmin || item.supervisorId === supervisorId || substitutedModules.has(item.moduloId)))
-  const canSeeScopedRow = (rowSupervisorId: string, moduloId: string) => isAdmin || rowSupervisorId === supervisorId || substitutedModules.has(moduloId)
+  const supervisorModules = isAdmin ? allModules.filter((item) => item.ativo) : allModules.filter((item) => item.ativo && (item.supervisorId === supervisorId || hasCoveredScope(item.supervisorId, item.moduloId)))
+  const depositantes = allDepositantes.filter((item) => item.ativo && (isAdmin || item.supervisorId === supervisorId || hasCoveredScope(item.supervisorId, item.moduloId)))
+  const canSeeScopedRow = (rowSupervisorId: string, moduloId: string) => isAdmin || rowSupervisorId === supervisorId || hasCoveredScope(rowSupervisorId, moduloId)
 
   const kpiGeral = isAdmin ? rows(raw.kpiGeral).filter((row) => val(row, 0) && val(row, 2)).map((row) => ({ periodo: val(row, 0), codigo: val(row, 1), kpi: val(row, 2), valorPct: parsePercent(val(row, 3)) })) : []
   const kpiInventario = isAdmin ? rows(raw.kpiInventario).filter((row) => val(row, 0) && val(row, 2)).map((row) => ({ periodo: val(row, 0), codigo: val(row, 1), kpiTipo: val(row, 2), valorPct: parsePercent(val(row, 3)) })) : []
