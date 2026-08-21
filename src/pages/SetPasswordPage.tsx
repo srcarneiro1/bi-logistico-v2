@@ -8,7 +8,7 @@ interface SetPasswordPageProps {
 }
 
 function cleanAuthUrl() {
-  window.history.replaceState(null, '', `${window.location.pathname}${window.location.search && !window.location.search.includes('type=recovery') ? window.location.search : ''}`)
+  window.history.replaceState(null, '', '/')
 }
 
 export function SetPasswordPage({ onComplete }: SetPasswordPageProps) {
