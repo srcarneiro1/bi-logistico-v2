@@ -21,7 +21,7 @@ import { FcaEditPage } from './pages/FcaEditPage'
 import { AdminSubstitutionsPage } from './pages/AdminSubstitutionsPage'
 
 const emptyFilters:DashboardFilters={periodo:'',fcaPeriodo:'ALL',supervisorId:'',moduloId:''}
-const BRAND_LOGO='https://raw.githubusercontent.com/srcarneiro1/forecast-planner/main/public/brand/unilog-logo-white-transparent.svg'
+const BRAND_LOGO='/brand/unilog-logo-white-transparent.svg'
 
 function isPasswordRecoveryUrl() {
   const query = new URLSearchParams(window.location.search)

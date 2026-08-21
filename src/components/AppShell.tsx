@@ -5,7 +5,7 @@ import { listFcaPeriods } from '../lib/fca'
 import type { DashboardFilters } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
 
-const BRAND_LOGO='https://raw.githubusercontent.com/srcarneiro1/forecast-planner/main/public/brand/unilog-logo-white-transparent.svg'
+const BRAND_LOGO='/brand/unilog-logo-white-transparent.svg'
 const baseItems=[
   {to:'/',label:'Visão geral',icon:'space_dashboard'},
   {to:'/kpis',label:'KPIs',icon:'monitoring'},
@@ -64,7 +64,7 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
           <label><span>Módulo</span><select aria-label="Módulo" value={filters.moduloId} onChange={e=>onFiltersChange({...filters,moduloId:e.target.value})}><option value="">Todos os módulos</option>{modules.map(m=><option key={m}>{m}</option>)}</select></label>
           {isAdmin&&(filters.supervisorId||filters.moduloId)&&<button className="topbar-filter-reset" onClick={resetFilters} title="Limpar supervisor e módulo" aria-label="Limpar supervisor e módulo"><span className="material-symbols-rounded">filter_alt_off</span></button>}
         </div>}
-        <div className="topbar-profile" title={scope}><span className="sync-dot"/><span>HUB conectada</span></div>
+        <div className="topbar-profile" title={scope}><span className="topbar-scope"><small>Escopo ativo</small><strong>{scope}</strong></span><span className="topbar-sync"><span className="sync-dot"/><span>HUB conectada</span></span></div>
       </header>
       <main className="content">{!hub.analyticsReady&&<div className="analytics-warning"><span className="material-symbols-rounded">info</span><div><strong>Camada analítica ainda não publicada no Apps Script.</strong><span>Cadastros e FCA funcionam, mas os indicadores aparecerão após atualizar a ponte da HUB para a versão 2.</span></div></div>}{children}</main>
     </div>
