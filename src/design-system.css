@@ -40,7 +40,6 @@
   --shadow-card:0 1px 3px rgba(29,31,35,.035);
   --shadow-raised:0 12px 32px rgba(29,31,35,.10);
 
-  /* Backwards-compatible aliases */
   --red:var(--brand-primary);
   --red-dark:var(--brand-primary-hover);
   --red-soft:var(--brand-primary-soft);
@@ -60,7 +59,6 @@
 html{background:var(--surface-canvas)}
 body{font-size:13px;line-height:1.45;background:var(--surface-canvas);color:var(--text-primary)}
 
-/* Focus and control primitives */
 :where(button,a,input,select,textarea):focus-visible{outline:2px solid rgba(219,8,18,.32);outline-offset:2px}
 input,select,textarea{border-radius:var(--radius-control);border-color:var(--border-strong);font-size:12px}
 input,select{min-height:40px}
@@ -72,7 +70,6 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .button-primary:hover{background:var(--brand-primary-hover);border-color:var(--brand-primary-hover)}
 .button-ghost:hover,.button:hover:not(.button-primary){background:var(--surface-secondary);border-color:var(--border-strong)}
 
-/* Layout shell */
 .content{padding:var(--space-5) var(--space-6) var(--space-7);max-width:1640px}
 .topbar{height:62px;padding:0 var(--space-6)}
 .topbar-kicker{font-size:10px;letter-spacing:.1em}
@@ -86,7 +83,6 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .filter-context small{font-size:9px;color:var(--text-muted)}
 .filter-context strong{font-size:11px;color:var(--text-primary)}
 
-/* Page hierarchy */
 .page-header{margin-bottom:var(--space-5)}
 .page-header-row{gap:var(--space-5);align-items:flex-start}
 .page-header .eyebrow{font-size:10px;letter-spacing:.12em;margin-bottom:var(--space-2)}
@@ -94,7 +90,6 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .page-header p{font-size:13px;line-height:1.55;max-width:780px;color:var(--text-secondary)}
 .page-actions{gap:var(--space-2);flex-wrap:wrap}
 
-/* Surface primitives */
 .dashboard-panel,.panel,.form-section,.table-wrap,.metric-card,.supervisor-card,.depositor-360,.coverage-card,.admin-summary-card{border-color:var(--border-default);border-radius:var(--radius-card);box-shadow:var(--shadow-card)}
 .dashboard-panel,.panel,.metric-card,.supervisor-card,.form-section{background:var(--surface-primary)}
 .panel-spaced{margin-top:var(--space-4)}
@@ -105,7 +100,6 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .panel-body{padding:var(--space-4)}
 .panel-chip{padding:5px 9px;border-radius:var(--radius-pill);font-size:10px}
 
-/* KPI cards */
 .kpi-strip{gap:var(--space-3);margin-bottom:var(--space-4)}
 .metric-card{padding:var(--space-4);min-height:164px}
 .metric-card:before{height:3px}
@@ -116,7 +110,6 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .metric-comparisons b{font-size:11px}
 .metric-meta{font-size:10px;margin-top:var(--space-2);color:var(--text-muted)}
 
-/* Semantic color is distinct from brand intent */
 .metric-ok:before,.metric-dot.ok{background:var(--status-success)}
 .metric-warn:before,.metric-dot.warn{background:var(--status-warning)}
 .metric-crit:before,.metric-dot.crit{background:var(--status-danger)}
@@ -124,21 +117,18 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .text-warn{color:var(--status-warning)!important}
 .text-crit{color:var(--status-danger)!important}
 
-/* Search / local toolbars */
 .search-box{min-height:40px;border-radius:var(--radius-control);padding:0 var(--space-3);border-color:var(--border-strong)}
 .search-box:focus-within{border-color:#9ca0a8;box-shadow:0 0 0 3px rgba(73,74,86,.07)}
 .search-box input{min-height:38px;font-size:12px}
 .filters-panel{gap:var(--space-3);padding:var(--space-3);border-radius:var(--radius-card);margin-bottom:var(--space-4);box-shadow:var(--shadow-card)}
 .fca-scope-filters{grid-template-columns:minmax(280px,1fr) 220px!important}
 
-/* FCA summary becomes a reusable segmented-stat visual */
 .fca-status-summary{gap:var(--space-2);margin-bottom:var(--space-3)}
 .fca-status-summary button{min-height:64px;padding:var(--space-3) var(--space-4);border-radius:var(--radius-card);box-shadow:var(--shadow-card);transition:border-color .15s ease,background .15s ease,box-shadow .15s ease}
 .fca-status-summary button.active{border-color:#aeb2ba;box-shadow:inset 0 -3px 0 var(--brand-primary),var(--shadow-card)}
 .fca-status-summary strong{font-size:20px;line-height:1.1}
 .fca-status-summary span{font-size:10px;letter-spacing:.06em}
 
-/* Tables */
 .table-wrap{overflow:auto;background:var(--surface-primary)}
 .table-wrap table{min-width:760px}
 .table-wrap th,.table-wrap td{padding:12px 14px;border-bottom-color:#edf0f2;font-size:12px;line-height:1.35}
@@ -154,7 +144,16 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .status-CANCELADO{background:var(--status-neutral-soft);color:var(--status-neutral)}
 .status-VENCIDO{background:var(--status-danger-soft);color:#9b1119}
 
-/* Forms */
+/* Numeric columns follow one alignment rule across analytical tables. */
+.status-table th:nth-child(3),.status-table th:nth-child(4),.status-table th:nth-child(5),
+.status-table td:nth-child(3),.status-table td:nth-child(4),.status-table td:nth-child(5),
+.depositor-table th:nth-child(4),.depositor-table th:nth-child(5),.depositor-table th:nth-child(6),
+.depositor-table td:nth-child(4),.depositor-table td:nth-child(5),.depositor-table td:nth-child(6){text-align:right}
+.status-table th:nth-child(2),.status-table td:nth-child(2),
+.depositor-table th:nth-child(3),.depositor-table td:nth-child(3){text-align:center}
+.depositor-open-button{width:100%;display:block;text-align:left;border-radius:6px;padding:2px 0}
+.depositor-open-button:hover strong{color:var(--brand-primary)}
+
 .form-panel{gap:var(--space-4)}
 .form-section{padding:var(--space-5)}
 .form-grid{gap:var(--space-3)}
@@ -165,12 +164,10 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .action-card{border-radius:var(--radius-card);padding:var(--space-4);background:var(--surface-secondary)}
 .sticky-form-actions{padding:var(--space-3) 0;background:rgba(245,246,248,.94);border-top-color:var(--border-default)}
 
-/* Notices and states */
 .notice,.admin-guidance,.scope-note,.substitute-context,.analytics-warning{border-radius:var(--radius-control);font-size:12px}
 .table-empty,.empty-chart{color:var(--text-muted)!important}
 .loading-panel{padding:var(--space-5)}
 
-/* Detail views */
 .depositor-hero{padding:var(--space-4) var(--space-5)}
 .depositor-kpis>div{padding:var(--space-4) var(--space-5)}
 .depositor-kpis span{font-size:10px}
@@ -180,7 +177,6 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .details-grid dd{font-size:12px;color:var(--text-primary)}
 .long-text{font-size:13px;line-height:1.65}
 
-/* Admin reuses the same surface language */
 .admin-summary-grid{gap:var(--space-3);margin-bottom:var(--space-4)}
 .admin-summary-card{padding:var(--space-4)}
 .admin-summary-card small{font-size:10px}
@@ -190,7 +186,6 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .substitution-admin-grid{gap:var(--space-4)}
 .substitution-form{border-radius:var(--radius-card);padding:var(--space-4)}
 
-/* Responsive behavior: one drawer model, one content rhythm */
 @media(max-width:1180px){
   .content{padding-left:var(--space-5);padding-right:var(--space-5)}
   .global-filters{padding-left:var(--space-5);padding-right:var(--space-5);grid-template-columns:repeat(3,minmax(150px,1fr))}
