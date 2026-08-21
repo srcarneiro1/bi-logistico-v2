@@ -37,8 +37,8 @@ export function defaultPeriod(hub:HubBootstrap, now=new Date()){
   const current=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit'}).format(now)
   return periods.find(p=>p.key===current)?.value ?? periods.find(p=>p.key<current)?.value ?? periods[0].value
 }
-export const pct = (value:number|null|undefined, digits=1) => value == null ? '—' : value.toLocaleString('pt-BR',{style:'percent',minimumFractionDigits:digits,maximumFractionDigits:digits})
-export const pp = (value:number|null|undefined) => value == null ? '—' : `${value>=0?'+':''}${(value*100).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})} p.p.`
+export const pct = (value:number|null|undefined, digits=2) => value == null ? '—' : value.toLocaleString('pt-BR',{style:'percent',minimumFractionDigits:digits,maximumFractionDigits:digits})
+export const pp = (value:number|null|undefined) => value == null ? '—' : `${value>=0?'+':''}${(value*100).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})} p.p.`
 export const money = (value:number|null|undefined) => value == null ? '—' : value.toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0})
 export function avg(values:Array<number|null|undefined>) { const valid=values.filter((v):v is number=>typeof v==='number'&&Number.isFinite(v)); return valid.length ? valid.reduce((a,b)=>a+b,0)/valid.length : null }
 export function sum(values:Array<number|null|undefined>) { return values.reduce<number>((total,v)=>total+(typeof v==='number'&&Number.isFinite(v)?v:0),0) }
