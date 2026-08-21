@@ -18,6 +18,7 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
   const location=useLocation()
   const periods=getAvailablePeriods(hub)
   const isAdmin=hub.profile.perfil==='ADMIN'
+  const isFcaRoute=location.pathname==='/fca'||location.pathname.startsWith('/fca/')
   const isFcaList=location.pathname==='/fca'
   const items=isAdmin?[...baseItems,{to:'/administracao/substituicoes',label:'Substituições',icon:'event_repeat'}]:baseItems
   const[collapsed,setCollapsed]=useState(()=>localStorage.getItem('bi-logistico-v2:sidebar')==='collapsed')
@@ -25,17 +26,17 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
 
   useEffect(()=>setMobileOpen(false),[location.pathname])
   useEffect(()=>{
-    if(!isFcaList&&!filters.periodo){
+    if(!isFcaRoute&&!filters.periodo){
       const fallback=defaultPeriod(hub)
       if(fallback)onFiltersChange({...filters,periodo:fallback})
     }
-  },[isFcaList,filters.periodo,hub])
+  },[isFcaRoute,filters.periodo,hub])
 
   const modules=Array.from(new Set(hub.supervisorModules.filter(x=>!filters.supervisorId||x.supervisorId===filters.supervisorId).map(x=>x.moduloId))).sort()
   const current=items.find(i=>i.to==='/'?location.pathname==='/':location.pathname.startsWith(i.to))
   const contextualRoute=location.pathname.startsWith('/administracao/')||location.pathname==='/fca/novo'||/^\/fca\/[^/]+(?:\/editar)?$/.test(location.pathname)
   const supervisorName=filters.supervisorId?hub.supervisors.find(s=>s.supervisorId===filters.supervisorId)?.nomeExibicao:''
-  const periodScope=isFcaList&&!filters.periodo?'Todos os meses':filters.periodo?periodLabel(filters.periodo):''
+  const periodScope=isFcaRoute&&!filters.periodo?'Todos os meses':filters.periodo?periodLabel(filters.periodo):''
   const scope=[periodScope,supervisorName,filters.moduloId].filter(Boolean).join(' · ')||'Escopo completo'
 
   function toggleCollapsed(){setCollapsed(v=>{const next=!v;localStorage.setItem('bi-logistico-v2:sidebar',next?'collapsed':'expanded');return next})}
