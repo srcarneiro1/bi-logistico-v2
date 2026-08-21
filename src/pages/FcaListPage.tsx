@@ -7,7 +7,7 @@ import type { DashboardFilters } from '../types/dashboard'
 import type { FcaWithActions } from '../types/fca'
 import type { HubBootstrap } from '../types/hub'
 
-export function FcaListPage({hub:_,filters}:{hub:HubBootstrap;filters:DashboardFilters}){
+export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters}){
   const[rows,setRows]=useState<FcaWithActions[]>([])
   const[loading,setLoading]=useState(true)
   const[error,setError]=useState<string|null>(null)
@@ -55,6 +55,6 @@ export function FcaListPage({hub:_,filters}:{hub:HubBootstrap;filters:DashboardF
       <div className="search-box"><span className="material-symbols-rounded">search</span><input aria-label="Pesquisar FCA" placeholder="Pesquisar FCA, depositante, causa…" value={search} onChange={e=>setSearch(e.target.value)}/></div>
       <select aria-label="Status da FCA" value={status} onChange={e=>setStatus(e.target.value)}><option value="">Todos os status</option><option value="ABERTO">Aberto</option><option value="EM_ANDAMENTO">Em andamento</option><option value="CONCLUIDO">Concluído</option><option value="VENCIDO">Vencido</option><option value="CANCELADO">Cancelado</option></select>
     </div>
-    {loading&&<div className="panel loading-panel">Carregando FCAs…</div>}{error&&<div className="notice notice-error">{error}</div>}{!loading&&!error&&<div className="table-wrap"><table><thead><tr><th>FCA</th><th>Data</th><th>Depositante</th><th>KPI</th><th>Supervisor</th><th>Módulo</th><th>Status</th></tr></thead><tbody>{filtered.map(row=>{const derived=deriveFcaStatus(row),overdue=isFcaOverdue(row),display=overdue?'VENCIDO':derived;return <tr key={row.id}><td><Link className="fca-number-link" to={`/fca/${row.id}`}>#{String(row.numero).padStart(5,'0')}</Link></td><td>{new Date(`${row.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</td><td><strong>{row.depositante_nome}</strong></td><td>{row.indicador_nome}</td><td>{row.supervisor_nome}</td><td><span className="module-badge">{row.modulo_id}</span></td><td><span className={`status-badge status-${display}`}>{display.replace('_',' ')}</span></td></tr>})}{filtered.length===0&&<tr><td colSpan={7} className="table-empty">Nenhum FCA encontrado para o escopo atual.</td></tr>}</tbody></table></div>}
+    {loading&&<div className="panel loading-panel">Carregando FCAs…</div>}{error&&<div className="notice notice-error">{error}</div>}{!loading&&!error&&<div className="table-wrap"><table className="fca-table"><thead><tr><th>FCA</th><th>Data</th><th>Depositante</th><th>KPI</th><th>Supervisor</th><th>Módulo</th><th>Status</th></tr></thead><tbody>{filtered.map(row=>{const derived=deriveFcaStatus(row),overdue=isFcaOverdue(row),display=overdue?'VENCIDO':derived;return <tr key={row.id}><td><Link className="fca-number-link" to={`/fca/${row.id}`}>#{String(row.numero).padStart(5,'0')}</Link></td><td>{new Date(`${row.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</td><td><strong>{row.depositante_nome}</strong></td><td>{row.indicador_nome}</td><td>{row.supervisor_nome}</td><td><span className="module-badge">{row.modulo_id}</span></td><td><span className={`status-badge status-${display}`}>{display.replace('_',' ')}</span></td></tr>})}{filtered.length===0&&<tr><td colSpan={7} className="table-empty">Nenhum FCA encontrado para o escopo atual.</td></tr>}</tbody></table></div>}
   </section>
 }
