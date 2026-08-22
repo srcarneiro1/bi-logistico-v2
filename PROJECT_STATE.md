@@ -70,43 +70,54 @@ Entregue/ajustado:
 - `aria-expanded` e `aria-controls` no acionador mobile;
 - drawer com semântica, fechamento por Escape, focus trap, retorno de foco e bloqueio de scroll;
 - drawer mobile/tablet com navegação vertical;
-- breakpoint do drawer ampliado para até 1100px para eliminar o estado intermediário de sidebar estreita em tablet;
+- breakpoint do drawer ampliado para até 1100px;
 - padrão responsivo de tabelas em cards abaixo de 760px;
 - `Gestão à vista / Pontos de atenção` com layout mobile próprio;
-- controle de menu refinado para replicar o padrão visual do Forecast Planner: `menu_open` expandido e `menu` recolhido, mesmo peso/escala de ícone e botão compacto.
+- controle de menu replicando o padrão do Forecast Planner: `menu_open` expandido e `menu` recolhido, mesmo peso/escala de ícone e botão compacto.
 
-Último feedback do usuário: mudanças funcionais aprovadas; único refinamento pedido foi aproximar o hamburger do Forecast Planner. Ajuste aplicado e o trabalho pode seguir para os próximos blocos.
+Último feedback do usuário: mudanças funcionais aprovadas; hamburger precisava ficar visualmente mais próximo do Forecast Planner. Ajuste aplicado.
 
 #### Bloco 2B — Topbar + filtros — EM VALIDAÇÃO
 Branch: `refactor/topbar-filter-toolbar`
-Base: `refactor/shell-accessibility` (stacked sobre #22)
-
-Objetivo:
-- retirar filtros da mesma faixa de título/escopo/status HUB;
-- manter topbar curta e legível;
-- criar toolbar dedicada de filtros logo abaixo;
-- preservar integralmente regras de período, supervisor, módulo e reset.
+PR: #23 — `Separa topbar e toolbar de filtros`
+Base: `refactor/shell-accessibility`
 
 Implementado:
-- topbar agora contém apenas página atual, escopo ativo e status HUB;
+- topbar contém apenas página atual, escopo ativo e status HUB;
 - filtros ficam em `filter-toolbar` própria;
-- desktop: toolbar horizontal com rótulos e controles compactos;
-- intermediário/tablet: filtros em grade de três colunas;
+- desktop: toolbar horizontal com labels;
+- intermediário/tablet: filtros em grade;
 - mobile: filtros empilhados;
-- toolbar é sticky abaixo da topbar;
+- toolbar sticky abaixo da topbar;
 - rotas contextuais continuam sem filtros globais;
-- nenhuma regra de filtro foi alterada.
+- regras de período, supervisor, módulo e reset preservadas.
 
-### Bloco 3 — Dashboard e data visualization — PRÓXIMO
+### Bloco 3 — Dashboard e data visualization — EM ANDAMENTO
+
+#### Legenda interativa dos gráficos
+Branch: `feat/chart-toggle-series`
+Base: `refactor/topbar-filter-toolbar` (stacked sobre #23)
+
+Implementado:
+- legenda do `SimpleLineChart` vira controle clicável;
+- clicar oculta a série (linha + pontos);
+- clicar novamente exibe;
+- tooltip permanece funcional para séries visíveis;
+- eixo Y recalcula com as séries visíveis;
+- eixo X preserva todos os períodos do conjunto original;
+- não é permitido ocultar a última série visível;
+- controles usam botão, `aria-pressed`, `aria-label` e foco por teclado;
+- série oculta fica visualmente atenuada/rasurada na legenda.
+
+Ainda pendente no Bloco 3:
 - hierarquia Primary KPI vs Supporting KPI;
 - revisão do painel de pontos de atenção;
 - reduzir redundância do resumo de escopo;
 - headers de gráfico consistentes;
-- responsividade/data-viz;
-- restaurar interação dos gráficos: clicar na legenda oculta a série e clicar novamente exibe a série; preservar tooltip, acessibilidade e pelo menos uma série visível.
+- responsividade/data-viz adicional.
 
-### Bloco 4 — Supervisores / Tables / FCA / Depositantes — PENDENTE
-- detalhe do Supervisor deve evoluir para experiência equivalente ao 360º de Depositantes: selecionar card expande a área de detalhes de forma clara, sem sensação de tabela solta abaixo;
+### Bloco 4 — Supervisores / Tables / FCA / Depositantes — PRÓXIMO
+- detalhe do Supervisor deve evoluir para experiência equivalente ao 360º de Depositantes: selecionar card expande uma área integrada de detalhes, sem sensação de tabela solta abaixo;
 - toolbar reutilizável em mais páginas;
 - estados loading/empty em toda aplicação;
 - refinamentos de densidade/ações em FCA e Depositantes.
@@ -124,8 +135,8 @@ O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em ma
 
 ## Próximas ações
 
-1. Validar o Preview do #22 com o controle de menu refinado.
-2. Validar o Preview do Bloco 2B: topbar + filter toolbar em desktop, tablet e mobile.
-3. Criar PR isolado para legenda clicável do `SimpleLineChart`.
-4. Criar PR isolado para Supervisor 360º.
-5. Só depois seguir para hierarquia e refinamento amplo do Dashboard.
+1. Validar #22 (shell/hamburger/tablet/mobile).
+2. Validar #23 (topbar + toolbar de filtros).
+3. Validar legenda clicável dos gráficos.
+4. Implementar Supervisor 360º em PR isolado.
+5. Depois seguir para hierarquia e refinamento amplo do Dashboard.
