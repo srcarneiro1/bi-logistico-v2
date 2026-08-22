@@ -46,12 +46,8 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
  function openDepositante(cnpj:string){sessionStorage.setItem('bi-logistico-v2:depositante',cnpj);navigate('/depositantes')}
  return <section>
    <PageHeader eyebrow="LIDERANÇA OPERACIONAL" title="Supervisores" description="Compare carteiras e abra o responsável para analisar depositantes e FCAs pendentes no escopo atual."/>
-   <div className="supervisor-grid">{visibleCards.map(({s,prod,rec,inv,deps,status,critCount,warnCount,fcaCount})=>{
-     const isSelected=selectedSupervisorId===s.supervisorId
-     return <button type="button" className={`supervisor-card supervisor-card-${status} ${isSelected?'selected':''}`} key={s.supervisorId} aria-expanded={isSelected} aria-controls={SUPERVISOR_DETAIL_ID} onClick={()=>setSelectedSupervisorId(isSelected?'':s.supervisorId)}><div className="supervisor-head">{s.fotoUrl?<img src={s.fotoUrl} alt=""/>:<span className="supervisor-avatar">{s.nomeExibicao.slice(0,2).toUpperCase()}</span>}<div><strong>{s.nomeExibicao}</strong><span>{deps.length} depositante(s) · {fcaCount} FCA(s)</span></div><span className={`supervisor-health supervisor-health-${status}`}>{cardBadge(critCount,warnCount,status)}</span></div><div className="supervisor-metrics"><div><span>Produção</span><b className={`text-${metricStatus(prod,metaProd)}`}>{pct(prod)}</b></div><div><span>Recebimento</span><b className={`text-${metricStatus(rec,metaRec)}`}>{pct(rec)}</b></div><div><span>Inventário</span><b className={`text-${metricStatus(inv,metaInv)}`}>{pct(inv)}</b></div></div><div className="supervisor-modules">{Array.from(new Set(deps.map(d=>d.moduloId))).map(m=><span key={m}>{m}</span>)}</div></button>
-   })}</div>
 
-   {selected&&<article id={SUPERVISOR_DETAIL_ID} className="supervisor-360" aria-label={`Visão detalhada de ${selected.s.nomeExibicao}`}>
+   {selected&&<article id={SUPERVISOR_DETAIL_ID} className="supervisor-360 supervisor-360-expanded" aria-label={`Visão detalhada de ${selected.s.nomeExibicao}`}>
      <div className="supervisor-360-hero">
        <div className="supervisor-360-identity">
          {selected.s.fotoUrl?<img src={selected.s.fotoUrl} alt=""/>:<span className="supervisor-360-avatar">{selected.s.nomeExibicao.slice(0,2).toUpperCase()}</span>}
@@ -72,5 +68,10 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
        <section className="dashboard-panel supervisor-open-fcas"><div className="panel-head"><div><span className="panel-eyebrow">PENDÊNCIAS</span><h2>FCAs abertos no período</h2></div><span className={`panel-chip ${selectedFcas.length?'panel-chip-red':''}`}>{selectedFcas.length} pendente(s)</span></div>{selectedFcas.length?<div className="supervisor-fca-list">{selectedFcas.map(f=>{const overdue=isFcaOverdue(f),status=overdue?'VENCIDO':deriveFcaStatus(f);return <Link key={f.id} to={`/fca/${f.id}`}><div><strong>FCA #{String(f.numero).padStart(5,'0')} · {f.depositante_nome}</strong><span>{f.indicador_nome} · {new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</span></div><span className={`status-badge status-${status}`}>{status.replace('_',' ')}</span></Link>})}</div>:<div className="table-empty">Nenhum FCA pendente para este supervisor no filtro atual.</div>}</section>
      </div>
    </article>}
+
+   <div className={`supervisor-grid ${selected?'supervisor-grid-with-detail':''}`}>{visibleCards.map(({s,prod,rec,inv,deps,status,critCount,warnCount,fcaCount})=>{
+     const isSelected=selectedSupervisorId===s.supervisorId
+     return <button type="button" className={`supervisor-card supervisor-card-${status} ${isSelected?'selected':''}`} key={s.supervisorId} aria-expanded={isSelected} aria-controls={SUPERVISOR_DETAIL_ID} onClick={()=>setSelectedSupervisorId(isSelected?'':s.supervisorId)}><div className="supervisor-head">{s.fotoUrl?<img src={s.fotoUrl} alt=""/>:<span className="supervisor-avatar">{s.nomeExibicao.slice(0,2).toUpperCase()}</span>}<div><strong>{s.nomeExibicao}</strong><span>{deps.length} depositante(s) · {fcaCount} FCA(s)</span></div><span className={`supervisor-health supervisor-health-${status}`}>{cardBadge(critCount,warnCount,status)}</span></div><div className="supervisor-metrics"><div><span>Produção</span><b className={`text-${metricStatus(prod,metaProd)}`}>{pct(prod)}</b></div><div><span>Recebimento</span><b className={`text-${metricStatus(rec,metaRec)}`}>{pct(rec)}</b></div><div><span>Inventário</span><b className={`text-${metricStatus(inv,metaInv)}`}>{pct(inv)}</b></div></div><div className="supervisor-modules">{Array.from(new Set(deps.map(d=>d.moduloId))).map(m=><span key={m}>{m}</span>)}</div></button>
+   })}</div>
  </section>
 }
