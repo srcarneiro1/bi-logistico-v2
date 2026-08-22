@@ -58,40 +58,32 @@ Entregue:
 
 Validação do usuário: aprovada em 21/08/2026.
 
-### Bloco 2 — Shell UX — EM VALIDAÇÃO
+### Bloco 2 — Shell UX — APROVADO PARA MERGE
 
-#### Bloco 2A — Mobile + acessibilidade
-Branch: `refactor/shell-accessibility`
-PR: #22 — shell mobile + tabelas responsivas
+PR #22 — shell mobile + tabelas responsivas
+PR #23 — topbar + toolbar de filtros
 
-Entregue/ajustado:
+Entregue:
 - drawer acessível com Escape, focus trap, retorno de foco e bloqueio de scroll;
 - drawer mobile/tablet com navegação vertical;
 - breakpoint do drawer ampliado para até 1100px;
 - tabelas responsivas em cards abaixo de 760px;
 - `Gestão à vista / Pontos de atenção` com layout mobile próprio;
-- controle de menu replicando o padrão do Forecast Planner: `menu_open` expandido e `menu` recolhido.
-
-#### Bloco 2B — Topbar + filtros
-Branch: `refactor/topbar-filter-toolbar`
-PR: #23 — `Separa topbar e toolbar de filtros`
-Base: `refactor/shell-accessibility`
-
-Implementado:
+- controle de menu inspirado no Forecast Planner (`menu_open` expandido / `menu` recolhido);
+- correção final da sidebar: nenhum botão pode escapar da largura útil no estado recolhido; logo e controle ficam centralizados dentro dos 68px;
+- drawer mobile/tablet mostra somente o botão X como fechamento, com ícone explicitamente visível;
 - topbar contém apenas página atual, escopo ativo e status HUB;
 - filtros em `filter-toolbar` dedicada e sticky;
 - desktop horizontal, tablet em grade e mobile empilhado;
-- rotas contextuais continuam sem filtros globais;
 - regras de período, supervisor, módulo e reset preservadas.
 
-### Bloco 3 — Dashboard e data visualization — EM VALIDAÇÃO
+Último feedback do usuário em 21/08/2026: alterações boas, com duas correções finais solicitadas — inconsistência da sidebar e posição do Supervisor 360º. Ambas corrigidas no topo da pilha e autorizado merge após correção.
 
-#### Legenda interativa dos gráficos
-Branch: `feat/chart-toggle-series`
-PR: #24 — `Restaura legenda interativa dos gráficos`
-Base: `refactor/topbar-filter-toolbar`
+### Bloco 3 — Dashboard e data visualization — APROVADO PARA MERGE
 
-Implementado:
+PR #24 — `Restaura legenda interativa dos gráficos`
+
+Entregue:
 - legenda do `SimpleLineChart` é clicável e acessível;
 - clicar oculta/exibe linha e pontos;
 - eixo Y recalcula pelas séries visíveis;
@@ -99,34 +91,30 @@ Implementado:
 - tooltip permanece;
 - última série visível não pode ser ocultada.
 
-Ainda pendente no Bloco 3:
+Ainda pendente para próximo ciclo:
 - hierarquia Primary KPI vs Supporting KPI;
 - refinamento amplo do Dashboard;
 - headers e responsividade adicional de gráficos.
 
-### Bloco 4 — Supervisor 360º — EM VALIDAÇÃO
-Branch: `refactor/supervisor-360`
-Base: `feat/chart-toggle-series` (stacked sobre #24)
+### Bloco 4 — Supervisor 360º — APROVADO PARA MERGE
 
-Implementado:
+PR #25 — `Cria visão 360 dos supervisores`
+
+Entregue:
 - selecionar um card de supervisor expande uma única superfície integrada, no padrão conceitual da visão 360º de Depositantes;
+- correção final: a visão expandida agora aparece **acima da grade de supervisores**, logo após o PageHeader, assim como a experiência de Depositantes;
 - hero com foto/avatar, nome, módulos, quantidade de depositantes, FCAs e status da carteira;
 - quatro KPIs: Produção, Recebimento, Inventário e FCAs pendentes;
-- abaixo, carteira por depositante e FCAs pendentes ficam dentro da mesma visão 360º;
+- carteira por depositante e FCAs pendentes integrados na mesma visão;
 - carteira mantém tabela desktop e cards responsivos no mobile;
 - clicar em depositante continua abrindo a visão de Depositantes;
 - cards de supervisor usam `aria-expanded` e `aria-controls`;
-- filtros e cálculos de FCA/KPI foram preservados.
-
-Ainda pendente no bloco de telas:
-- toolbar reutilizável em outras páginas;
-- estados loading/empty em toda aplicação;
-- refinamentos de FCA e Depositantes.
+- filtros e cálculos de FCA/KPI preservados.
 
 ### Bloco 5 — Redução da dívida CSS — ÚLTIMO
 O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em massa. Remover regras somente depois de migrar responsabilidades para primitives e validar regressões.
 
-## Últimas entregas consolidadas na main
+## Últimas entregas consolidadas na main antes deste ciclo
 
 - PR #17: correções isoladas da auditoria de UI.
 - PR #18: correção de cobertura/autenticação de substitutos.
@@ -134,12 +122,19 @@ O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em ma
 - PR #20: tooltip nos pontos dos gráficos + quantidade de FCA nos cards de supervisores.
 - PR #21: UI Foundations + FCA piloto + protocolo de continuidade entre chats.
 
-## Ordem atual de validação / futura integração
+## Integração autorizada em 21/08/2026
 
-1. #22 — shell, hamburger, tablet/mobile e tabelas.
-2. #23 — topbar + toolbar de filtros.
-3. #24 — legenda interativa dos gráficos.
-4. Supervisor 360º — branch `refactor/supervisor-360`.
-5. Depois: refinamento amplo do Dashboard.
+Integrar na ordem:
+1. #22
+2. #23
+3. #24
+4. #25
 
-Os PRs são empilhados. Antes de qualquer merge, respeitar a ordem e retargetar os dependentes para `main` após integrar a base. Não mergear sem solicitação explícita do usuário.
+Após os merges, atualizar este arquivo na `main` com os SHAs finais e marcar os Blocos 2, 3 (legenda) e 4 como concluídos.
+
+## Próximo ciclo
+
+Quando o usuário disser `retomar BI Logístico` em um novo chat:
+1. conferir se #22–#25 foram mergeados;
+2. partir para o refinamento amplo do Dashboard;
+3. depois expandir primitives/estados e, por último, reduzir a dívida de CSS global.
