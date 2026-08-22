@@ -63,8 +63,9 @@ Ainda não remover folhas CSS antigas. A remoção será progressiva conforme pr
 
 #### Bloco 2A — Mobile + acessibilidade
 Branch: `refactor/shell-accessibility`
+PR: #22 — `Melhora acessibilidade do shell mobile`
 
-Escopo:
+Primeira versão entregue:
 - `aria-expanded` e `aria-controls` no acionador mobile;
 - identificação semântica da navegação;
 - drawer anunciado como diálogo quando aberto;
@@ -73,11 +74,27 @@ Escopo:
 - contenção de `Tab` dentro do drawer enquanto aberto;
 - retorno de foco ao botão de abertura ao fechar;
 - bloqueio de scroll do body durante abertura;
-- labels explícitos em botões de navegação/logout;
-- sem alteração visual da topbar ou regras de filtro.
+- labels explícitos em botões de navegação/logout.
+
+Feedback visual do usuário em 21/08/2026: NÃO APROVADO na primeira versão.
+Problemas observados:
+- itens/ícones da sidebar ficaram visualmente na horizontal no mobile;
+- controle para recolher/expandir sidebar ficou inconsistente;
+- usuário prefere padronizar o controle desktop/mobile com ícone hamburger em vez de seta;
+- tabelas no mobile ficaram feias e desorganizadas.
+
+Correções aplicadas no mesmo PR #22:
+- sidebar mobile explicitamente em coluna única, neutralizando regras conflitantes da cascade;
+- drawer ampliado para 272px e navegação organizada verticalmente;
+- botão X permanece para fechar o drawer mobile;
+- controle de expandir/recolher no desktop passa a usar ícone hamburger em vez de chevrons;
+- criado padrão `responsive-data-table` em `ui-foundations.css`;
+- abaixo de 760px, tabelas responsivas deixam de depender de scroll horizontal e cada linha vira um card de dados com `data-label`;
+- padrão aplicado em FCA, KPIs, detalhe de Supervisores, Depositantes e Despesas do Financeiro;
+- desktop preserva apresentação tabular normal.
 
 #### Bloco 2B — Densidade da topbar/filtros — PENDENTE
-Tratar em PR separado após validação do 2A:
+Tratar em PR separado após aprovação do 2A:
 - reduzir competição visual entre título, filtros, escopo e status HUB;
 - revisar toolbar de filtros em desktop/intermediário/mobile;
 - consolidar breakpoints do shell sem alterar semântica dos filtros.
@@ -90,10 +107,11 @@ Tratar em PR separado após validação do 2A:
 - responsividade/data-viz.
 
 ### Bloco 4 — Tables/FCA/Depositantes — PENDENTE
-- toolbar reutilizável;
-- semântica consistente de tabelas;
+Parte do trabalho responsivo de tabelas foi antecipada no PR #22 por feedback do usuário. Ainda pendente:
+- toolbar reutilizável em mais páginas;
 - estados loading/empty em toda aplicação;
-- refinamento de FCA e Depositantes.
+- refinamentos de densidade/ações em FCA e Depositantes;
+- auditar tabelas administrativas restantes depois que o padrão responsivo for aprovado.
 
 ### Bloco 5 — Redução da dívida CSS — ÚLTIMO
 O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em massa. Remover regras somente depois de migrar responsabilidades para primitives e validar regressões.
@@ -108,13 +126,14 @@ O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em ma
 
 ## Próxima ação recomendada
 
-Validar o Preview do Bloco 2A em viewport mobile/tablet:
-1. abrir menu pelo botão hamburger;
-2. verificar foco no botão de fechar;
-3. usar Tab/Shift+Tab e confirmar que o foco permanece dentro do drawer;
-4. fechar com Escape e confirmar retorno de foco ao hamburger;
-5. fechar pelo backdrop e pelo botão X;
-6. navegar para outra rota e confirmar fechamento automático;
-7. confirmar que desktop permanece visualmente igual.
+Validar novamente o Preview do PR #22 em viewport mobile/tablet, agora com foco visual e funcional:
+1. abrir o menu pelo hamburger;
+2. confirmar que itens da sidebar aparecem em uma única coluna vertical;
+3. fechar pelo X, backdrop e Escape;
+4. confirmar foco/Tab dentro do drawer;
+5. em desktop, verificar que o controle de recolher/expandir agora usa hamburger;
+6. testar tabelas de FCA, KPIs, Supervisores, Depositantes e Financeiro em mobile;
+7. confirmar que cada linha vira um card legível com rótulo + valor e sem scroll horizontal desnecessário;
+8. confirmar que desktop continua com tabelas tradicionais.
 
-Se aprovado: mergear 2A e iniciar 2B em branch nova a partir da main.
+Se aprovado: mergear #22 e iniciar 2B em branch nova a partir da main.
