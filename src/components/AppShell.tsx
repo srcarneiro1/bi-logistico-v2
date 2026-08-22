@@ -16,6 +16,10 @@ const baseItems=[
   {to:'/fca',label:'FCA',icon:'fact_check'},
 ]
 
+function HamburgerGlyph(){
+  return <span className="hamburger-glyph" aria-hidden="true"><i/><i/><i/></span>
+}
+
 export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:HubBootstrap;filters:DashboardFilters;onFiltersChange:(next:DashboardFilters)=>void;onSignOut:()=>Promise<void>;children:ReactNode}){
   const location=useLocation()
   const periods=getAvailablePeriods(hub)
@@ -100,13 +104,13 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
       aria-label="Navegação principal"
       {...(mobileOpen?{role:'dialog','aria-modal':true as const}: {})}
     >
-      <div className="sidebar-brand"><img src={BRAND_LOGO} alt="Unilog Express"/><span>BI LOGÍSTICO</span><button type="button" className="sidebar-collapse" onClick={toggleCollapsed} title={collapsed?'Expandir menu':'Recolher menu'} aria-label={collapsed?'Expandir menu lateral':'Recolher menu lateral'}><span className="material-symbols-rounded" aria-hidden="true">menu</span></button><button type="button" className="sidebar-mobile-close" onClick={()=>setMobileOpen(false)} title="Fechar menu" aria-label="Fechar menu de navegação"><span className="material-symbols-rounded" aria-hidden="true">close</span></button></div>
+      <div className="sidebar-brand"><img src={BRAND_LOGO} alt="Unilog Express"/><span>BI LOGÍSTICO</span><button type="button" className="sidebar-collapse" onClick={toggleCollapsed} title={collapsed?'Expandir menu':'Recolher menu'} aria-label={collapsed?'Expandir menu lateral':'Recolher menu lateral'}><HamburgerGlyph/></button><button type="button" className="sidebar-mobile-close" onClick={()=>setMobileOpen(false)} title="Fechar menu" aria-label="Fechar menu de navegação"><span className="material-symbols-rounded" aria-hidden="true">close</span></button></div>
       <nav className="sidebar-nav" aria-label="Seções do BI">{items.map((item,index)=><div key={item.to} className={index===baseItems.length&&isAdmin?'admin-nav-item':''}>{index===baseItems.length&&isAdmin&&<span className="nav-section-label">ADMINISTRAÇÃO</span>}<NavLink to={item.to} end={item.to==='/' } title={collapsed?item.label:undefined}><span className="material-symbols-rounded" aria-hidden="true">{item.icon}</span><span className="nav-label">{item.label}</span></NavLink></div>)}</nav>
       <div className="sidebar-user"><div className="user-avatar">{hub.profile.nome.slice(0,1).toUpperCase()}</div><div className="sidebar-user-copy"><strong>{hub.profile.nome}</strong><span>{hub.profile.perfil}</span></div><button type="button" onClick={()=>void onSignOut()} title="Sair" aria-label="Sair do BI Logístico"><span className="material-symbols-rounded" aria-hidden="true">logout</span></button></div>
     </aside>
     <div className="workspace">
       <header className={`topbar ${!contextualRoute?'topbar-with-filters':''}`}>
-        <div className="topbar-title"><button ref={mobileMenuButtonRef} type="button" className="mobile-menu-button" onClick={()=>setMobileOpen(true)} title="Abrir menu" aria-label="Abrir menu de navegação" aria-expanded={mobileOpen} aria-controls={MOBILE_SIDEBAR_ID}><span className="material-symbols-rounded" aria-hidden="true">menu</span></button><div><span className="topbar-kicker">BI Logístico</span><strong>{current?.label??'Visão geral'}</strong></div></div>
+        <div className="topbar-title"><button ref={mobileMenuButtonRef} type="button" className="mobile-menu-button" onClick={()=>setMobileOpen(true)} title="Abrir menu" aria-label="Abrir menu de navegação" aria-expanded={mobileOpen} aria-controls={MOBILE_SIDEBAR_ID}><HamburgerGlyph/></button><div><span className="topbar-kicker">BI Logístico</span><strong>{current?.label??'Visão geral'}</strong></div></div>
         {!contextualRoute&&<div className="topbar-filters" role="region" aria-label="Filtros globais">
           <label><span>Período</span><select aria-label="Período" value={isFcaList?filters.fcaPeriodo:filters.periodo} onChange={e=>changePeriod(e.target.value)}>{isFcaList&&<option value="ALL">Todos os meses</option>}{isFcaList?fcaPeriods.map(period=><option key={period} value={period}>{periodLabel(period)}</option>):periods.map(p=><option key={p.key} value={p.value}>{p.label}</option>)}</select></label>
           <label><span>Supervisor</span><select aria-label="Supervisor" value={filters.supervisorId} disabled={!isAdmin} onChange={e=>onFiltersChange({...filters,supervisorId:e.target.value,moduloId:''})}><option value="">{isAdmin?'Todos os supervisores':hub.profile.nome}</option>{isAdmin&&hub.supervisors.map(s=><option key={s.supervisorId} value={s.supervisorId}>{s.nomeExibicao}</option>)}</select></label>
