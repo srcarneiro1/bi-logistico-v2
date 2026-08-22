@@ -24,6 +24,7 @@ Não depender do histórico de uma conversa para reconstruir decisões. O GitHub
 - Google Sheets/HUB revisada: cadastros operacionais, KPIs e financeiro.
 - Forecast Planner e Preline podem ser usados como benchmarks visuais, nunca como dependência de runtime sem decisão explícita.
 - O projeto não deve ser convertido para Next.js/Tailwind apenas para reproduzir padrões de outra biblioteca.
+- Preline é o benchmark principal de UI/UX para shell/offcanvas, densidade de dashboard, tabelas responsivas, estados interativos, hierarquia visual e acessibilidade. Não instalar Preline neste estágio.
 
 ## Guardrails funcionais
 
@@ -63,35 +64,27 @@ Ainda não remover folhas CSS antigas. A remoção será progressiva conforme pr
 
 #### Bloco 2A — Mobile + acessibilidade
 Branch: `refactor/shell-accessibility`
-PR: #22 — `Melhora acessibilidade do shell mobile`
+PR: #22 — shell mobile + tabelas responsivas
 
-Primeira versão entregue:
+Entregue/ajustado:
 - `aria-expanded` e `aria-controls` no acionador mobile;
-- identificação semântica da navegação;
-- drawer anunciado como diálogo quando aberto;
-- fechamento com `Escape`;
-- foco inicial dentro do drawer;
-- contenção de `Tab` dentro do drawer enquanto aberto;
-- retorno de foco ao botão de abertura ao fechar;
-- bloqueio de scroll do body durante abertura;
-- labels explícitos em botões de navegação/logout.
+- drawer com semântica, fechamento por Escape, focus trap, retorno de foco e bloqueio de scroll;
+- drawer mobile/tablet com navegação vertical;
+- breakpoint do drawer ampliado para até 1100px para eliminar o estado intermediário de sidebar estreita em tablet;
+- controle de expandir/recolher e botão de abertura usam o mesmo `HamburgerGlyph` próprio em CSS, sem depender de Material Symbols;
+- botão X permanece para fechar o drawer;
+- padrão `responsive-data-table` abaixo de 760px: linhas viram cards com rótulo + valor;
+- aplicado em FCA, KPIs, detalhe de Supervisores, Depositantes e Despesas do Financeiro;
+- Administração de substituições já usa cards e não precisa conversão;
+- `Gestão à vista / Pontos de atenção` ganhou layout mobile específico: cabeçalho do depositante + três métricas organizadas em cards internos, sem a grade desktop comprimida.
 
-Feedback visual do usuário em 21/08/2026: NÃO APROVADO na primeira versão.
-Problemas observados:
-- itens/ícones da sidebar ficaram visualmente na horizontal no mobile;
-- controle para recolher/expandir sidebar ficou inconsistente;
-- usuário prefere padronizar o controle desktop/mobile com ícone hamburger em vez de seta;
-- tabelas no mobile ficaram feias e desorganizadas.
-
-Correções aplicadas no mesmo PR #22:
-- sidebar mobile explicitamente em coluna única, neutralizando regras conflitantes da cascade;
-- drawer ampliado para 272px e navegação organizada verticalmente;
-- botão X permanece para fechar o drawer mobile;
-- controle de expandir/recolher no desktop passa a usar ícone hamburger em vez de chevrons;
-- criado padrão `responsive-data-table` em `ui-foundations.css`;
-- abaixo de 760px, tabelas responsivas deixam de depender de scroll horizontal e cada linha vira um card de dados com `data-label`;
-- padrão aplicado em FCA, KPIs, detalhe de Supervisores, Depositantes e Despesas do Financeiro;
-- desktop preserva apresentação tabular normal.
+Feedbacks do usuário que motivaram as revisões:
+- primeira versão do #22 não aprovada;
+- sidebar mobile apresentou itens/ícones inadequados;
+- controle desktop não aparentava hamburger no preview;
+- faixa intermediária/tablet ficou visualmente ruim com sidebar estreita;
+- tabelas convertidas para cards foram aprovadas visualmente;
+- `Gestão à vista` ficou ruim em mobile e foi corrigido separadamente.
 
 #### Bloco 2B — Densidade da topbar/filtros — PENDENTE
 Tratar em PR separado após aprovação do 2A:
@@ -99,19 +92,19 @@ Tratar em PR separado após aprovação do 2A:
 - revisar toolbar de filtros em desktop/intermediário/mobile;
 - consolidar breakpoints do shell sem alterar semântica dos filtros.
 
-### Bloco 3 — Dashboard — PENDENTE
+### Bloco 3 — Dashboard e data visualization — PENDENTE
 - hierarquia Primary KPI vs Supporting KPI;
 - revisão do painel de pontos de atenção;
 - reduzir redundância do resumo de escopo;
 - headers de gráfico consistentes;
-- responsividade/data-viz.
+- responsividade/data-viz;
+- RESTAURAR interação antiga dos gráficos: clicar na legenda oculta a série e clicar novamente exibe a série; preservar tooltip, acessibilidade e pelo menos uma série visível.
 
-### Bloco 4 — Tables/FCA/Depositantes — PENDENTE
-Parte do trabalho responsivo de tabelas foi antecipada no PR #22 por feedback do usuário. Ainda pendente:
+### Bloco 4 — Supervisores / Tables / FCA / Depositantes — PENDENTE
+- detalhe do Supervisor deve evoluir para experiência equivalente ao 360º de Depositantes: selecionar card expande a área de detalhes de forma clara, sem sensação de tabela solta abaixo;
 - toolbar reutilizável em mais páginas;
 - estados loading/empty em toda aplicação;
-- refinamentos de densidade/ações em FCA e Depositantes;
-- auditar tabelas administrativas restantes depois que o padrão responsivo for aprovado.
+- refinamentos de densidade/ações em FCA e Depositantes.
 
 ### Bloco 5 — Redução da dívida CSS — ÚLTIMO
 O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em massa. Remover regras somente depois de migrar responsabilidades para primitives e validar regressões.
@@ -126,14 +119,18 @@ O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em ma
 
 ## Próxima ação recomendada
 
-Validar novamente o Preview do PR #22 em viewport mobile/tablet, agora com foco visual e funcional:
-1. abrir o menu pelo hamburger;
-2. confirmar que itens da sidebar aparecem em uma única coluna vertical;
-3. fechar pelo X, backdrop e Escape;
-4. confirmar foco/Tab dentro do drawer;
-5. em desktop, verificar que o controle de recolher/expandir agora usa hamburger;
-6. testar tabelas de FCA, KPIs, Supervisores, Depositantes e Financeiro em mobile;
-7. confirmar que cada linha vira um card legível com rótulo + valor e sem scroll horizontal desnecessário;
-8. confirmar que desktop continua com tabelas tradicionais.
+Validar novamente o Preview do PR #22 em três larguras: desktop, tablet/intermediário e mobile.
 
-Se aprovado: mergear #22 e iniciar 2B em branch nova a partir da main.
+Checklist:
+1. desktop: hamburger de recolher/expandir deve aparecer como três linhas;
+2. tablet/intermediário: sidebar fixa estreita não deve existir; navegação deve abrir como drawer pelo hamburger;
+3. mobile: drawer vertical com rótulos, X, backdrop e Escape;
+4. tabelas: manter cards responsivos já aprovados;
+5. Home mobile: `Gestão à vista` deve ficar organizada, sem pontos/colunas desalinhados;
+6. desktop deve preservar layout analítico atual.
+
+Se aprovado:
+1. mergear #22;
+2. iniciar Bloco 2B (topbar/filtros) em branch própria;
+3. em seguida criar PR isolado para legenda clicável do `SimpleLineChart`;
+4. depois criar PR isolado para detalhe expandido/360º de Supervisor.
