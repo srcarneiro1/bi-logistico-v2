@@ -2,16 +2,19 @@
 
 > Fonte operacional de continuidade entre chats. Antes de propor alterações relevantes, ler este arquivo e confirmar o estado atual da `main` e dos PRs abertos no GitHub.
 
-## Regra de continuidade
+## Comando de retomada
+
+Comando combinado com o usuário: **`retomar BI Logístico`**.
+
+Ao receber esse comando em um chat novo, seguir obrigatoriamente esta sequência:
+1. Ler este arquivo (`PROJECT_STATE.md`).
+2. Consultar a `main` atual e os PRs abertos.
+3. Identificar o bloco atual, o último feedback validado e a próxima ação.
+4. Validar o arquivo diretamente relacionado ao próximo bloco.
+5. Só então implementar ou recomendar mudanças.
+6. Atualizar este arquivo quando uma decisão arquitetural, guardrail, feedback de validação ou etapa do roadmap mudar.
 
 Não depender do histórico de uma conversa para reconstruir decisões. O GitHub é a fonte persistente do projeto.
-
-Ao iniciar um novo chat ou retomar após contexto longo:
-1. Ler este arquivo.
-2. Consultar os PRs abertos e a `main` atual.
-3. Validar o arquivo diretamente relacionado ao próximo bloco.
-4. Só então implementar.
-5. Atualizar este arquivo quando uma decisão arquitetural, guardrail ou etapa do roadmap mudar.
 
 ## Stack e fronteiras
 
@@ -38,6 +41,7 @@ Benchmark principal: Preline como referência de arquitetura visual e padrões d
 
 ### Bloco 1 — UI Foundations — EM ANDAMENTO
 Branch: `refactor/ui-foundations-v1`
+PR: #21 — `Cria UI Foundations e migra FCA como piloto`
 
 Objetivo:
 - criar primitives reutilizáveis;
@@ -60,6 +64,12 @@ Tela-piloto: `FcaListPage`.
 - status migrado para `StatusBadge`;
 - `aria-pressed` nos filtros de status;
 - `scope="col"` nos cabeçalhos da tabela.
+
+Feedback visual de 21/08/2026:
+- estrutura geral aprovada pelo usuário;
+- diferença visual ainda pequena, o que é aceitável para foundations;
+- toolbar de busca/status ficou estranha por parecer um card dentro de outro e por mostrar borda/foco duplicado;
+- correção aplicada no mesmo PR: toolbar sem contêiner externo, busca e select como controles independentes, foco único e layout mais leve.
 
 Ainda não remover as folhas CSS antigas. A remoção deve ser progressiva conforme primitives assumirem responsabilidades.
 
@@ -95,7 +105,8 @@ O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em ma
 
 ## Próxima ação recomendada
 
-Validar o Preview do Bloco 1 em FCA. Se aprovado:
+Validar novamente o Preview do PR #21 após a simplificação da toolbar da FCA. Se aprovado:
 1. revisar diff e build/testes disponíveis;
-2. mergear o PR de UI Foundations;
-3. iniciar Bloco 2 em branch própria a partir da nova `main`.
+2. mergear o PR #21;
+3. atualizar este arquivo na `main` com Bloco 1 concluído;
+4. iniciar Bloco 2 em branch própria a partir da nova `main`.
