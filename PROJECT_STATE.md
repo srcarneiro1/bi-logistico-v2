@@ -71,34 +71,39 @@ Entregue/ajustado:
 - drawer com semântica, fechamento por Escape, focus trap, retorno de foco e bloqueio de scroll;
 - drawer mobile/tablet com navegação vertical;
 - breakpoint do drawer ampliado para até 1100px para eliminar o estado intermediário de sidebar estreita em tablet;
-- controle de expandir/recolher e botão de abertura usam o mesmo `HamburgerGlyph` próprio em CSS, sem depender de Material Symbols;
-- botão X permanece para fechar o drawer;
-- padrão `responsive-data-table` abaixo de 760px: linhas viram cards com rótulo + valor;
-- aplicado em FCA, KPIs, detalhe de Supervisores, Depositantes e Despesas do Financeiro;
-- Administração de substituições já usa cards e não precisa conversão;
-- `Gestão à vista / Pontos de atenção` ganhou layout mobile específico: cabeçalho do depositante + três métricas organizadas em cards internos, sem a grade desktop comprimida.
+- padrão responsivo de tabelas em cards abaixo de 760px;
+- `Gestão à vista / Pontos de atenção` com layout mobile próprio;
+- controle de menu refinado para replicar o padrão visual do Forecast Planner: `menu_open` expandido e `menu` recolhido, mesmo peso/escala de ícone e botão compacto.
 
-Feedbacks do usuário que motivaram as revisões:
-- primeira versão do #22 não aprovada;
-- sidebar mobile apresentou itens/ícones inadequados;
-- controle desktop não aparentava hamburger no preview;
-- faixa intermediária/tablet ficou visualmente ruim com sidebar estreita;
-- tabelas convertidas para cards foram aprovadas visualmente;
-- `Gestão à vista` ficou ruim em mobile e foi corrigido separadamente.
+Último feedback do usuário: mudanças funcionais aprovadas; único refinamento pedido foi aproximar o hamburger do Forecast Planner. Ajuste aplicado e o trabalho pode seguir para os próximos blocos.
 
-#### Bloco 2B — Densidade da topbar/filtros — PENDENTE
-Tratar em PR separado após aprovação do 2A:
-- reduzir competição visual entre título, filtros, escopo e status HUB;
-- revisar toolbar de filtros em desktop/intermediário/mobile;
-- consolidar breakpoints do shell sem alterar semântica dos filtros.
+#### Bloco 2B — Topbar + filtros — EM VALIDAÇÃO
+Branch: `refactor/topbar-filter-toolbar`
+Base: `refactor/shell-accessibility` (stacked sobre #22)
 
-### Bloco 3 — Dashboard e data visualization — PENDENTE
+Objetivo:
+- retirar filtros da mesma faixa de título/escopo/status HUB;
+- manter topbar curta e legível;
+- criar toolbar dedicada de filtros logo abaixo;
+- preservar integralmente regras de período, supervisor, módulo e reset.
+
+Implementado:
+- topbar agora contém apenas página atual, escopo ativo e status HUB;
+- filtros ficam em `filter-toolbar` própria;
+- desktop: toolbar horizontal com rótulos e controles compactos;
+- intermediário/tablet: filtros em grade de três colunas;
+- mobile: filtros empilhados;
+- toolbar é sticky abaixo da topbar;
+- rotas contextuais continuam sem filtros globais;
+- nenhuma regra de filtro foi alterada.
+
+### Bloco 3 — Dashboard e data visualization — PRÓXIMO
 - hierarquia Primary KPI vs Supporting KPI;
 - revisão do painel de pontos de atenção;
 - reduzir redundância do resumo de escopo;
 - headers de gráfico consistentes;
 - responsividade/data-viz;
-- RESTAURAR interação antiga dos gráficos: clicar na legenda oculta a série e clicar novamente exibe a série; preservar tooltip, acessibilidade e pelo menos uma série visível.
+- restaurar interação dos gráficos: clicar na legenda oculta a série e clicar novamente exibe a série; preservar tooltip, acessibilidade e pelo menos uma série visível.
 
 ### Bloco 4 — Supervisores / Tables / FCA / Depositantes — PENDENTE
 - detalhe do Supervisor deve evoluir para experiência equivalente ao 360º de Depositantes: selecionar card expande a área de detalhes de forma clara, sem sensação de tabela solta abaixo;
@@ -117,20 +122,10 @@ O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em ma
 - PR #20: tooltip nos pontos dos gráficos + quantidade de FCA nos cards de supervisores.
 - PR #21: UI Foundations + FCA piloto + protocolo de continuidade entre chats.
 
-## Próxima ação recomendada
+## Próximas ações
 
-Validar novamente o Preview do PR #22 em três larguras: desktop, tablet/intermediário e mobile.
-
-Checklist:
-1. desktop: hamburger de recolher/expandir deve aparecer como três linhas;
-2. tablet/intermediário: sidebar fixa estreita não deve existir; navegação deve abrir como drawer pelo hamburger;
-3. mobile: drawer vertical com rótulos, X, backdrop e Escape;
-4. tabelas: manter cards responsivos já aprovados;
-5. Home mobile: `Gestão à vista` deve ficar organizada, sem pontos/colunas desalinhados;
-6. desktop deve preservar layout analítico atual.
-
-Se aprovado:
-1. mergear #22;
-2. iniciar Bloco 2B (topbar/filtros) em branch própria;
-3. em seguida criar PR isolado para legenda clicável do `SimpleLineChart`;
-4. depois criar PR isolado para detalhe expandido/360º de Supervisor.
+1. Validar o Preview do #22 com o controle de menu refinado.
+2. Validar o Preview do Bloco 2B: topbar + filter toolbar em desktop, tablet e mobile.
+3. Criar PR isolado para legenda clicável do `SimpleLineChart`.
+4. Criar PR isolado para Supervisor 360º.
+5. Só depois seguir para hierarquia e refinamento amplo do Dashboard.
