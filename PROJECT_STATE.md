@@ -39,46 +39,48 @@ Não depender do histórico de uma conversa para reconstruir decisões. O GitHub
 
 Benchmark principal: Preline como referência de arquitetura visual e padrões de aplicação, sem instalar a biblioteca neste estágio.
 
-### Bloco 1 — UI Foundations — EM ANDAMENTO
-Branch: `refactor/ui-foundations-v1`
-PR: #21 — `Cria UI Foundations e migra FCA como piloto`
+### Bloco 1 — UI Foundations — CONCLUÍDO
+PR #21 — `Cria UI Foundations e migra FCA como piloto`
+Merge na main: `511fb33a1a8fb8bd0691ee54e4904467bbc99fd9`
 
-Objetivo:
-- criar primitives reutilizáveis;
-- parar de criar novas regras específicas espalhadas em folhas antigas;
-- validar o padrão em uma tela-piloto antes de migrar outras áreas.
-
-Primitives adicionados:
+Entregue:
 - `Panel` / `PanelHeader`;
 - `Badge` / `StatusBadge`;
 - `SearchField`;
 - `EmptyState`;
-- `Skeleton`.
-
-Nova camada CSS: `src/ui-foundations.css`.
-
-Tela-piloto: `FcaListPage`.
-- busca migrada para `SearchField`;
-- loading migrado para skeleton;
-- erro/vazio migrados para `EmptyState`;
-- status migrado para `StatusBadge`;
+- `Skeleton`;
+- `src/ui-foundations.css`;
+- FCA usada como tela-piloto;
+- toolbar corrigida após feedback visual do usuário;
 - `aria-pressed` nos filtros de status;
 - `scope="col"` nos cabeçalhos da tabela.
 
-Feedback visual de 21/08/2026:
-- estrutura geral aprovada pelo usuário;
-- diferença visual ainda pequena, o que é aceitável para foundations;
-- toolbar de busca/status ficou estranha por parecer um card dentro de outro e por mostrar borda/foco duplicado;
-- correção aplicada no mesmo PR: toolbar sem contêiner externo, busca e select como controles independentes, foco único e layout mais leve.
+Validação do usuário: aprovada em 21/08/2026.
 
-Ainda não remover as folhas CSS antigas. A remoção deve ser progressiva conforme primitives assumirem responsabilidades.
+Ainda não remover folhas CSS antigas. A remoção será progressiva conforme primitives assumirem responsabilidades.
 
-### Bloco 2 — Shell UX — PENDENTE
-- sidebar mobile com `aria-expanded` / `aria-controls`;
-- fechamento com Escape;
-- gestão de foco e retorno ao acionador;
-- revisão da densidade da topbar/filtros;
-- breakpoints consolidados.
+### Bloco 2 — Shell UX — EM ANDAMENTO
+
+#### Bloco 2A — Mobile + acessibilidade
+Branch: `refactor/shell-accessibility`
+
+Escopo:
+- `aria-expanded` e `aria-controls` no acionador mobile;
+- identificação semântica da navegação;
+- drawer anunciado como diálogo quando aberto;
+- fechamento com `Escape`;
+- foco inicial dentro do drawer;
+- contenção de `Tab` dentro do drawer enquanto aberto;
+- retorno de foco ao botão de abertura ao fechar;
+- bloqueio de scroll do body durante abertura;
+- labels explícitos em botões de navegação/logout;
+- sem alteração visual da topbar ou regras de filtro.
+
+#### Bloco 2B — Densidade da topbar/filtros — PENDENTE
+Tratar em PR separado após validação do 2A:
+- reduzir competição visual entre título, filtros, escopo e status HUB;
+- revisar toolbar de filtros em desktop/intermediário/mobile;
+- consolidar breakpoints do shell sem alterar semântica dos filtros.
 
 ### Bloco 3 — Dashboard — PENDENTE
 - hierarquia Primary KPI vs Supporting KPI;
@@ -102,11 +104,17 @@ O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em ma
 - PR #18: correção de cobertura/autenticação de substitutos.
 - PR #19: regressão mínima para filtros e coberturas.
 - PR #20: tooltip nos pontos dos gráficos + quantidade de FCA nos cards de supervisores.
+- PR #21: UI Foundations + FCA piloto + protocolo de continuidade entre chats.
 
 ## Próxima ação recomendada
 
-Validar novamente o Preview do PR #21 após a simplificação da toolbar da FCA. Se aprovado:
-1. revisar diff e build/testes disponíveis;
-2. mergear o PR #21;
-3. atualizar este arquivo na `main` com Bloco 1 concluído;
-4. iniciar Bloco 2 em branch própria a partir da nova `main`.
+Validar o Preview do Bloco 2A em viewport mobile/tablet:
+1. abrir menu pelo botão hamburger;
+2. verificar foco no botão de fechar;
+3. usar Tab/Shift+Tab e confirmar que o foco permanece dentro do drawer;
+4. fechar com Escape e confirmar retorno de foco ao hamburger;
+5. fechar pelo backdrop e pelo botão X;
+6. navegar para outra rota e confirmar fechamento automático;
+7. confirmar que desktop permanece visualmente igual.
+
+Se aprovado: mergear 2A e iniciar 2B em branch nova a partir da main.
