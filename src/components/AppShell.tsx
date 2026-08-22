@@ -109,16 +109,22 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
       <div className="sidebar-user"><div className="user-avatar">{hub.profile.nome.slice(0,1).toUpperCase()}</div><div className="sidebar-user-copy"><strong>{hub.profile.nome}</strong><span>{hub.profile.perfil}</span></div><button type="button" onClick={()=>void onSignOut()} title="Sair" aria-label="Sair do BI Logístico"><span className="material-symbols-rounded" aria-hidden="true">logout</span></button></div>
     </aside>
     <div className="workspace">
-      <header className={`topbar ${!contextualRoute?'topbar-with-filters':''}`}>
+      <header className="topbar">
         <div className="topbar-title"><button ref={mobileMenuButtonRef} type="button" className="mobile-menu-button" onClick={()=>setMobileOpen(true)} title="Abrir menu" aria-label="Abrir menu de navegação" aria-expanded={mobileOpen} aria-controls={MOBILE_SIDEBAR_ID}><MenuIcon/></button><div><span className="topbar-kicker">BI Logístico</span><strong>{current?.label??'Visão geral'}</strong></div></div>
-        {!contextualRoute&&<div className="topbar-filters" role="region" aria-label="Filtros globais">
+        <div className="topbar-profile" title={scope}>
+          <span className="topbar-scope"><small>Escopo ativo</small><strong>{scope}</strong></span>
+          <span className="topbar-sync"><span className="sync-dot"/><span>HUB conectada</span></span>
+        </div>
+      </header>
+      {!contextualRoute&&<div className="filter-toolbar" role="region" aria-label="Filtros globais">
+        <div className="filter-toolbar-title"><span className="material-symbols-rounded" aria-hidden="true">tune</span><div><strong>Filtros</strong><small>Refine o escopo da análise</small></div></div>
+        <div className="topbar-filters">
           <label><span>Período</span><select aria-label="Período" value={isFcaList?filters.fcaPeriodo:filters.periodo} onChange={e=>changePeriod(e.target.value)}>{isFcaList&&<option value="ALL">Todos os meses</option>}{isFcaList?fcaPeriods.map(period=><option key={period} value={period}>{periodLabel(period)}</option>):periods.map(p=><option key={p.key} value={p.value}>{p.label}</option>)}</select></label>
           <label><span>Supervisor</span><select aria-label="Supervisor" value={filters.supervisorId} disabled={!isAdmin} onChange={e=>onFiltersChange({...filters,supervisorId:e.target.value,moduloId:''})}><option value="">{isAdmin?'Todos os supervisores':hub.profile.nome}</option>{isAdmin&&hub.supervisors.map(s=><option key={s.supervisorId} value={s.supervisorId}>{s.nomeExibicao}</option>)}</select></label>
           <label><span>Módulo</span><select aria-label="Módulo" value={filters.moduloId} onChange={e=>onFiltersChange({...filters,moduloId:e.target.value})}><option value="">Todos os módulos</option>{modules.map(m=><option key={m}>{m}</option>)}</select></label>
           {isAdmin&&(filters.supervisorId||filters.moduloId)&&<button type="button" className="topbar-filter-reset" onClick={resetFilters} title="Limpar supervisor e módulo" aria-label="Limpar supervisor e módulo"><span className="material-symbols-rounded" aria-hidden="true">filter_alt_off</span></button>}
-        </div>}
-        <div className="topbar-profile" title={scope}><span className="topbar-scope"><small>Escopo ativo</small><strong>{scope}</strong></span><span className="topbar-sync"><span className="sync-dot"/><span>HUB conectada</span></span></div>
-      </header>
+        </div>
+      </div>}
       <main className="content">{!hub.analyticsReady&&<div className="analytics-warning"><span className="material-symbols-rounded" aria-hidden="true">info</span><div><strong>Camada analítica ainda não publicada no Apps Script.</strong><span>Cadastros e FCA funcionam, mas os indicadores aparecerão após atualizar a ponte da HUB para a versão 2.</span></div></div>}{children}</main>
     </div>
   </div>
