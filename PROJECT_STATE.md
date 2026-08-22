@@ -58,69 +58,70 @@ Entregue:
 
 Validação do usuário: aprovada em 21/08/2026.
 
-Ainda não remover folhas CSS antigas. A remoção será progressiva conforme primitives assumirem responsabilidades.
-
-### Bloco 2 — Shell UX — EM ANDAMENTO
+### Bloco 2 — Shell UX — EM VALIDAÇÃO
 
 #### Bloco 2A — Mobile + acessibilidade
 Branch: `refactor/shell-accessibility`
 PR: #22 — shell mobile + tabelas responsivas
 
 Entregue/ajustado:
-- `aria-expanded` e `aria-controls` no acionador mobile;
-- drawer com semântica, fechamento por Escape, focus trap, retorno de foco e bloqueio de scroll;
+- drawer acessível com Escape, focus trap, retorno de foco e bloqueio de scroll;
 - drawer mobile/tablet com navegação vertical;
 - breakpoint do drawer ampliado para até 1100px;
-- padrão responsivo de tabelas em cards abaixo de 760px;
+- tabelas responsivas em cards abaixo de 760px;
 - `Gestão à vista / Pontos de atenção` com layout mobile próprio;
-- controle de menu replicando o padrão do Forecast Planner: `menu_open` expandido e `menu` recolhido, mesmo peso/escala de ícone e botão compacto.
+- controle de menu replicando o padrão do Forecast Planner: `menu_open` expandido e `menu` recolhido.
 
-Último feedback do usuário: mudanças funcionais aprovadas; hamburger precisava ficar visualmente mais próximo do Forecast Planner. Ajuste aplicado.
-
-#### Bloco 2B — Topbar + filtros — EM VALIDAÇÃO
+#### Bloco 2B — Topbar + filtros
 Branch: `refactor/topbar-filter-toolbar`
 PR: #23 — `Separa topbar e toolbar de filtros`
 Base: `refactor/shell-accessibility`
 
 Implementado:
 - topbar contém apenas página atual, escopo ativo e status HUB;
-- filtros ficam em `filter-toolbar` própria;
-- desktop: toolbar horizontal com labels;
-- intermediário/tablet: filtros em grade;
-- mobile: filtros empilhados;
-- toolbar sticky abaixo da topbar;
+- filtros em `filter-toolbar` dedicada e sticky;
+- desktop horizontal, tablet em grade e mobile empilhado;
 - rotas contextuais continuam sem filtros globais;
 - regras de período, supervisor, módulo e reset preservadas.
 
-### Bloco 3 — Dashboard e data visualization — EM ANDAMENTO
+### Bloco 3 — Dashboard e data visualization — EM VALIDAÇÃO
 
 #### Legenda interativa dos gráficos
 Branch: `feat/chart-toggle-series`
-Base: `refactor/topbar-filter-toolbar` (stacked sobre #23)
+PR: #24 — `Restaura legenda interativa dos gráficos`
+Base: `refactor/topbar-filter-toolbar`
 
 Implementado:
-- legenda do `SimpleLineChart` vira controle clicável;
-- clicar oculta a série (linha + pontos);
-- clicar novamente exibe;
-- tooltip permanece funcional para séries visíveis;
-- eixo Y recalcula com as séries visíveis;
-- eixo X preserva todos os períodos do conjunto original;
-- não é permitido ocultar a última série visível;
-- controles usam botão, `aria-pressed`, `aria-label` e foco por teclado;
-- série oculta fica visualmente atenuada/rasurada na legenda.
+- legenda do `SimpleLineChart` é clicável e acessível;
+- clicar oculta/exibe linha e pontos;
+- eixo Y recalcula pelas séries visíveis;
+- eixo X preserva períodos;
+- tooltip permanece;
+- última série visível não pode ser ocultada.
 
 Ainda pendente no Bloco 3:
 - hierarquia Primary KPI vs Supporting KPI;
-- revisão do painel de pontos de atenção;
-- reduzir redundância do resumo de escopo;
-- headers de gráfico consistentes;
-- responsividade/data-viz adicional.
+- refinamento amplo do Dashboard;
+- headers e responsividade adicional de gráficos.
 
-### Bloco 4 — Supervisores / Tables / FCA / Depositantes — PRÓXIMO
-- detalhe do Supervisor deve evoluir para experiência equivalente ao 360º de Depositantes: selecionar card expande uma área integrada de detalhes, sem sensação de tabela solta abaixo;
-- toolbar reutilizável em mais páginas;
+### Bloco 4 — Supervisor 360º — EM VALIDAÇÃO
+Branch: `refactor/supervisor-360`
+Base: `feat/chart-toggle-series` (stacked sobre #24)
+
+Implementado:
+- selecionar um card de supervisor expande uma única superfície integrada, no padrão conceitual da visão 360º de Depositantes;
+- hero com foto/avatar, nome, módulos, quantidade de depositantes, FCAs e status da carteira;
+- quatro KPIs: Produção, Recebimento, Inventário e FCAs pendentes;
+- abaixo, carteira por depositante e FCAs pendentes ficam dentro da mesma visão 360º;
+- carteira mantém tabela desktop e cards responsivos no mobile;
+- clicar em depositante continua abrindo a visão de Depositantes;
+- cards de supervisor usam `aria-expanded` e `aria-controls`;
+- filtros e cálculos de FCA/KPI foram preservados.
+
+Ainda pendente no bloco de telas:
+- toolbar reutilizável em outras páginas;
 - estados loading/empty em toda aplicação;
-- refinamentos de densidade/ações em FCA e Depositantes.
+- refinamentos de FCA e Depositantes.
 
 ### Bloco 5 — Redução da dívida CSS — ÚLTIMO
 O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em massa. Remover regras somente depois de migrar responsabilidades para primitives e validar regressões.
@@ -133,10 +134,12 @@ O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em ma
 - PR #20: tooltip nos pontos dos gráficos + quantidade de FCA nos cards de supervisores.
 - PR #21: UI Foundations + FCA piloto + protocolo de continuidade entre chats.
 
-## Próximas ações
+## Ordem atual de validação / futura integração
 
-1. Validar #22 (shell/hamburger/tablet/mobile).
-2. Validar #23 (topbar + toolbar de filtros).
-3. Validar legenda clicável dos gráficos.
-4. Implementar Supervisor 360º em PR isolado.
-5. Depois seguir para hierarquia e refinamento amplo do Dashboard.
+1. #22 — shell, hamburger, tablet/mobile e tabelas.
+2. #23 — topbar + toolbar de filtros.
+3. #24 — legenda interativa dos gráficos.
+4. Supervisor 360º — branch `refactor/supervisor-360`.
+5. Depois: refinamento amplo do Dashboard.
+
+Os PRs são empilhados. Antes de qualquer merge, respeitar a ordem e retargetar os dependentes para `main` após integrar a base. Não mergear sem solicitação explícita do usuário.
