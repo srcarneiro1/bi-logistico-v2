@@ -59,11 +59,23 @@
   .responsive-data-table .table-link,.responsive-data-table .depositor-open-button{width:auto;text-align:left}
   .responsive-data-table .mono{overflow-wrap:anywhere}
   .responsive-data-table .table-empty{grid-column:1/-1;display:block!important;padding:20px!important;text-align:center!important}
+
+  /* Gestão à vista vira cartões compactos em vez de preservar a grade desktop comprimida. */
+  .attention-list{padding:8px 12px 12px}
+  .attention-row{position:relative;display:grid!important;grid-template-columns:28px minmax(0,1fr);gap:8px 10px;align-items:start;padding:14px 4px;border-bottom:1px solid #edf0f2}
+  .attention-row>.rank{grid-column:1;grid-row:1 / span 2;padding-top:2px}
+  .attention-row>div:nth-child(2){grid-column:2;grid-row:1;display:grid;gap:2px;min-width:0}
+  .attention-row>div:nth-child(2) strong{font-size:13px;line-height:1.25}
+  .attention-row>.attention-metrics{grid-column:2;grid-row:2;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:4px}
+  .attention-row>.attention-metrics span{padding:8px 9px;border-radius:8px;background:var(--surface-secondary);border:1px solid #edf0f2}
+  .attention-row>.attention-metrics b{font-size:11px;line-height:1.2}
+  .attention-row>.health-dot{position:absolute;right:4px;top:17px;width:8px;height:8px}
 }
 
 @media(max-width:480px){
   .responsive-data-table tr{grid-template-columns:1fr}
   .responsive-data-table td[data-primary="true"],.responsive-data-table td[data-full="true"]{grid-column:auto}
+  .attention-row>.attention-metrics{grid-template-columns:1fr}
 }
 
 @media(prefers-reduced-motion:reduce){.ui-skeleton span{animation:none}}
