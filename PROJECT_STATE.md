@@ -36,6 +36,60 @@ Não depender do histórico de uma conversa para reconstruir decisões. O GitHub
 - Não alterar o comportamento de “Limpar filtros” sem decisão explícita.
 - Mudanças pequenas, isoladas e validáveis; evitar grandes patches multifuncionais.
 
+## Segurança de acesso — P0 EM VALIDAÇÃO
+
+Motivação: o usuário solicitou garantia de que BI Logístico e Forecast Planner não possam expor dados apenas porque o frontend foi contornado. O artifact externo citado não pôde ser lido sem autenticação; a auditoria foi feita diretamente no código e nos bancos dos dois projetos.
+
+### BI Logístico
+
+Auditoria confirmada:
+- frontend usa somente URL + publishable key;
+- `SUPABASE_SECRET_KEY` permanece server-side nas Cloudflare Pages Functions;
+- bootstrap da HUB valida bearer token no servidor antes de devolver dados;
+- uma conta Auth isolada não ganha acesso operacional sem profile/HUB/cobertura;
+- todas as tabelas de aplicação usam RLS;
+- FCA continua restrito por profile ativo, titularidade/substituição/creator e cobertura exata Supervisor + Módulo;
+- `private.has_active_supervisor_coverage` é SECURITY DEFINER com escopo controlado e checa profile ativo, e-mail, datas e par exato.
+
+Hardening aplicado diretamente no Supabase em 23/08/2026:
+- removidos todos os privilégios de `anon` nas tabelas da aplicação;
+- removidos `TRUNCATE`, `REFERENCES` e `TRIGGER` de `authenticated` (TRUNCATE não passa pelo RLS);
+- default privileges do papel `postgres` em `public` alterados para deny-by-default para tabelas, sequences e functions; grants futuros precisam ser explícitos.
+
+Migrations versionadas na branch `security/auth-hardening-p0`:
+- `supabase/migrations/20260823_tighten_bi_table_privileges.sql`;
+- `supabase/migrations/20260823_secure_postgres_default_privileges.sql`.
+
+### Forecast Planner
+
+Auditoria encontrou risco maior porque o cliente consulta Supabase diretamente e as leituras mestres eram `TO authenticated USING (true)`, enquanto o frontend oferecia signup público.
+
+Hardening aplicado diretamente no Supabase em 23/08/2026:
+- `profiles.ativo boolean not null default false`;
+- profiles existentes preservados como ativos;
+- novos usuários de Auth passam a nascer `usuario` e `ativo=false`;
+- cliente não pode mais auto-inserir/alterar/promover profile;
+- dados mestres exigem profile ativo;
+- escritas administrativas exigem profile ativo + `perfil='admin'`;
+- simulações permanecem owner-only e agora também exigem profile ativo;
+- `anon` sem privilégios nas tabelas auditadas;
+- `authenticated` sem `TRUNCATE`, `REFERENCES` ou `TRIGGER`;
+- default privileges do papel `postgres` em `public` seguem deny-by-default.
+
+As migrations estão versionadas no Forecast na branch `security/harden-auth-access`.
+
+### Configurações manuais ainda obrigatórias nos DOIS projetos
+
+A integração disponível não expõe mutação das configurações hospedadas do Supabase Auth. No Dashboard do Supabase ainda é necessário:
+1. desabilitar `Allow new users to sign up`;
+2. revisar providers e manter somente os necessários;
+3. configurar senha forte (mínimo recomendado 12 caracteres);
+4. ativar leaked-password protection quando o plano permitir — o Security Advisor acusa essa proteção como desabilitada nos dois projetos;
+5. revisar Site URL + Redirect URLs;
+6. próximo bloco: implementar MFA/TOTP e enforcement AAL2, inicialmente para administradores.
+
+Regra permanente: uma tela de login nunca é considerada fronteira de segurança. Toda leitura/escrita deve continuar negada quando chamada diretamente por REST/RPC/Functions sem a autorização de aplicação correta.
+
 ## Roadmap UI/UX — objetivo 10/10
 
 Benchmark principal: Preline como referência de arquitetura visual e padrões de aplicação, sem instalar a biblioteca neste estágio.
@@ -132,7 +186,9 @@ O `main.tsx` ainda carrega várias folhas globais legadas. Não consolidar em ma
 
 Ao receber **`retomar BI Logístico`**:
 1. confirmar a `main` e eventuais PRs abertos;
-2. iniciar o refinamento amplo do Dashboard usando Preline como benchmark;
-3. priorizar hierarquia Primary KPI vs Supporting KPI, headers de gráficos, densidade da Home e estados/feedback;
-4. continuar migração progressiva para primitives reutilizáveis;
-5. deixar redução/consolidação das folhas CSS globais para o final, após estabilidade funcional.
+2. concluir/validar o bloco de segurança P0 antes de voltar ao UI/UX;
+3. executar o bloco P1 de segurança: MFA/TOTP + AAL2, começando por administradores;
+4. depois retomar refinamento amplo do Dashboard usando Preline como benchmark;
+5. priorizar hierarquia Primary KPI vs Supporting KPI, headers de gráficos, densidade da Home e estados/feedback;
+6. continuar migração progressiva para primitives reutilizáveis;
+7. deixar redução/consolidação das folhas CSS globais para o final, após estabilidade funcional.
