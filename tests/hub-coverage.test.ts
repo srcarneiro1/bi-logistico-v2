@@ -107,4 +107,19 @@ describe('bootstrap de cobertura', () => {
     expect(new Set(hub.supervisors.map(item => item.supervisorId))).toEqual(new Set(['SUP-A','SUP-B']))
     expect(new Set(hub.depositantes.map(item => item.nome))).toEqual(new Set(['Depositante A','Depositante B']))
   })
+
+  it('admin delegado recebe dados administrativos sem ganhar escopo analítico global', () => {
+    const hub = buildHubBootstrap(
+      rawHub,
+      { id: 'auth-a', email: 'a@empresa.com' },
+      new Date('2026-08-21T12:00:00-03:00'),
+      { substitutes: [substitute], coverages: [coverage] },
+      'ADMIN',
+    )
+
+    expect(hub.depositantes.map(item => item.nome)).toEqual(['Depositante A'])
+    expect(hub.facts.kpiOperacional.map(item => item.nomeDepositante)).toEqual(['Depositante A'])
+    expect(hub.substitutos.map(item => item.nome)).toEqual(['Substituto'])
+    expect(hub.substituicoes.map(item => item.substituicaoId)).toEqual(['cov-1'])
+  })
 })
