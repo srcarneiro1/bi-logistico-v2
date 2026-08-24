@@ -1,6 +1,7 @@
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL, type Env } from './env'
 
 interface SupabaseAuthUser { id: string; email?: string }
+export type GovernanceRole = 'OWNER' | 'ADMIN' | 'USER'
 
 export interface SupabaseSubstitute { id: string; codigo: string; nome: string; email: string | null; fotoUrl: string | null; ativo: boolean }
 export interface SupabaseCoverage {
@@ -29,6 +30,19 @@ async function userGet<T>(accessToken: string, path: string): Promise<T> {
     throw new Error(`SUPABASE_READ_FAILED:${response.status}:${detail.slice(0,300)}`)
   }
   return await response.json() as T
+}
+
+export async function getGovernanceRole(accessToken:string,userId:string):Promise<GovernanceRole>{
+  try{
+    const rows=await userGet<Array<{governance_role:'OWNER'|'ADMIN'}>>(
+      accessToken,
+      `app_governance?select=governance_role&user_id=eq.${encodeURIComponent(userId)}&limit=1`,
+    )
+    return rows[0]?.governance_role??'USER'
+  }catch(error){
+    console.error('governance role lookup',error instanceof Error?error.message:error)
+    return 'USER'
+  }
 }
 
 export async function getSupervisorCoverageData(accessToken: string) {

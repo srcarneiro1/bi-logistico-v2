@@ -9,7 +9,7 @@ const emptySub={id:'',codigo:'',nome:'',email:'',fotoUrl:'',ativo:true}
 const emptyCoverage:CoverageForm={id:'',titularId:'',substitutoMasterId:'',moduloId:'',dataInicio:'',dataFim:'',motivo:'',status:'ATIVA'}
 
 export function SubstitutionManager({hub,onRefresh,startOpen=false}:{hub:HubBootstrap;onRefresh:()=>Promise<void>;startOpen?:boolean}){
- const isAdmin=hub.profile.perfil==='ADMIN',[subForm,setSubForm]=useState(emptySub),[covForm,setCovForm]=useState<CoverageForm>(emptyCoverage),[saving,setSaving]=useState(false),[message,setMessage]=useState<string|null>(null),[adminOpen,setAdminOpen]=useState(startOpen)
+ const isAdmin=hub.profile.governanceRole==='OWNER'||hub.profile.governanceRole==='ADMIN',[subForm,setSubForm]=useState(emptySub),[covForm,setCovForm]=useState<CoverageForm>(emptyCoverage),[saving,setSaving]=useState(false),[message,setMessage]=useState<string|null>(null),[adminOpen,setAdminOpen]=useState(startOpen)
  const coverage=useMemo(()=>[...hub.substituicoes].sort((a,b)=>Number(b.ativo)-Number(a.ativo)||b.dataInicio.localeCompare(a.dataInicio)),[hub.substituicoes])
  const modulesForTitular=Array.from(new Set(hub.supervisorModules.filter(m=>m.supervisorId===covForm.titularId&&m.ativo).map(m=>m.moduloId))).sort()
  function editSubstitute(s:HubSubstituto){setSubForm({id:s.id,codigo:s.codigo,nome:s.nome,email:s.email??'',fotoUrl:s.fotoUrl??'',ativo:s.ativo});setAdminOpen(true);setMessage(null)}

@@ -23,11 +23,17 @@ function MenuIcon({open=false}:{open?:boolean}){
 export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:HubBootstrap;filters:DashboardFilters;onFiltersChange:(next:DashboardFilters)=>void;onSignOut:()=>Promise<void>;children:ReactNode}){
   const location=useLocation()
   const periods=getAvailablePeriods(hub)
-  const isAdmin=hub.profile.perfil==='ADMIN'
+  const isOperationalAdmin=hub.profile.perfil==='ADMIN'
+  const isGovernanceAdmin=hub.profile.governanceRole==='OWNER'||hub.profile.governanceRole==='ADMIN'
+  const isOwner=hub.profile.governanceRole==='OWNER'
+  const adminItems=[
+    ...(isGovernanceAdmin?[{to:'/administracao/substituicoes',label:'Substituições',icon:'event_repeat'}]:[]),
+    ...(isOwner?[{to:'/administracao/acessos',label:'Acessos',icon:'manage_accounts'}]:[]),
+  ]
+  const items=[...baseItems,...adminItems]
   const isFcaRoute=location.pathname==='/fca'||location.pathname.startsWith('/fca/')
   const isFcaList=location.pathname==='/fca'
   const contextualRoute=location.pathname.startsWith('/administracao/')||location.pathname==='/fca/novo'||/^\/fca\/[^/]+(?:\/editar)?$/.test(location.pathname)
-  const items=isAdmin?[...baseItems,{to:'/administracao/substituicoes',label:'Substituições',icon:'event_repeat'}]:baseItems
   const[collapsed,setCollapsed]=useState(()=>localStorage.getItem('bi-logistico-v2:sidebar')==='collapsed')
   const[mobileOpen,setMobileOpen]=useState(false)
   const[fcaPeriods,setFcaPeriods]=useState<string[]>([])
@@ -87,6 +93,7 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
   const supervisorName=filters.supervisorId?hub.supervisors.find(s=>s.supervisorId===filters.supervisorId)?.nomeExibicao:''
   const visiblePeriod=isFcaRoute?(filters.fcaPeriodo==='ALL'?'Todos os meses':periodLabel(filters.fcaPeriodo)):periodLabel(filters.periodo)
   const scope=[visiblePeriod,supervisorName,filters.moduloId].filter(Boolean).join(' · ')||'Escopo completo'
+  const accessLabel=isOwner?'OWNER':hub.profile.governanceRole==='ADMIN'?'ADMINISTRADOR':hub.profile.perfil
 
   function toggleCollapsed(){setCollapsed(v=>{const next=!v;localStorage.setItem('bi-logistico-v2:sidebar',next?'collapsed':'expanded');return next})}
   function resetFilters(){onFiltersChange({...filters,supervisorId:'',moduloId:''})}
@@ -105,8 +112,8 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
       {...(mobileOpen?{role:'dialog','aria-modal':true as const}: {})}
     >
       <div className="sidebar-brand"><img src={BRAND_LOGO} alt="Unilog Express"/><span>BI LOGÍSTICO</span><button type="button" className="sidebar-collapse" onClick={toggleCollapsed} title={collapsed?'Expandir menu':'Recolher menu'} aria-label={collapsed?'Expandir menu lateral':'Recolher menu lateral'}><MenuIcon open={!collapsed}/></button><button type="button" className="sidebar-mobile-close" onClick={()=>setMobileOpen(false)} title="Fechar menu" aria-label="Fechar menu de navegação"><span className="material-symbols-rounded" aria-hidden="true">close</span></button></div>
-      <nav className="sidebar-nav" aria-label="Seções do BI">{items.map((item,index)=><div key={item.to} className={index===baseItems.length&&isAdmin?'admin-nav-item':''}>{index===baseItems.length&&isAdmin&&<span className="nav-section-label">ADMINISTRAÇÃO</span>}<NavLink to={item.to} end={item.to==='/' } title={collapsed?item.label:undefined}><span className="material-symbols-rounded" aria-hidden="true">{item.icon}</span><span className="nav-label">{item.label}</span></NavLink></div>)}</nav>
-      <div className="sidebar-user"><div className="user-avatar">{hub.profile.nome.slice(0,1).toUpperCase()}</div><div className="sidebar-user-copy"><strong>{hub.profile.nome}</strong><span>{hub.profile.perfil}</span></div><button type="button" onClick={()=>void onSignOut()} title="Sair" aria-label="Sair do BI Logístico"><span className="material-symbols-rounded" aria-hidden="true">logout</span></button></div>
+      <nav className="sidebar-nav" aria-label="Seções do BI">{items.map((item,index)=><div key={item.to} className={index===baseItems.length&&adminItems.length?'admin-nav-item':''}>{index===baseItems.length&&adminItems.length>0&&<span className="nav-section-label">ADMINISTRAÇÃO</span>}<NavLink to={item.to} end={item.to==='/' } title={collapsed?item.label:undefined}><span className="material-symbols-rounded" aria-hidden="true">{item.icon}</span><span className="nav-label">{item.label}</span></NavLink></div>)}</nav>
+      <div className="sidebar-user"><div className="user-avatar">{hub.profile.nome.slice(0,1).toUpperCase()}</div><div className="sidebar-user-copy"><strong>{hub.profile.nome}</strong><span>{accessLabel}</span></div><button type="button" onClick={()=>void onSignOut()} title="Sair" aria-label="Sair do BI Logístico"><span className="material-symbols-rounded" aria-hidden="true">logout</span></button></div>
     </aside>
     <div className="workspace">
       <header className="topbar">
@@ -120,9 +127,9 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
         <div className="filter-toolbar-title"><span className="material-symbols-rounded" aria-hidden="true">tune</span><div><strong>Filtros</strong><small>Refine o escopo da análise</small></div></div>
         <div className="topbar-filters">
           <label><span>Período</span><select aria-label="Período" value={isFcaList?filters.fcaPeriodo:filters.periodo} onChange={e=>changePeriod(e.target.value)}>{isFcaList&&<option value="ALL">Todos os meses</option>}{isFcaList?fcaPeriods.map(period=><option key={period} value={period}>{periodLabel(period)}</option>):periods.map(p=><option key={p.key} value={p.value}>{p.label}</option>)}</select></label>
-          <label><span>Supervisor</span><select aria-label="Supervisor" value={filters.supervisorId} disabled={!isAdmin} onChange={e=>onFiltersChange({...filters,supervisorId:e.target.value,moduloId:''})}><option value="">{isAdmin?'Todos os supervisores':hub.profile.nome}</option>{isAdmin&&hub.supervisors.map(s=><option key={s.supervisorId} value={s.supervisorId}>{s.nomeExibicao}</option>)}</select></label>
+          <label><span>Supervisor</span><select aria-label="Supervisor" value={filters.supervisorId} disabled={!isOperationalAdmin} onChange={e=>onFiltersChange({...filters,supervisorId:e.target.value,moduloId:''})}><option value="">{isOperationalAdmin?'Todos os supervisores':hub.profile.nome}</option>{isOperationalAdmin&&hub.supervisors.map(s=><option key={s.supervisorId} value={s.supervisorId}>{s.nomeExibicao}</option>)}</select></label>
           <label><span>Módulo</span><select aria-label="Módulo" value={filters.moduloId} onChange={e=>onFiltersChange({...filters,moduloId:e.target.value})}><option value="">Todos os módulos</option>{modules.map(m=><option key={m}>{m}</option>)}</select></label>
-          {isAdmin&&(filters.supervisorId||filters.moduloId)&&<button type="button" className="topbar-filter-reset" onClick={resetFilters} title="Limpar supervisor e módulo" aria-label="Limpar supervisor e módulo"><span className="material-symbols-rounded" aria-hidden="true">filter_alt_off</span></button>}
+          {isOperationalAdmin&&(filters.supervisorId||filters.moduloId)&&<button type="button" className="topbar-filter-reset" onClick={resetFilters} title="Limpar supervisor e módulo" aria-label="Limpar supervisor e módulo"><span className="material-symbols-rounded" aria-hidden="true">filter_alt_off</span></button>}
         </div>
       </div>}
       <main className="content">{!hub.analyticsReady&&<div className="analytics-warning"><span className="material-symbols-rounded" aria-hidden="true">info</span><div><strong>Camada analítica ainda não publicada no Apps Script.</strong><span>Cadastros e FCA funcionam, mas os indicadores aparecerão após atualizar a ponte da HUB para a versão 2.</span></div></div>}{children}</main>

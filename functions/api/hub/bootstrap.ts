@@ -1,7 +1,7 @@
 import type { PagesFunction } from '@cloudflare/workers-types'
 import { assertEnv, type Env } from '../../_lib/env'
 import { bearerToken, json } from '../../_lib/http'
-import { getAuthenticatedUser, getSupervisorCoverageData, upsertProfile } from '../../_lib/supabase'
+import { getAuthenticatedUser, getGovernanceRole, getSupervisorCoverageData, upsertProfile } from '../../_lib/supabase'
 import { readHub } from '../../_lib/google'
 import { buildHubBootstrap } from '../../_lib/hub'
 
@@ -12,6 +12,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     if (!token) return json({ error: 'Sessão não informada.' }, { status: 401 })
 
     const authUser = await getAuthenticatedUser(env, token)
+    const governanceRole = await getGovernanceRole(token, authUser.id)
     const rawHub = await readHub(env)
 
     let coverageData: Awaited<ReturnType<typeof getSupervisorCoverageData>> | undefined
@@ -21,21 +22,21 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       console.error('hub/bootstrap coverage enrichment', coverageError instanceof Error ? coverageError.message : coverageError)
     }
 
-    let bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData)
+    let bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData, governanceRole)
     await upsertProfile(env, bootstrap.profileRow)
 
-    // On a first login, ADMIN policies may only become available after profile synchronization.
+    // Mantém a segunda tentativa para perfis que dependem da sincronização inicial no Supabase.
     if (!coverageData && bootstrap.profile.perfil === 'ADMIN') {
       try {
         coverageData = await getSupervisorCoverageData(token)
-        bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData)
+        bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData, governanceRole)
       } catch (coverageRetryError) {
         console.error('hub/bootstrap coverage retry', coverageRetryError instanceof Error ? coverageRetryError.message : coverageRetryError)
       }
     }
 
     const { profileRow: _internal, ...response } = bootstrap
-    return json(response)
+    return json({ ...response, profile: { ...response.profile, governanceRole } })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
 

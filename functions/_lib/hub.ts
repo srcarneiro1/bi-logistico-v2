@@ -1,5 +1,5 @@
 import type { HubRawData } from './google'
-import type { SupabaseCoverage, SupabaseSubstitute } from './supabase'
+import type { GovernanceRole, SupabaseCoverage, SupabaseSubstitute } from './supabase'
 
 type Perfil = 'ADMIN' | 'USUARIO'
 
@@ -48,6 +48,7 @@ export function buildHubBootstrap(
   user: { id: string; email: string },
   now = new Date(),
   coverageData?: { substitutes: SupabaseSubstitute[]; coverages: SupabaseCoverage[] },
+  governanceRole: GovernanceRole = 'USER',
 ) {
   const supervisorRows = raw.supervisors.slice(1).filter((row) => val(row, 0))
   const matched = supervisorRows.find((row) => emailKey(val(row, 3)) === emailKey(user.email))
@@ -116,6 +117,7 @@ export function buildHubBootstrap(
   })).filter((item) => item.ativo)
 
   const isAdmin = perfil === 'ADMIN'
+  const isGovernanceAdmin = governanceRole === 'OWNER' || governanceRole === 'ADMIN'
   const substitutionTitularIds = new Set(userCoverages.map((sub) => sub.supervisorTitularId))
   const supervisors = isAdmin ? allSupervisors.filter((item) => item.ativo) : allSupervisors.filter((item) => item.supervisorId === supervisorId || substitutionTitularIds.has(item.supervisorId))
   const supervisorModules = isAdmin ? allModules.filter((item) => item.ativo) : allModules.filter((item) => item.ativo && (item.supervisorId === supervisorId || hasCoveredScope(item.supervisorId, item.moduloId)))
@@ -135,13 +137,13 @@ export function buildHubBootstrap(
   })).filter((item) => canSeeScopedRow(item.supervisorId, item.moduloId))
   const despesa = isAdmin ? rows(raw.despesa).filter((row) => val(row, 0) && val(row, 1)).map((row) => ({ periodo: val(row, 0), codAllStrategy: val(row, 1), despesaPlanejada: parseMoney(val(row, 2)), despesaRealizada: parseMoney(val(row, 3)) })) : []
 
-  const visibleSubstitutions = isAdmin ? allSubstitutions : allSubstitutions.filter((item) => item.supervisorTitularId === supervisorId || userIsSubstitute(item))
+  const visibleSubstitutions = isGovernanceAdmin ? allSubstitutions : allSubstitutions.filter((item) => item.supervisorTitularId === supervisorId || userIsSubstitute(item))
 
   return {
     profile: { id: user.id, email: userEmail, nome: profileName, perfil, supervisorId: isAdmin ? null : supervisorId },
     profileRow: { id: user.id, email: userEmail, nome: profileName, perfil, supervisor_id: isAdmin ? null : supervisorId, ativo: true },
     supervisors, supervisorModules, depositantes, indicadores: indicators,
-    substitutos: isAdmin ? (coverageData?.substitutes ?? []) : [],
+    substitutos: isGovernanceAdmin ? (coverageData?.substitutes ?? []) : [],
     substituicoes: visibleSubstitutions,
     facts: { kpiGeral, kpiInventario, kpiOperacional, kpiInventarioDepositante, receita, despesa },
     analyticsReady: Boolean(raw.kpiOperacional?.length || raw.kpiGeral?.length || raw.receita?.length),

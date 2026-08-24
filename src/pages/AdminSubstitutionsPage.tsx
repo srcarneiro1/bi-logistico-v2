@@ -3,7 +3,8 @@ import { SubstitutionManager } from '../components/SubstitutionManager'
 import type { HubBootstrap } from '../types/hub'
 
 export function AdminSubstitutionsPage({hub,onRefresh}:{hub:HubBootstrap;onRefresh:()=>Promise<void>}){
- if(hub.profile.perfil!=='ADMIN')return <div className="notice notice-error">Área exclusiva para administradores.</div>
+ const isGovernanceAdmin=hub.profile.governanceRole==='OWNER'||hub.profile.governanceRole==='ADMIN'
+ if(!isGovernanceAdmin)return <div className="notice notice-error">Área exclusiva para administradores.</div>
  const today=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date())
  const active=hub.substituicoes.filter(s=>s.ativo).length
  const future=hub.substituicoes.filter(s=>s.status==='ATIVA'&&!s.ativo&&s.dataInicio>today).length
