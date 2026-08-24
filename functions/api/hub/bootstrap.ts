@@ -12,6 +12,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     if (!token) return json({ error: 'Sessão não informada.' }, { status: 401 })
 
     const authUser = await getAuthenticatedUser(env, token)
+    const governanceRole = await getGovernanceRole(token, authUser.id)
     const rawHub = await readHub(env)
 
     let coverageData: Awaited<ReturnType<typeof getSupervisorCoverageData>> | undefined
@@ -21,20 +22,19 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       console.error('hub/bootstrap coverage enrichment', coverageError instanceof Error ? coverageError.message : coverageError)
     }
 
-    let bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData)
+    let bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData, governanceRole)
     await upsertProfile(env, bootstrap.profileRow)
 
-    // On a first login, operational ADMIN policies may only become available after profile synchronization.
+    // Mantém a segunda tentativa para perfis que dependem da sincronização inicial no Supabase.
     if (!coverageData && bootstrap.profile.perfil === 'ADMIN') {
       try {
         coverageData = await getSupervisorCoverageData(token)
-        bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData)
+        bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData, governanceRole)
       } catch (coverageRetryError) {
         console.error('hub/bootstrap coverage retry', coverageRetryError instanceof Error ? coverageRetryError.message : coverageRetryError)
       }
     }
 
-    const governanceRole = await getGovernanceRole(token, authUser.id)
     const { profileRow: _internal, ...response } = bootstrap
     return json({ ...response, profile: { ...response.profile, governanceRole } })
   } catch (error) {
