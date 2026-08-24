@@ -8,6 +8,7 @@ import './audit-polish.css'
 import './design-system.css'
 import './planner-shell.css'
 import './ui-foundations.css'
+import './mfa.css'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
