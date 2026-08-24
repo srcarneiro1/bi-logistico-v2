@@ -1,7 +1,7 @@
 import type { PagesFunction } from '@cloudflare/workers-types'
 import { assertEnv, type Env } from '../../_lib/env'
 import { bearerToken, json } from '../../_lib/http'
-import { getAuthenticatedUser, getSupervisorCoverageData, upsertProfile } from '../../_lib/supabase'
+import { getAuthenticatedUser, getGovernanceRole, getSupervisorCoverageData, upsertProfile } from '../../_lib/supabase'
 import { readHub } from '../../_lib/google'
 import { buildHubBootstrap } from '../../_lib/hub'
 
@@ -24,7 +24,7 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
     let bootstrap = buildHubBootstrap(rawHub, { id: authUser.id, email: authUser.email! }, new Date(), coverageData)
     await upsertProfile(env, bootstrap.profileRow)
 
-    // On a first login, ADMIN policies may only become available after profile synchronization.
+    // On a first login, operational ADMIN policies may only become available after profile synchronization.
     if (!coverageData && bootstrap.profile.perfil === 'ADMIN') {
       try {
         coverageData = await getSupervisorCoverageData(token)
@@ -34,8 +34,9 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       }
     }
 
+    const governanceRole = await getGovernanceRole(token, authUser.id)
     const { profileRow: _internal, ...response } = bootstrap
-    return json(response)
+    return json({ ...response, profile: { ...response.profile, governanceRole } })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
 
