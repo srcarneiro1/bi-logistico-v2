@@ -36,7 +36,7 @@ export function MfaGate({ required, children }: Props) {
       supabase.auth.mfa.listFactors(),
     ])
 
-    if (aalError || factorsError) {
+    if (aalError || factorsError || !aal || !factors) {
       setError('Não foi possível verificar o segundo fator de autenticação.')
       setMode('challenge')
       return
@@ -67,9 +67,12 @@ export function MfaGate({ required, children }: Props) {
     setBusy(true)
     setError(null)
     try {
-      const { data: factors } = await supabase.auth.mfa.listFactors()
-      for (const pending of factors?.totp.filter(item => item.status === 'unverified') ?? []) {
-        await supabase.auth.mfa.unenroll({ factorId: pending.id })
+      const { data: factors, error: factorsError } = await supabase.auth.mfa.listFactors()
+      if (factorsError) throw factorsError
+
+      for (const pending of factors?.all.filter(item => item.factor_type === 'totp' && item.status === 'unverified') ?? []) {
+        const { error: unenrollError } = await supabase.auth.mfa.unenroll({ factorId: pending.id })
+        if (unenrollError) throw unenrollError
       }
 
       const { data, error: enrollError } = await supabase.auth.mfa.enroll({
@@ -77,6 +80,7 @@ export function MfaGate({ required, children }: Props) {
         friendlyName: 'BI Logístico',
       })
       if (enrollError) throw enrollError
+      if (!data || !('totp' in data) || !data.totp) throw new Error('TOTP_ENROLLMENT_MISSING')
 
       setEnrollment({ factorId: data.id, qrCode: data.totp.qr_code, secret: data.totp.secret })
       setFactorId(data.id)
