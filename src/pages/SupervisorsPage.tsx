@@ -30,14 +30,16 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
    const fcaCount=scopedFcas.filter(f=>f.supervisor_id===s.supervisorId).length
    const prod=avg(op.map(x=>x.producaoPct)),rec=avg(op.map(x=>x.recebimentoPct)),invAvg=avg(inv.map(x=>x.totalPct))
    const statuses=[metricStatus(prod,metaProd),metricStatus(rec,metaRec),metricStatus(invAvg,metaInv)]
-   const status=statuses.reduce((a,b)=>rank[b]>rank[a]?b:a,'ok' as MetricStatus)
+   const aggregateStatus=statuses.reduce((a,b)=>rank[b]>rank[a]?b:a,'ok' as MetricStatus)
    const depStatuses=deps.map(d=>{const o=op.find(r=>r.cnpj===d.cnpj),i=inv.find(r=>r.cnpj===d.cnpj);const ss=[metricStatus(o?.producaoPct,metaProd),metricStatus(o?.recebimentoPct,metaRec),metricStatus(i?.totalPct,metaInv)];return ss.reduce((a,b)=>rank[b]>rank[a]?b:a,'ok' as MetricStatus)})
-   return{s,prod,rec,inv:invAvg,deps,status,critCount:depStatuses.filter(x=>x==='crit').length,warnCount:depStatuses.filter(x=>x==='warn').length,fcaCount}
+   const critCount=depStatuses.filter(x=>x==='crit').length,warnCount=depStatuses.filter(x=>x==='warn').length
+   const status:MetricStatus=critCount>0?'crit':warnCount>0?'warn':aggregateStatus
+   return{s,prod,rec,inv:invAvg,deps,status,critCount,warnCount,fcaCount}
  }).sort((a,b)=>b.critCount-a.critCount||b.warnCount-a.warnCount||rank[b.status]-rank[a.status]||a.s.nomeExibicao.localeCompare(b.s.nomeExibicao,'pt-BR'))
  const visibleCards=filters.supervisorId?cards.filter(c=>c.s.supervisorId===filters.supervisorId):cards
- const criticalCards=visibleCards.filter(c=>c.critCount>0).length
- const attentionCards=visibleCards.filter(c=>!c.critCount&&c.warnCount>0).length
- const stableCards=visibleCards.filter(c=>!c.critCount&&!c.warnCount&&c.status==='ok').length
+ const criticalCards=visibleCards.filter(c=>c.status==='crit').length
+ const attentionCards=visibleCards.filter(c=>c.status==='warn').length
+ const stableCards=visibleCards.filter(c=>c.status==='ok').length
  const selected=selectedSupervisorId?cards.find(c=>c.s.supervisorId===selectedSupervisorId):null
  const detailRows=selected?.deps.map(d=>{const op=scopedOp.find(r=>r.cnpj===d.cnpj),inv=scopedInv.find(r=>r.cnpj===d.cnpj);const statuses=[metricStatus(op?.producaoPct,metaProd),metricStatus(op?.recebimentoPct,metaRec),metricStatus(inv?.totalPct,metaInv)];const status=statuses.reduce((a,b)=>rank[b]>rank[a]?b:a,'ok' as MetricStatus);return{d,op,inv,status}}).sort((a,b)=>rank[b.status]-rank[a.status]||a.d.nome.localeCompare(b.d.nome,'pt-BR'))??[]
  const selectedFcas=useMemo(()=>selected?[...scopedFcas].filter(f=>{
