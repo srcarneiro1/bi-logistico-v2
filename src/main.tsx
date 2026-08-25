@@ -9,6 +9,12 @@ import './design-system.css'
 import './planner-shell.css'
 import './ui-foundations.css'
 import './home-dashboard.css'
+import './app-feedback.css'
+import './kpis-dashboard.css'
+import './supervisors-discovery.css'
+import './depositors-discovery.css'
+import './finance-dashboard.css'
+import './fca-mobile.css'
 import './mfa.css'
 
 createRoot(document.getElementById('root')!).render(

@@ -1,0 +1,68 @@
+.kpis-page{display:grid;gap:var(--space-4)}
+.kpis-page .page-header{margin-bottom:0}
+
+.kpis-overview{display:grid;gap:var(--space-3)}
+.kpis-section-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--space-4)}
+.kpis-section-heading>div{display:grid;gap:3px}
+.kpis-section-heading>div>span{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text-muted)}
+.kpis-section-heading h2{margin:0;font-size:17px;line-height:1.3;color:var(--text-primary)}
+.kpis-section-heading small{font-size:10px;color:var(--text-muted)}
+
+.kpis-compact-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--space-2)}
+.kpis-compact-grid .metric-card-supporting{min-height:132px!important}
+
+.kpis-analysis-grid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(320px,.82fr);gap:var(--space-3);align-items:stretch}
+.kpis-analysis-grid>.dashboard-panel{min-width:0}
+.kpis-leadtime-panel .panel-body{padding:20px 22px 18px}
+
+.kpis-inventory-panel{display:flex;flex-direction:column}
+.inventory-score{display:grid;gap:4px;padding:18px 18px 16px;border-bottom:1px solid var(--border-default);background:var(--surface-primary)}
+.inventory-score>span{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)}
+.inventory-score>strong{font-size:30px;line-height:1.05;letter-spacing:-.035em;color:var(--text-primary)}
+.inventory-score>small{font-size:10px;color:var(--text-muted)}
+.inventory-support-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:8px 18px 14px}
+.inventory-support-grid>div{display:grid;gap:3px;padding:12px 10px;border-bottom:1px solid #edf0f2}
+.inventory-support-grid>div:nth-last-child(-n+2){border-bottom:0}
+.inventory-support-grid>div:nth-child(odd){border-right:1px solid #edf0f2}
+.inventory-support-grid span{font-size:10px;color:var(--text-secondary)}
+.inventory-support-grid strong{font-size:18px;line-height:1.1;color:var(--text-primary)}
+.inventory-support-grid small{font-size:9px;color:var(--text-muted)}
+
+.kpis-history-panel,.kpis-table-panel{margin-top:0}
+.kpis-history-panel .panel-body{padding:20px 22px 18px}
+.kpis-table-panel .table-wrap{border:0;border-radius:0;box-shadow:none}
+.kpis-table-panel .status-table th:first-child,.kpis-table-panel .status-table td:first-child{padding-left:18px}
+.kpis-table-panel .status-table th:last-child,.kpis-table-panel .status-table td:last-child{padding-right:18px}
+
+@media(max-width:1280px){
+  .kpis-compact-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .kpis-analysis-grid{grid-template-columns:minmax(0,1.5fr) minmax(300px,.85fr)}
+}
+
+@media(max-width:980px){
+  .kpis-analysis-grid{grid-template-columns:1fr}
+  .kpis-inventory-panel{display:block}
+  .inventory-support-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .inventory-support-grid>div{border-bottom:0;border-right:1px solid #edf0f2!important}
+  .inventory-support-grid>div:last-child{border-right:0!important}
+}
+
+@media(max-width:760px){
+  .kpis-section-heading{display:grid;align-items:start}
+  .kpis-compact-grid{grid-template-columns:1fr}
+  .kpis-compact-grid .metric-card-supporting{min-height:0!important}
+  .kpis-leadtime-panel .panel-body,.kpis-history-panel .panel-body{padding:14px}
+  .inventory-score{padding:16px}
+  .inventory-score>strong{font-size:27px}
+  .inventory-support-grid{grid-template-columns:1fr 1fr;padding:8px 14px 12px}
+  .inventory-support-grid>div{border-bottom:1px solid #edf0f2!important}
+  .inventory-support-grid>div:nth-last-child(-n+2){border-bottom:0!important}
+  .inventory-support-grid>div:nth-child(odd){border-right:1px solid #edf0f2!important}
+  .inventory-support-grid>div:nth-child(even){border-right:0!important}
+}
+
+@media(max-width:480px){
+  .inventory-support-grid{grid-template-columns:1fr}
+  .inventory-support-grid>div{border-right:0!important;border-bottom:1px solid #edf0f2!important}
+  .inventory-support-grid>div:last-child{border-bottom:0!important}
+}
