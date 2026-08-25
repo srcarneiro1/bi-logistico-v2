@@ -1,8 +1,10 @@
 import type { MetricStatus } from '../types/dashboard'
 import { pp } from '../lib/dashboard'
 
-export function MetricCard({label,value,meta,status='neutral',detail,delta,gap}:{label:string;value:string;meta?:string;status?:MetricStatus;detail?:string;delta?:number|null;gap?:number|null}){
-  return <article className={`metric-card metric-${status}`}>
+type MetricCardVariant='primary'|'supporting'
+
+export function MetricCard({label,value,meta,status='neutral',detail,delta,gap,variant='primary'}:{label:string;value:string;meta?:string;status?:MetricStatus;detail?:string;delta?:number|null;gap?:number|null;variant?:MetricCardVariant}){
+  return <article className={`metric-card metric-card-${variant} metric-${status}`}>
     <div className="metric-card-head"><span>{label}</span><i className={`metric-dot ${status}`} /></div>
     <strong>{value}</strong>
     <div className="metric-comparisons">
