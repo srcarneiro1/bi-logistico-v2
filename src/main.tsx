@@ -9,6 +9,7 @@ import './design-system.css'
 import './planner-shell.css'
 import './ui-foundations.css'
 import './home-dashboard.css'
+import './app-feedback.css'
 import './mfa.css'
 
 createRoot(document.getElementById('root')!).render(
