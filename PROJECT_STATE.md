@@ -24,7 +24,7 @@ Não depender do histórico de uma conversa para reconstruir decisões. O GitHub
 - Google Sheets/HUB revisada: cadastros operacionais, KPIs e financeiro.
 - Forecast Planner e Preline podem ser usados como benchmarks visuais, nunca como dependência de runtime sem decisão explícita.
 - Não converter o projeto para Next.js/Tailwind apenas para reproduzir padrões de outra biblioteca.
-- Preline é benchmark de UI/UX, não dependência.
+- Preline — especialmente os templates Analytics Dashboard e Admin Dashboard — é benchmark principal de UI/UX, não dependência.
 
 ## Guardrails funcionais
 
@@ -36,158 +36,106 @@ Não depender do histórico de uma conversa para reconstruir decisões. O GitHub
 - Não alterar o comportamento de “Limpar filtros” sem decisão explícita.
 - Mudanças pequenas, isoladas e validáveis; evitar grandes patches multifuncionais.
 - Não fazer merge sem autorização explícita do usuário.
+- **Responsividade é requisito de aceite:** cada bloco visual deve ser construído e validado para desktop, tablet e mobile, e não adaptado apenas no final.
+- Em mobile, preferir composição específica (cards, toolbars compactas, progressive disclosure e alvos de toque adequados) em vez de apenas comprimir layouts desktop.
 
 ## Segurança de acesso — CONCLUÍDA NESTA FASE
 
 Princípio permanente: uma tela de login nunca é considerada fronteira de segurança. Toda leitura/escrita deve continuar negada quando chamada diretamente por REST/RPC/Functions sem autorização de aplicação correta.
 
-### P0 — hardening de autenticação e privilégios
-
 Concluído e mergeado:
-- PR #27 — hardening P0 do BI.
-- `anon` sem privilégios nas tabelas de aplicação.
-- `authenticated` sem `TRUNCATE`, `REFERENCES` ou `TRIGGER`.
-- default privileges do papel `postgres` em `public` em deny-by-default.
-- frontend usa somente URL + publishable key.
-- `SUPABASE_SECRET_KEY` permanece exclusivamente server-side.
-- bootstrap HUB valida bearer token, perfil e escopo antes de devolver dados.
-- RLS continua sendo a fronteira de autorização dos dados Supabase.
-
-### P1A — governança Owner/Admin
-
-Concluído e mergeado:
-- PR #28 — governança `OWNER | ADMIN | USER` separada do perfil operacional.
-- Owner único e protegido por identidade Supabase.
-- somente Owner pode conceder/revogar Admin.
-- Admin delegado não ganha automaticamente escopo analítico global.
-- alterações de governança ficam auditadas.
-- tela Admin > Acessos disponível ao Owner.
-
-### P1B — MFA/TOTP + AAL2
-
-Concluído e mergeado:
+- PR #27 — hardening P0.
+- PR #28 — governança `OWNER | ADMIN | USER`.
 - PR #29 — MFA/TOTP para Owner/Admin.
 - PR #30 — enforcement AAL2 + hardening final de governança.
-- cadastro TOTP via QR Code/secret.
-- challenge de 6 dígitos.
-- sessão privilegiada elevada para `aal2` após validação.
-- usuários comuns permanecem em `aal1`.
-- corrigidos flashes/reloads causados por renovação silenciosa de sessão.
+- RLS e autorização server-side preservados.
 - `AAL2` obrigatório para autoridade Owner/Admin no banco.
-- policies administrativas de substituições, auditoria e governança herdam a exigência central.
-- helpers privilegiados de autoridade no schema `private`.
-- RPCs públicos de governança usam `SECURITY INVOKER` + RLS.
-- antigos `SECURITY DEFINER` públicos removidos.
-
-Security Advisor após o hardening:
-- nenhum alerta de RLS ou função privilegiada exposta.
-- único warning restante: `Leaked Password Protection Disabled`.
-- esse recurso é Pro+ no Supabase; em plano sem suporte, registrar como limitação do plano, não como pendência técnica bloqueante.
-
-Configurações hospedadas de Auth que continuam sendo responsabilidade operacional do ambiente:
-- signup público desabilitado;
-- providers restritos aos necessários;
-- senha forte configurada;
-- Site URL e Redirect URLs corretos;
-- leaked-password protection habilitada quando o plano permitir.
+- helpers privilegiados no schema `private`.
+- RPCs públicos de governança com `SECURITY INVOKER` + RLS.
+- Security Advisor sem alertas de RLS/função privilegiada; `Leaked Password Protection Disabled` permanece apenas quando indisponível no plano.
 
 ## Roadmap UI/UX — objetivo 10/10
 
-Benchmark principal: Preline como referência de arquitetura visual e padrões de aplicação, sem instalar a biblioteca neste estágio.
+Benchmark principal: Preline Analytics/Admin como referência de hierarquia, densidade, cards, tabelas, filtros, estados de feedback e responsividade, sem instalar a biblioteca.
 
-### Bloco 1 — UI Foundations — CONCLUÍDO
-PR #21.
+### Foundations e Shell — CONCLUÍDOS
 
-Entregue:
-- `Panel` / `PanelHeader`;
-- `Badge` / `StatusBadge`;
-- `SearchField`;
-- `EmptyState`;
-- `Skeleton`;
-- `src/ui-foundations.css`;
-- FCA como tela-piloto;
-- acessibilidade básica em filtros/tabelas.
-
-### Bloco 2 — Shell UX — CONCLUÍDO
-PR #22 + consolidação no PR #26.
+PRs #21, #22 e #26.
 
 Entregue:
+- `Panel`, `PanelHeader`, `Badge`, `StatusBadge`, `SearchField`, `EmptyState`, `Skeleton`;
 - drawer acessível e responsivo;
 - sidebar desktop recolhível;
+- topbar e filter toolbar;
 - tabelas responsivas;
-- topbar com página, escopo e status HUB;
-- filter toolbar sticky e responsiva;
-- regras funcionais de filtros preservadas.
+- Supervisor 360º;
+- acessibilidade básica e regras funcionais preservadas.
 
-### Bloco 3 — Home e Data Visualization — EM VALIDAÇÃO
+### Ciclo visual #31–#37 — CONCLUÍDO / CONSOLIDAÇÃO AUTORIZADA
 
-Concluído e mergeado no PR #31:
-- 3 KPIs principais com hierarquia superior;
-- KPIs adicionais como supporting metrics compactos;
-- gráfico histórico como superfície dominante;
-- Financeiro + Escopo em coluna lateral;
-- Pontos de atenção em largura total;
-- CSS exclusivo da Home para reduzir risco de regressão.
+PR #31 — Home:
+- hierarquia Primary KPI vs Supporting KPI;
+- gráfico histórico dominante;
+- financeiro/escopo como apoio;
+- pontos de atenção em largura total.
 
-Em validação no PR #32 — `ui/chart-feedback-polish`:
-- rótulos do eixo X amostrados quando o histórico é longo;
-- primeiro, último e janeiro preservados no eixo temporal;
-- `EmptyState` compartilhado quando não há histórico;
-- tooltip claro alinhado ao design system;
-- legenda em chips com scroll horizontal no mobile;
-- estados globais de carregamento e erro em superfície consistente;
-- retry do bootstrap/HUB sem logout obrigatório;
-- `prefers-reduced-motion` preservado.
+PR #32 — gráficos e feedback:
+- rótulos temporais com amostragem inteligente;
+- tooltip/legenda refinados;
+- `EmptyState` compartilhado;
+- estados globais de loading/error e retry.
 
-Já entregue anteriormente:
-- legenda interativa do `SimpleLineChart`;
-- ocultar/exibir séries com acessibilidade;
-- eixo Y recalculado pelas séries visíveis;
-- tooltip por ponto.
+PR #33 — KPIs:
+- cards compactos;
+- Lead Times com maior peso;
+- Inventário com pontuação principal e dimensões de apoio;
+- histórico usando largura útil.
 
-Após validar o PR #32, próximo foco:
-- revisar redundâncias/densidade restantes da Home;
-- headers e micro-hierarquia dos demais gráficos/painéis analíticos;
-- expandir estados `loading/error/empty` para páginas que ainda usam mensagens ad hoc;
-- revisão de acessibilidade final do dashboard.
+PR #34 — Supervisores:
+- resumo por criticidade;
+- cards com hierarquia mais clara;
+- saúde da carteira governada pela maior severidade dos depositantes;
+- status duplicado removido.
 
-### Bloco 4 — Supervisor 360º — CONCLUÍDO
-PR #26.
+PR #35 — Depositantes:
+- busca com primitive compartilhado;
+- resumo de críticos/atenção/estáveis;
+- ordenação por severidade;
+- status explícito.
+- mobile refinado posteriormente no head final: cards próprios com identidade + status, supervisor/módulo como metadados, KPIs compactos, CNPJ no rodapé e 360º em uma coluna real.
 
-Entregue:
-- superfície integrada 360º por supervisor;
-- hero, módulos, depositantes, FCAs e status;
-- KPIs Produção, Recebimento, Inventário e FCAs pendentes;
-- carteira e FCA integrados;
-- desktop e mobile responsivos.
+PR #36 — Financeiro:
+- Receita realizada e Atingimento como headline;
+- planejado/saldo como supporting metrics;
+- barras Planejado x Realizado com escala relativa para valores >100%;
+- cor semântica da barra realizada;
+- rail de severidade separado do conteúdo para preservar legibilidade.
 
-### Bloco 5 — Redução da dívida CSS — ÚLTIMO
+PR #37 — FCA + mobile final:
+- listagem de FCA em cards no mobile;
+- resumo de status compacto e horizontal em telas pequenas;
+- detalhe responsivo;
+- Novo/Editar FCA em grids adequados a tablet/mobile;
+- botões e ações com touch targets adequados;
+- tratamento específico para 980px, 760px, 480px e casos estreitos.
 
-Não consolidar folhas globais em massa agora. Remover regras apenas depois de migrar responsabilidades para primitives e validar regressões.
+O head final do ciclo inclui também o refinamento mobile de Depositantes e deve ser consolidado em `main` como uma única entrega final.
 
-## Últimas entregas consolidadas
+### Próximo bloco
 
-- PR #17: correções isoladas da auditoria de UI.
-- PR #18: cobertura/autenticação de substitutos.
-- PR #19: regressão mínima para filtros e coberturas.
-- PR #20: tooltip nos gráficos + quantidade de FCA em supervisores.
-- PR #21: UI Foundations.
-- PR #22: shell responsivo.
-- PR #26: topbar/filter toolbar + legenda interativa + Supervisor 360º.
-- PR #27: segurança P0.
-- PR #28: governança Owner/Admin.
-- PR #29: MFA/TOTP.
-- PR #30: enforcement AAL2 + hardening final de governança.
-- PR #31: hierarquia visual da Home — validado e mergeado.
-- PR #32: gráficos + feedback global — draft em validação.
+Após consolidar o ciclo #31–#37:
+1. Administração/Acessos/Substituições — revisar densidade e responsividade sem alterar governança;
+2. passe final de consistência entre páginas: headers, toolbars, empty/loading/error states e acessibilidade;
+3. revisão mobile transversal das páginas restantes;
+4. redução da dívida CSS somente no final, sem consolidação ampla antes de validar regressões.
 
-## Próximo ciclo
+## Próximo ciclo ao retomar
 
 Ao receber **`retomar BI Logístico`**:
-1. confirmar a `main` e PRs abertos;
-2. não reabrir P0/P1 de segurança salvo novo achado ou incidente;
-3. se o PR #32 estiver aberto, começar pela validação/feedback dele;
-4. após #32, seguir exclusivamente no BI para densidade/redundâncias e micro-hierarquia de gráficos/painéis;
-5. expandir primitives de feedback para páginas ainda inconsistentes;
-6. continuar migração progressiva para primitives reutilizáveis;
-7. deixar consolidação ampla de CSS para o final.
+1. confirmar `main` e PRs abertos;
+2. não reabrir segurança salvo novo incidente;
+3. confirmar que o ciclo visual #31–#37 já está consolidado;
+4. seguir para Administração/Acessos/Substituições e consistência final;
+5. validar sempre desktop + tablet + mobile;
+6. manter Preline Analytics/Admin como benchmark, sem adicionar dependência;
+7. deixar limpeza ampla de CSS por último.
