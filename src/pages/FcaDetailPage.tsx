@@ -32,7 +32,7 @@ export function FcaDetailPage() {
   const overdue = isFcaOverdue(row)
   const actions=[...(row.fca_acoes??[])].sort((a,b)=>a.ordem-b.ordem)
 
-  return <section>
+  return <section className="fca-page fca-detail-page">
     <PageHeader eyebrow={`FCA #${String(row.numero).padStart(5,'0')}`} title={row.depositante_nome} description={`${row.indicador_nome} · ${row.modulo_id} · ${row.supervisor_nome}`} actions={<><Link className="button" to="/fca"><span className="material-symbols-rounded">arrow_back</span>Voltar</Link><Link className="button button-primary" to={`/fca/${row.id}/editar`}><span className="material-symbols-rounded">edit</span>Editar FCA</Link></>}/>
     {state?.justCreated&&<div className="notice notice-success">FCA #{String(state.justCreated).padStart(5,'0')} criado com sucesso.</div>}
     {state?.updated&&<div className="notice notice-success">FCA atualizado com sucesso.</div>}
