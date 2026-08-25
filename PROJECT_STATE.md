@@ -65,18 +65,17 @@ Concluído e mergeado:
 
 ### P1B — MFA/TOTP + AAL2
 
-Frontend concluído e mergeado:
+Concluído e mergeado:
 - PR #29 — MFA/TOTP para Owner/Admin.
+- PR #30 — enforcement AAL2 + hardening final de governança.
 - cadastro TOTP via QR Code/secret.
 - challenge de 6 dígitos.
 - sessão privilegiada elevada para `aal2` após validação.
 - usuários comuns permanecem em `aal1`.
 - corrigidos flashes/reloads causados por renovação silenciosa de sessão.
-
-Enforcement de banco aplicado em produção e versionado no PR #30:
-- `AAL2` obrigatório para autoridade Owner/Admin.
+- `AAL2` obrigatório para autoridade Owner/Admin no banco.
 - policies administrativas de substituições, auditoria e governança herdam a exigência central.
-- helpers privilegiados de autoridade movidos para schema `private`.
+- helpers privilegiados de autoridade no schema `private`.
 - RPCs públicos de governança usam `SECURITY INVOKER` + RLS.
 - antigos `SECURITY DEFINER` públicos removidos.
 
@@ -120,21 +119,37 @@ Entregue:
 - filter toolbar sticky e responsiva;
 - regras funcionais de filtros preservadas.
 
-### Bloco 3 — Data visualization — PARCIALMENTE CONCLUÍDO
+### Bloco 3 — Home e Data Visualization — EM VALIDAÇÃO
 
-Entregue:
+Concluído e mergeado no PR #31:
+- 3 KPIs principais com hierarquia superior;
+- KPIs adicionais como supporting metrics compactos;
+- gráfico histórico como superfície dominante;
+- Financeiro + Escopo em coluna lateral;
+- Pontos de atenção em largura total;
+- CSS exclusivo da Home para reduzir risco de regressão.
+
+Em validação no PR #32 — `ui/chart-feedback-polish`:
+- rótulos do eixo X amostrados quando o histórico é longo;
+- primeiro, último e janeiro preservados no eixo temporal;
+- `EmptyState` compartilhado quando não há histórico;
+- tooltip claro alinhado ao design system;
+- legenda em chips com scroll horizontal no mobile;
+- estados globais de carregamento e erro em superfície consistente;
+- retry do bootstrap/HUB sem logout obrigatório;
+- `prefers-reduced-motion` preservado.
+
+Já entregue anteriormente:
 - legenda interativa do `SimpleLineChart`;
 - ocultar/exibir séries com acessibilidade;
 - eixo Y recalculado pelas séries visíveis;
-- tooltip preservado.
+- tooltip por ponto.
 
-Próximo ciclo:
-- hierarquia Primary KPI vs Supporting KPI;
-- refinamento amplo do Dashboard/Home;
-- headers e responsividade adicional dos gráficos;
-- redução de redundâncias e densidade visual;
-- estados de loading/error/empty;
-- revisão de acessibilidade.
+Após validar o PR #32, próximo foco:
+- revisar redundâncias/densidade restantes da Home;
+- headers e micro-hierarquia dos demais gráficos/painéis analíticos;
+- expandir estados `loading/error/empty` para páginas que ainda usam mensagens ad hoc;
+- revisão de acessibilidade final do dashboard.
 
 ### Bloco 4 — Supervisor 360º — CONCLUÍDO
 PR #26.
@@ -162,17 +177,17 @@ Não consolidar folhas globais em massa agora. Remover regras apenas depois de m
 - PR #27: segurança P0.
 - PR #28: governança Owner/Admin.
 - PR #29: MFA/TOTP.
-- PR #30: enforcement AAL2 + hardening final de governança — migration aplicada em produção; merge pendente de autorização explícita.
+- PR #30: enforcement AAL2 + hardening final de governança.
+- PR #31: hierarquia visual da Home — validado e mergeado.
+- PR #32: gráficos + feedback global — draft em validação.
 
 ## Próximo ciclo
 
-Após consolidar o PR #30, segurança deixa de ser bloqueador do roadmap.
-
 Ao receber **`retomar BI Logístico`**:
-1. confirmar `main` e PRs abertos;
+1. confirmar a `main` e PRs abertos;
 2. não reabrir P0/P1 de segurança salvo novo achado ou incidente;
-3. retomar **UI/UX pela Home / Visão geral**;
-4. priorizar hierarquia Primary KPI vs Supporting KPI;
-5. revisar densidade, redundâncias, headers de gráficos, responsividade e estados/feedback;
+3. se o PR #32 estiver aberto, começar pela validação/feedback dele;
+4. após #32, seguir exclusivamente no BI para densidade/redundâncias e micro-hierarquia de gráficos/painéis;
+5. expandir primitives de feedback para páginas ainda inconsistentes;
 6. continuar migração progressiva para primitives reutilizáveis;
 7. deixar consolidação ampla de CSS para o final.
