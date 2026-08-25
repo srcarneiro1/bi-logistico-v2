@@ -13,6 +13,7 @@ import './app-feedback.css'
 import './kpis-dashboard.css'
 import './supervisors-discovery.css'
 import './depositors-discovery.css'
+import './finance-dashboard.css'
 import './mfa.css'
 
 createRoot(document.getElementById('root')!).render(
