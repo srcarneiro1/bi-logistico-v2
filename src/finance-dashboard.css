@@ -31,8 +31,11 @@
 .finance-depositors-panel .revenue-bars>div{display:grid;grid-template-columns:34px minmax(120px,1fr) 90px;gap:8px;align-items:center}
 .finance-depositors-panel .revenue-bars span{font-size:9px;color:var(--text-muted)}
 .finance-depositors-panel .revenue-bars i{height:6px;background:#eceef1;border-radius:999px;overflow:hidden}
-.finance-depositors-panel .revenue-bars i b{display:block;height:100%;border-radius:999px;background:var(--brand-primary)}
-.finance-depositors-panel .revenue-bars>div:first-child i b{background:#c9cdd3}
+.finance-depositors-panel .revenue-bars i b{display:block;height:100%;border-radius:999px;background:#c9cdd3;transition:width .2s ease}
+.finance-depositors-panel .revenue-bar-real-ok i b{background:var(--status-success)}
+.finance-depositors-panel .revenue-bar-real-warn i b{background:var(--status-warning)}
+.finance-depositors-panel .revenue-bar-real-crit i b{background:var(--status-danger)}
+.finance-depositors-panel .revenue-bar-real-neutral i b{background:var(--status-neutral)}
 .finance-depositors-panel .revenue-bars em{font-size:10px;font-style:normal;text-align:right;color:var(--text-secondary)}
 .finance-depositors-panel .revenue-attainment{display:grid;justify-items:end;gap:3px}
 .finance-depositors-panel .revenue-attainment span{font-size:9px;color:var(--text-muted)}
@@ -66,3 +69,5 @@
   .finance-depositors-panel .revenue-bars>div{grid-template-columns:32px minmax(80px,1fr);gap:7px}
   .finance-depositors-panel .revenue-bars em{grid-column:2;text-align:left}
 }
+
+@media(prefers-reduced-motion:reduce){.finance-depositors-panel .revenue-bars i b{transition:none}}
