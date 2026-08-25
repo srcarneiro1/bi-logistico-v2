@@ -22,7 +22,8 @@
 
 .finance-depositors-panel,.finance-expenses-panel{margin-top:0}
 .finance-depositors-panel .revenue-list{padding:6px 16px 10px}
-.finance-depositors-panel .revenue-row{display:grid;grid-template-columns:minmax(180px,.9fr) minmax(320px,1.6fr) 120px;gap:18px;align-items:center;padding:14px 2px;border-bottom:1px solid #edf0f2}
+.finance-depositors-panel .revenue-row{position:relative;display:grid;grid-template-columns:minmax(180px,.9fr) minmax(320px,1.6fr) 120px;gap:18px;align-items:center;padding:14px 8px 14px 20px;border-bottom:1px solid #edf0f2}
+.finance-depositors-panel .revenue-row::before{content:'';position:absolute;left:4px;top:12px;bottom:12px;width:3px;border-radius:999px;background:transparent}
 .finance-depositors-panel .revenue-row:last-child{border-bottom:0}
 .finance-depositors-panel .revenue-identity{display:grid;gap:3px;min-width:0}
 .finance-depositors-panel .revenue-identity strong{font-size:12px;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -40,9 +41,10 @@
 .finance-depositors-panel .revenue-attainment{display:grid;justify-items:end;gap:3px}
 .finance-depositors-panel .revenue-attainment span{font-size:9px;color:var(--text-muted)}
 .finance-depositors-panel .revenue-attainment strong{font-size:14px}
-.finance-depositors-panel .revenue-row-crit{box-shadow:inset 3px 0 0 var(--status-danger)}
-.finance-depositors-panel .revenue-row-warn{box-shadow:inset 3px 0 0 var(--status-warning)}
-.finance-depositors-panel .revenue-row-ok{box-shadow:inset 3px 0 0 var(--status-success)}
+.finance-depositors-panel .revenue-row-crit::before{background:var(--status-danger)}
+.finance-depositors-panel .revenue-row-warn::before{background:var(--status-warning)}
+.finance-depositors-panel .revenue-row-ok::before{background:var(--status-success)}
+.finance-depositors-panel .revenue-row-neutral::before{background:var(--status-neutral)}
 
 .finance-expenses-panel .table-wrap{border:0;border-radius:0;box-shadow:none}
 
@@ -61,7 +63,7 @@
   .finance-hero-main,.finance-hero-attainment{padding:18px}
   .finance-hero-main>strong{font-size:29px}.finance-hero-attainment>strong{font-size:27px}
   .finance-depositors-panel .revenue-list{padding:4px 14px 8px}
-  .finance-depositors-panel .revenue-row{grid-template-columns:1fr;gap:10px;padding:14px 2px}
+  .finance-depositors-panel .revenue-row{grid-template-columns:1fr;gap:10px;padding:14px 6px 14px 20px}
   .finance-depositors-panel .revenue-attainment{justify-items:start}
 }
 
