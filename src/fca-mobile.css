@@ -41,10 +41,11 @@
   .fca-page .page-actions{display:grid;grid-template-columns:1fr;gap:var(--space-2)}
   .fca-page .page-actions .button{width:100%;min-height:44px}
 
-  .fca-list-page .fca-status-summary{display:grid;grid-template-columns:1fr 1fr;gap:var(--space-2)}
-  .fca-list-page .fca-status-summary button{min-height:72px;padding:12px 14px;text-align:left}
+  .fca-list-page .fca-status-summary{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x proximity;padding:1px 1px 4px;margin:0 -1px;overscroll-behavior-inline:contain}
+  .fca-list-page .fca-status-summary button{flex:0 0 132px;min-height:72px;padding:12px 14px;text-align:left;scroll-snap-align:start;box-shadow:none}
   .fca-list-page .fca-status-summary strong{font-size:22px}
   .fca-list-page .fca-status-summary span{font-size:10px}
+  .fca-list-page .fca-status-summary::-webkit-scrollbar{height:4px}
   .fca-list-page .fca-toolbar{grid-template-columns:1fr;gap:var(--space-2)}
   .fca-list-page .fca-toolbar select,.fca-list-page .ui-search-field{min-height:44px}
 
@@ -52,13 +53,13 @@
   .fca-list-page .fca-table{display:block;min-width:0;width:100%}
   .fca-list-page .fca-table thead{display:none}
   .fca-list-page .fca-table tbody{display:grid;gap:var(--space-2);padding:var(--space-2)}
-  .fca-list-page .fca-table tr{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;padding:14px 14px 13px;border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card)}
+  .fca-list-page .fca-table tr{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;padding:14px 14px 13px;border:1px solid var(--border-default);border-radius:14px;background:var(--surface-primary);box-shadow:var(--shadow-card)}
   .fca-list-page .fca-table td{display:grid;gap:2px;padding:0!important;border:0!important;text-align:left!important;min-width:0;font-size:11px}
   .fca-list-page .fca-table td:before{content:attr(data-label);font-size:9px;font-weight:700;letter-spacing:.055em;text-transform:uppercase;color:var(--text-muted)}
-  .fca-list-page .fca-table td[data-primary="true"]{grid-column:1/-1;padding-right:100px!important}
+  .fca-list-page .fca-table td[data-primary="true"]{grid-column:1/-1;padding-right:100px!important;padding-bottom:9px!important;border-bottom:1px solid #edf0f2!important}
   .fca-list-page .fca-table td[data-primary="true"]:before{display:none}
   .fca-list-page .fca-table .fca-number-link{display:inline-flex;align-items:center;min-height:36px;font-size:14px;font-weight:800;width:max-content}
-  .fca-list-page .fca-table td[data-label="Depositante"]{grid-column:1/-1}
+  .fca-list-page .fca-table td[data-label="Depositante"]{grid-column:1/-1;font-size:12px}
   .fca-list-page .fca-table td[data-label="Status"]{position:absolute;top:14px;right:14px;display:block}
   .fca-list-page .fca-table td[data-label="Status"]:before{display:none}
   .fca-list-page .fca-table td[data-label="Status"] .status-badge{min-height:28px;display:inline-flex;align-items:center;padding:5px 9px}
@@ -86,15 +87,21 @@
 }
 
 @media(max-width:480px){
-  .fca-list-page .fca-status-summary{grid-template-columns:1fr}
-  .fca-list-page .fca-status-summary button{min-height:62px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-  .fca-list-page .fca-table tr{grid-template-columns:1fr;padding:13px}
+  .fca-list-page .fca-status-summary button{flex-basis:118px;min-height:64px;padding:10px 12px}
+  .fca-list-page .fca-status-summary strong{font-size:20px}
+  .fca-list-page .fca-table tr{grid-template-columns:1fr 1fr;padding:13px;gap:9px 10px}
   .fca-list-page .fca-table td[data-primary="true"]{padding-right:92px!important}
-  .fca-list-page .fca-table td[data-label="Data"],.fca-list-page .fca-table td[data-label="Módulo"]{grid-column:1}
+  .fca-list-page .fca-table td[data-label="Data"],.fca-list-page .fca-table td[data-label="Módulo"]{grid-column:span 1}
+  .fca-list-page .fca-table td[data-label="Depositante"],.fca-list-page .fca-table td[data-label="KPI"],.fca-list-page .fca-table td[data-label="Supervisor"]{grid-column:1/-1}
   .fca-detail-page .details-grid{grid-template-columns:1fr}
   .fca-detail-page .panel-head{display:grid;gap:8px}
   .fca-detail-page .panel-head .panel-chip{justify-self:start}
   .fca-form .form-section{padding:14px}
   .fca-form .action-card-title{grid-template-columns:auto 1fr}
   .fca-form .action-remove{grid-column:1/-1;width:100%;justify-content:center}
+}
+
+@media(max-width:360px){
+  .fca-list-page .fca-table tr{grid-template-columns:1fr}
+  .fca-list-page .fca-table td[data-label="Data"],.fca-list-page .fca-table td[data-label="Módulo"]{grid-column:1}
 }
