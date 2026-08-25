@@ -17,14 +17,22 @@
 .portfolio-section-heading p{margin:0;max-width:720px;font-size:11px;line-height:1.45;color:var(--text-muted)}
 
 .supervisor-discovery-grid{gap:var(--space-3)}
-.supervisor-discovery-grid .supervisor-card{display:grid;gap:14px;min-height:210px;padding:17px 18px;align-content:start}
-.supervisor-discovery-grid .supervisor-head{align-items:flex-start}
+.supervisor-discovery-grid .supervisor-card{display:grid;gap:12px;min-height:196px;padding:17px 18px;align-content:start}
+.supervisor-discovery-grid .supervisor-head{align-items:center}
 .supervisor-discovery-grid .supervisor-head>div{min-width:0;display:grid;gap:2px}
 .supervisor-discovery-grid .supervisor-head>div strong{font-size:13px;line-height:1.25}
-.supervisor-discovery-grid .supervisor-health{margin-left:auto;align-self:start;white-space:nowrap}
-.supervisor-card-priority{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid #edf0f2;border-radius:9px;background:var(--surface-secondary)}
+.supervisor-card-open{margin-left:auto;flex:0 0 auto;font-size:20px;color:var(--text-muted);transition:color .15s ease,transform .15s ease}
+.supervisor-card:hover .supervisor-card-open{color:var(--text-primary);transform:translateX(1px)}
+.supervisor-card.selected .supervisor-card-open{transform:none}
+
+.supervisor-card-priority{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 11px;border:1px solid #edf0f2;border-radius:9px;background:var(--surface-secondary)}
 .supervisor-card-priority span{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted)}
 .supervisor-card-priority strong{font-size:11px;text-align:right}
+.supervisor-card-priority-crit{border-color:#f2d3d5;background:var(--status-danger-soft)}
+.supervisor-card-priority-warn{border-color:#eee0b5;background:var(--status-warning-soft)}
+.supervisor-card-priority-ok{border-color:#dcebdd;background:var(--status-success-soft)}
+.supervisor-card-priority-neutral{border-color:var(--border-default);background:var(--surface-secondary)}
+
 .supervisor-discovery-grid .supervisor-metrics{padding-top:0;border-top:0}
 .supervisor-discovery-grid .supervisor-metrics>div{gap:3px}
 .supervisor-discovery-grid .supervisor-metrics span{font-size:9px;color:var(--text-muted)}
@@ -51,3 +59,5 @@
   .supervisor-card-priority{display:grid;gap:3px}
   .supervisor-card-priority strong{text-align:left}
 }
+
+@media(prefers-reduced-motion:reduce){.supervisor-card-open{transition:none}}
