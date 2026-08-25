@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { pct, periodKey, periodLabel } from '../lib/dashboard'
+import { EmptyState } from './ui/Feedback'
 import './SimpleLineChart.css'
 
 interface SeriesPoint {
@@ -40,6 +41,15 @@ function axisLabel(periodo:string,index:number){
   return index===0||month==='01'?`${monthText}/${year.slice(-2)}`:monthText
 }
 
+function showAxisLabel(periodo:string,index:number,total:number){
+  if(total<=8)return true
+  if(index===0||index===total-1)return true
+  const key=periodKey(periodo)
+  if(/^\d{4}-01$/.test(key))return true
+  const step=total>14?3:2
+  return index%step===0
+}
+
 export function SimpleLineChart({series,height=230}:SimpleLineChartProps){
   const [activePoint,setActivePoint]=useState<ActivePoint|null>(null)
   const [hiddenSeries,setHiddenSeries]=useState<Set<string>>(()=>new Set())
@@ -49,10 +59,11 @@ export function SimpleLineChart({series,height=230}:SimpleLineChartProps){
     setHiddenSeries(current=>new Set([...current].filter(label=>validLabels.has(label))))
   },[series])
 
+  const allSeriesValues=series.flatMap(s=>s.values.map(v=>v.value).filter((v):v is number=>v!=null))
+  if(!allSeriesValues.length) return <EmptyState icon="show_chart" title="Sem histórico disponível" description="Não há pontos históricos para os filtros selecionados. Ajuste o período ou o escopo para consultar outra série." />
+
   const visibleSeries=series.filter(item=>!hiddenSeries.has(item.label))
   const all=visibleSeries.flatMap(s=>s.values.map(v=>v.value).filter((v):v is number=>v!=null))
-  if(!series.flatMap(s=>s.values.map(v=>v.value).filter((v):v is number=>v!=null)).length) return <div className="empty-chart">Sem histórico disponível para os filtros selecionados.</div>
-
   const periods=Array.from(new Set(series.flatMap(s=>s.values.map(v=>v.periodo))))
   const scaleValues=all.length?all:[0,1]
   const min=Math.max(0,Math.min(...scaleValues)-.04), max=Math.max(1,Math.max(...scaleValues)+.02)
@@ -80,8 +91,9 @@ export function SimpleLineChart({series,height=230}:SimpleLineChartProps){
   }
 
   return <div className="simple-chart">
+    <div className="chart-legend" aria-label="Séries do gráfico">{series.map((s,i)=>{const tone=s.tone??fallbackTones[i%fallbackTones.length];const visible=!hiddenSeries.has(s.label);const canHide=visibleSeries.length>1||!visible;return <button type="button" key={s.label} className={visible?'':'is-hidden'} aria-pressed={visible} aria-label={`${visible?'Ocultar':'Exibir'} série ${s.label}`} disabled={!canHide} onClick={()=>toggleSeries(s.label)}><i style={{background:colors[tone]}} />{s.label}</button>})}</div>
     <div className="simple-chart-plot">
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Evolução dos indicadores">
+      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Evolução dos indicadores por período">
         {[0,.25,.5,.75,1].map(t=>{const yy=padY+t*(H-2*padY); const v=max-t*(max-min);return <g key={t}><line x1={padX} x2={W-padX} y1={yy} y2={yy} className="chart-grid"/><text x={4} y={yy+4} className="chart-axis">{pct(v)}</text></g>})}
         {visibleSeries.map((s,si)=>{
           const pts=s.values.map(v=>({i:periods.indexOf(v.periodo),v:v.value,periodo:v.periodo})).filter((p):p is {i:number;v:number;periodo:string}=>p.v!=null)
@@ -100,10 +112,9 @@ export function SimpleLineChart({series,height=230}:SimpleLineChartProps){
             })}
           </g>
         })}
-        {periods.map((p,i)=><text key={p} x={x(i)} y={H-4} textAnchor="middle" className={`chart-axis chart-x ${periodKey(p).endsWith('-01')?'chart-year-start':''}`}>{axisLabel(p,i)}</text>)}
+        {periods.map((p,i)=>showAxisLabel(p,i,periods.length)?<text key={p} x={x(i)} y={H-4} textAnchor="middle" className={`chart-axis chart-x ${periodKey(p).endsWith('-01')?'chart-year-start':''}`}>{axisLabel(p,i)}</text>:null)}
       </svg>
       {activePoint&&<div className={`chart-tooltip chart-tooltip-${activePoint.align}`} role="tooltip" style={{left:`${activePoint.leftPct}%`,top:`${activePoint.topPct}%`}}><div className="chart-tooltip-head"><i style={{background:activePoint.color}}/><strong>{activePoint.label}</strong></div><span>{periodLabel(activePoint.periodo)}</span><b>{pct(activePoint.value)}</b></div>}
     </div>
-    <div className="chart-legend" aria-label="Séries do gráfico">{series.map((s,i)=>{const tone=s.tone??fallbackTones[i%fallbackTones.length];const visible=!hiddenSeries.has(s.label);const canHide=visibleSeries.length>1||!visible;return <button type="button" key={s.label} className={visible?'':'is-hidden'} aria-pressed={visible} aria-label={`${visible?'Ocultar':'Exibir'} série ${s.label}`} disabled={!canHide} onClick={()=>toggleSeries(s.label)}><i style={{background:colors[tone]}} />{s.label}</button>})}</div>
   </div>
 }
