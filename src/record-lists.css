@@ -1,0 +1,92 @@
+/* Bloco 3 — tabelas e record lists compartilhadas.
+   A mesma função deve ter a mesma hierarquia visual em todas as telas. */
+
+/* Desktop table anatomy */
+.table-wrap:has(.responsive-data-table){overflow:hidden;border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card)}
+.table-wrap.embedded:has(.responsive-data-table){border-width:1px 0 0;border-radius:0;box-shadow:none}
+.responsive-data-table{width:100%;border-collapse:collapse;background:var(--surface-primary)}
+.responsive-data-table thead{background:#fafbfc}
+.responsive-data-table th{height:38px;padding:0 14px;border-bottom:1px solid var(--border-default);font-size:8.5px;font-weight:750;letter-spacing:.065em;text-transform:uppercase;color:#737b86;text-align:left;vertical-align:middle;white-space:nowrap}
+.responsive-data-table td{min-height:48px;padding:11px 14px;border-bottom:1px solid #edf0f2;font-size:10.5px;line-height:1.35;color:var(--text-primary);vertical-align:middle}
+.responsive-data-table tbody tr:last-child td{border-bottom:0}
+.responsive-data-table tbody tr{transition:background .14s ease,box-shadow .14s ease}
+.responsive-data-table tbody tr:hover{background:#fafbfc}
+.responsive-data-table tbody tr:focus-within{background:#f8f9fb;box-shadow:inset 3px 0 0 #c8ccd3}
+.responsive-data-table strong{font-size:10.5px;line-height:1.25;color:var(--text-primary)}
+.responsive-data-table small{font-size:8.5px;line-height:1.35;color:var(--text-muted)}
+.responsive-data-table .mono{font-size:9.5px;color:var(--text-secondary)}
+.responsive-data-table .module-badge{min-height:24px;padding:4px 8px;border-radius:var(--radius-pill);font-size:9px}
+.responsive-data-table .ui-status-badge{min-height:24px;padding:4px 8px;font-size:9px}
+.responsive-data-table .metric-cell{min-width:66px;display:inline-flex;justify-content:center}
+
+/* Primary identity / row actions */
+.table-primary,.fca-record-cell,.fca-entity-cell,.fca-owner-cell{display:grid;gap:2px;min-width:0}
+.table-primary>strong,.fca-entity-cell>strong,.fca-owner-cell>strong{overflow-wrap:anywhere}
+.table-link,.depositor-open-button,.fca-number-link{color:var(--text-primary);text-decoration:none}
+.table-link:hover,.depositor-open-button:hover,.fca-number-link:hover{color:var(--brand-primary)}
+.fca-open-cell{text-align:right}
+.fca-open-link{min-height:32px;display:inline-flex;align-items:center;gap:4px;padding:0 9px;border-radius:8px;color:var(--text-secondary);font-size:9px;font-weight:700;text-decoration:none;transition:background .14s ease,color .14s ease}
+.fca-open-link:hover{background:#eef0f3;color:var(--text-primary)}
+.fca-open-link .material-symbols-rounded{font-size:15px}
+
+/* Selected rows communicate selection once; status remains in its own badge. */
+.responsive-data-table tr.selected-row{background:#f7f8fa;box-shadow:inset 3px 0 0 var(--brand-primary)}
+.responsive-data-table tr.selected-row:hover{background:#f5f6f8}
+
+/* Equivalent record lists */
+.attention-list,.revenue-list,.supervisor-fca-list,.fca-mini-list{display:grid}
+.attention-row,.revenue-row,.supervisor-fca-list>a,.fca-mini-list>a{transition:background .14s ease,border-color .14s ease,box-shadow .14s ease}
+.supervisor-fca-list>a,.fca-mini-list>a{border-bottom:1px solid #edf0f2}
+.supervisor-fca-list>a:last-child,.fca-mini-list>a:last-child{border-bottom:0}
+.supervisor-fca-list>a:hover,.fca-mini-list>a:hover{background:#fafbfc}
+
+/* Admin actions: visually secondary until explicitly dangerous/primary. */
+.admin-access-page .responsive-data-table td:last-child{width:1%;white-space:nowrap;text-align:right}
+.admin-access-page .responsive-data-table td:last-child .button{min-height:34px;padding:0 11px;font-size:9px}
+
+@media(max-width:760px){
+  /* Mobile = record card, never a compressed desktop table. */
+  .table-wrap:has(.responsive-data-table),.table-wrap.embedded:has(.responsive-data-table){overflow:visible;border:0;border-radius:0;background:transparent;box-shadow:none}
+  .responsive-data-table{display:block!important;min-width:0!important;background:transparent;border-collapse:separate!important;border-spacing:0!important}
+  .responsive-data-table thead{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+  .responsive-data-table tbody{display:grid!important;gap:10px!important}
+  .responsive-data-table tr{position:relative;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px 14px;padding:14px;background:var(--surface-primary);border:1px solid var(--border-default);border-radius:12px;box-shadow:var(--shadow-card)}
+  .responsive-data-table tr:hover{background:var(--surface-primary)}
+  .responsive-data-table tr.selected-row{background:#fff;box-shadow:inset 3px 0 0 var(--brand-primary),var(--shadow-card)}
+  .responsive-data-table td{display:grid!important;grid-template-columns:1fr;align-content:start;gap:4px;min-width:0;min-height:0;padding:0!important;border:0!important;font-size:11px;text-align:left!important;white-space:normal!important}
+  .responsive-data-table td::before{content:attr(data-label);font-size:8px;font-weight:750;letter-spacing:.065em;text-transform:uppercase;color:var(--text-muted)}
+  .responsive-data-table td[data-primary="true"]{grid-column:1/-1;display:flex!important;align-items:center;justify-content:space-between;gap:10px;padding-bottom:11px!important;border-bottom:1px solid #edf0f2!important}
+  .responsive-data-table td[data-primary="true"]::before{display:none}
+  .responsive-data-table td[data-full="true"]{grid-column:1/-1}
+  .responsive-data-table td>*{max-width:100%}
+  .responsive-data-table .table-primary,.responsive-data-table .fca-record-cell,.responsive-data-table .fca-entity-cell{min-width:0}
+  .responsive-data-table .table-primary>strong,.responsive-data-table .fca-entity-cell>strong{font-size:12px}
+  .responsive-data-table .metric-cell{justify-content:flex-start;min-width:0}
+  .responsive-data-table .ui-status-badge{justify-self:start}
+  .responsive-data-table .mono{overflow-wrap:anywhere}
+  .responsive-data-table .table-empty{grid-column:1/-1;display:block!important;padding:22px!important;text-align:center!important}
+
+  /* Actions become a predictable final row of the record card. */
+  .responsive-data-table td.fca-open-cell,.admin-access-page .responsive-data-table td:last-child{grid-column:1/-1;width:auto;white-space:normal;text-align:left!important;padding-top:10px!important;border-top:1px solid #edf0f2!important}
+  .responsive-data-table td.fca-open-cell::before,.admin-access-page .responsive-data-table td:last-child::before{display:none}
+  .fca-open-link,.admin-access-page .responsive-data-table td:last-child .button{width:100%;min-height:38px;justify-content:center}
+
+  /* Home / Financeiro / mini lists use the same record-card rhythm. */
+  .attention-list,.revenue-list,.supervisor-fca-list,.fca-mini-list{gap:9px!important;padding:8px 0!important}
+  .attention-row,.revenue-row,.supervisor-fca-list>a,.fca-mini-list>a{margin:0!important;padding:13px!important;border:1px solid var(--border-default)!important;border-radius:11px!important;background:var(--surface-primary)!important;box-shadow:var(--shadow-card)!important}
+  .supervisor-fca-list>a,.fca-mini-list>a{display:flex!important;align-items:flex-start!important;justify-content:space-between!important;gap:10px!important}
+  .supervisor-fca-list>a>div,.fca-mini-list>a>div{min-width:0;display:grid;gap:3px}
+  .supervisor-fca-list>a strong,.fca-mini-list>a strong{overflow-wrap:anywhere}
+
+  .revenue-row{display:grid!important;grid-template-columns:1fr auto!important;gap:12px!important}
+  .revenue-row .revenue-bars{grid-column:1/-1}
+  .revenue-row .revenue-attainment{min-width:0!important;padding-left:0!important;border-left:0!important;text-align:right}
+}
+
+@media(max-width:480px){
+  .responsive-data-table tr{grid-template-columns:1fr}
+  .responsive-data-table td[data-primary="true"],.responsive-data-table td[data-full="true"],.responsive-data-table td.fca-open-cell,.admin-access-page .responsive-data-table td:last-child{grid-column:auto}
+  .responsive-data-table td[data-primary="true"]{display:grid!important}
+  .revenue-row{grid-template-columns:1fr!important}
+  .revenue-row .revenue-attainment{text-align:left}
+}
