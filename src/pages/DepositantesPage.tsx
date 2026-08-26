@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { PageHeader } from '../components/PageHeader'
 import { SimpleLineChart } from '../components/SimpleLineChart'
 import { MetricStatusBadge, StatusBadge } from '../components/ui/Badge'
+import { DetailHero, DetailMetrics } from '../components/ui/DetailHero'
 import { PageToolbar } from '../components/ui/PageToolbar'
 import { SearchField } from '../components/ui/SearchField'
 import { SummaryMetrics } from '../components/ui/SummaryMetrics'
@@ -36,6 +37,8 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
  const supervisor=selected?hub.supervisors.find(s=>s.supervisorId===selected.supervisorId):null
  const opCurrent=selected?hub.facts.kpiOperacional.find(r=>r.cnpj===selected.cnpj&&(!selectedPeriodKey||periodKey(r.periodo)===selectedPeriodKey)):undefined
  const invCurrent=selected?hub.facts.kpiInventarioDepositante.find(r=>r.cnpj===selected.cnpj&&(!selectedPeriodKey||periodKey(r.periodo)===selectedPeriodKey)):undefined
+ const currentStatuses=[metricStatus(opCurrent?.producaoPct,metaProd),metricStatus(opCurrent?.recebimentoPct,metaRec),metricStatus(invCurrent?.totalPct,metaInv)]
+ const selectedStatus=currentStatuses.reduce((a,b)=>rank[b]>rank[a]?b:a,'ok' as MetricStatus)
  const history=selected?hub.facts.kpiOperacional.filter(r=>r.cnpj===selected.cnpj&&(!selectedPeriodKey||periodKey(r.periodo)<=selectedPeriodKey)).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo))).slice(-18):[]
  const invHistory=selected?hub.facts.kpiInventarioDepositante.filter(r=>r.cnpj===selected.cnpj&&(!selectedPeriodKey||periodKey(r.periodo)<=selectedPeriodKey)).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo))).slice(-18):[]
  const invMap=new Map(invHistory.map(r=>[periodKey(r.periodo),r.totalPct]))
@@ -50,8 +53,25 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
  <PageHeader eyebrow="CARTEIRA" title="Depositantes" description="Selecione um cliente para abrir a visão 360º do período, com operação, resultado e FCAs relacionados."/>
  <PageToolbar ariaLabel="Ferramentas de depositantes" search={<SearchField ariaLabel="Buscar depositante" value={search} onChange={setSearch} placeholder="Buscar por nome, CNPJ ou código…"/>}/>
  {selected&&<article className="depositor-360">
-   <div className="depositor-hero"><div><span className="panel-eyebrow">DEPOSITANTE SELECIONADO</span><h2>{selected.nome}</h2><p>{selected.codAllStrategy??'Sem código AllStrategy'} · CNPJ {selected.cnpj}</p></div><div className="depositor-owner"><span>Supervisor</span><strong>{supervisor?.nomeExibicao??selected.supervisorId}</strong><small>{selected.moduloId}</small></div><button className="button" onClick={()=>setSelectedCnpj('')}>Fechar visão</button></div>
-   <div className="depositor-kpis"><div><span>Produção</span><strong className={`text-${metricStatus(opCurrent?.producaoPct,metaProd)}`}>{pct(opCurrent?.producaoPct)}</strong><small>Meta {pct(metaProd?.metaPct)}</small></div><div><span>Recebimento</span><strong className={`text-${metricStatus(opCurrent?.recebimentoPct,metaRec)}`}>{pct(opCurrent?.recebimentoPct)}</strong><small>Meta {pct(metaRec?.metaPct)}</small></div><div><span>Inventário</span><strong className={`text-${metricStatus(invCurrent?.totalPct,metaInv)}`}>{pct(invCurrent?.totalPct)}</strong><small>Meta {pct(metaInv?.metaPct)}</small></div><div><span>Receita realizada</span><strong>{money(finance?.receitaRealizada)}</strong><small>{attainment==null?'Sem planejamento':`${pct(attainment)} do planejado`}</small></div></div>
+   <DetailHero
+     eyebrow="Depositante selecionado"
+     title={selected.nome}
+     description={`${selected.codAllStrategy??'Sem código AllStrategy'} · CNPJ ${selected.cnpj}`}
+     status={<MetricStatusBadge status={selectedStatus} label={statusLabel[selectedStatus]}/>} 
+     meta={[
+       {label:'Supervisor',value:supervisor?.nomeExibicao??selected.supervisorId},
+       {label:'Módulo',value:selected.moduloId},
+       {label:'FCAs no período',value:relatedFcas.length},
+       {label:'Atingimento financeiro',value:attainment==null?'Sem planejamento':pct(attainment)},
+     ]}
+     actions={<button className="button" onClick={()=>setSelectedCnpj('')}>Fechar visão</button>}
+   />
+   <DetailMetrics items={[
+     {key:'prod',label:'Produção',value:pct(opCurrent?.producaoPct),detail:`Meta ${pct(metaProd?.metaPct)}`,tone:metricStatus(opCurrent?.producaoPct,metaProd)==='crit'?'danger':metricStatus(opCurrent?.producaoPct,metaProd)==='warn'?'warning':metricStatus(opCurrent?.producaoPct,metaProd)==='ok'?'success':'neutral'},
+     {key:'rec',label:'Recebimento',value:pct(opCurrent?.recebimentoPct),detail:`Meta ${pct(metaRec?.metaPct)}`,tone:metricStatus(opCurrent?.recebimentoPct,metaRec)==='crit'?'danger':metricStatus(opCurrent?.recebimentoPct,metaRec)==='warn'?'warning':metricStatus(opCurrent?.recebimentoPct,metaRec)==='ok'?'success':'neutral'},
+     {key:'inv',label:'Inventário',value:pct(invCurrent?.totalPct),detail:`Meta ${pct(metaInv?.metaPct)}`,tone:metricStatus(invCurrent?.totalPct,metaInv)==='crit'?'danger':metricStatus(invCurrent?.totalPct,metaInv)==='warn'?'warning':metricStatus(invCurrent?.totalPct,metaInv)==='ok'?'success':'neutral'},
+     {key:'rev',label:'Receita realizada',value:money(finance?.receitaRealizada),detail:attainment==null?'Sem planejamento':`${pct(attainment)} do planejado`,tone:attainment==null?'neutral':attainment>=1?'success':attainment<.95?'danger':'warning'},
+   ]}/>
    <div className="depositor-grid"><article className="dashboard-panel"><div className="panel-head"><div><span className="panel-eyebrow">HISTÓRICO ATÉ O PERÍODO</span><h2>Evolução operacional</h2></div></div><div className="panel-body"><SimpleLineChart series={historySeries}/></div></article><article className="dashboard-panel"><div className="panel-head"><div><span className="panel-eyebrow">FINANCEIRO</span><h2>Resultado do período</h2></div></div><div className="finance-summary"><div><span>Planejado</span><strong>{money(finance?.receitaPlanejada)}</strong></div><div><span>Realizado</span><strong>{money(finance?.receitaRealizada)}</strong></div><div><span>Atingimento</span><strong className={attainment!=null&&attainment>=1?'text-ok':attainment!=null&&attainment<.95?'text-crit':''}>{pct(attainment)}</strong></div></div></article></div>
    <article className="dashboard-panel depositor-fcas"><div className="panel-head"><div><span className="panel-eyebrow">FCA DO PERÍODO</span><h2>Fatos, causas e ações do cliente</h2></div><span className="panel-chip">{relatedFcas.length} registro(s)</span></div>{fcaLoading?<div className="table-empty">Carregando FCAs…</div>:relatedFcas.length?<div className="fca-mini-list">{relatedFcas.slice(0,8).map(f=>{const display=isFcaOverdue(f)?'VENCIDO':deriveFcaStatus(f);return <Link to={`/fca/${f.id}`} key={f.id} onClick={()=>setFcaReturnContext({type:'depositante',cnpj:selected.cnpj})}><div><strong>FCA #{String(f.numero).padStart(5,'0')}</strong><span>{new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')} · {f.indicador_nome}</span></div><StatusBadge status={display}/></Link>})}</div>:<div className="table-empty">Nenhum FCA para este depositante no período selecionado.</div>}</article>
  </article>}
