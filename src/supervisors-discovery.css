@@ -10,6 +10,12 @@
 .supervisor-discovery-grid{gap:var(--space-3)}
 .supervisor-discovery-grid .supervisor-card{display:grid;gap:12px;min-height:196px;padding:17px 18px;align-content:start}
 .supervisor-discovery-grid .supervisor-head{align-items:center}
+.supervisor-card-avatar-image,.supervisor-avatar{width:46px;height:46px;aspect-ratio:1/1;flex:0 0 46px;border-radius:50%;object-fit:cover;object-position:center;background:#f1f2f4}
+.supervisor-card-avatar-image{display:block}
+.supervisor-avatar{display:grid;place-items:center;color:var(--text-primary);font-size:12px;font-weight:800}
+.supervisor-360-avatar-image,.supervisor-360-avatar{width:46px;height:46px;aspect-ratio:1/1;flex:0 0 46px;border-radius:12px;object-fit:cover;object-position:center;background:#f1f2f4}
+.supervisor-360-avatar-image{display:block}
+.supervisor-360-avatar{display:grid;place-items:center;color:var(--text-primary);font-size:13px;font-weight:800}
 .supervisor-discovery-grid .supervisor-head>div{min-width:0;display:grid;gap:2px}
 .supervisor-discovery-grid .supervisor-head>div strong{font-size:13px;line-height:1.25}
 .supervisor-card-open{margin-left:auto;flex:0 0 auto;font-size:20px;color:var(--text-muted);transition:color .15s ease,transform .15s ease}
