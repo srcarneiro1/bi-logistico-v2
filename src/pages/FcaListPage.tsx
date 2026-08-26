@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { PageHeader } from '../components/PageHeader'
 import { StatusBadge } from '../components/ui/Badge'
 import { EmptyState, Skeleton } from '../components/ui/Feedback'
+import { PageToolbar } from '../components/ui/PageToolbar'
 import { Panel } from '../components/ui/Panel'
 import { SearchField } from '../components/ui/SearchField'
 import { deriveFcaStatus, isFcaOverdue, listFcas } from '../lib/fca'
@@ -67,7 +68,12 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
 
     <section className="fca-workspace-card" aria-label="Registros FCA">
       <div className="fca-workspace-head"><div><span className="panel-eyebrow">REGISTROS</span><h2>FCA no escopo atual</h2><p>{filtered.length} registro(s) após filtros · vencidos permanecem priorizados visualmente pelo status.</p></div><span className="panel-chip">{filters.fcaPeriodo==='ALL'?'Todos os meses':filters.fcaPeriodo}</span></div>
-      <div className="ui-toolbar fca-toolbar" role="region" aria-label="Filtros da FCA"><SearchField ariaLabel="Pesquisar FCA" placeholder="Pesquisar FCA, depositante, causa…" value={search} onChange={setSearch}/><select aria-label="Status da FCA" value={status} onChange={event=>setStatus(event.target.value)}><option value="">Todos os status</option><option value="ABERTO">Aberto</option><option value="EM_ANDAMENTO">Em andamento</option><option value="CONCLUIDO">Concluído</option><option value="VENCIDO">Vencido</option><option value="CANCELADO">Cancelado</option></select></div>
+      <PageToolbar
+        embedded
+        ariaLabel="Filtros da FCA"
+        search={<SearchField ariaLabel="Pesquisar FCA" placeholder="Pesquisar FCA, depositante, causa…" value={search} onChange={setSearch}/>}
+        filters={<select aria-label="Status da FCA" value={status} onChange={event=>setStatus(event.target.value)}><option value="">Todos os status</option><option value="ABERTO">Aberto</option><option value="EM_ANDAMENTO">Em andamento</option><option value="CONCLUIDO">Concluído</option><option value="VENCIDO">Vencido</option><option value="CANCELADO">Cancelado</option></select>}
+      />
 
       {loading&&<Panel className="fca-results"><Skeleton lines={7}/></Panel>}
       {!loading&&error&&<Panel className="fca-results"><EmptyState tone="error" icon="error" title="Não foi possível carregar os FCAs" description={error}/></Panel>}
