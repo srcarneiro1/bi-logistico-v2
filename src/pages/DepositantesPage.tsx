@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PageHeader } from '../components/PageHeader'
 import { SimpleLineChart } from '../components/SimpleLineChart'
+import { PageToolbar } from '../components/ui/PageToolbar'
 import { SearchField } from '../components/ui/SearchField'
 import { deriveFcaStatus, isFcaOverdue, listFcas } from '../lib/fca'
 import { indicatorMeta, metricStatus, money, pct, periodKey } from '../lib/dashboard'
@@ -43,7 +44,9 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
  const attainment=finance?.receitaPlanejada?((finance.receitaRealizada??0)/finance.receitaPlanejada):null
  const relatedFcas=selected?fcas.filter(f=>f.depositante_cnpj===selected.cnpj&&(!selectedPeriodKey||f.data_reuniao.slice(0,7)===selectedPeriodKey)).sort((a,b)=>Number(isFcaOverdue(b))-Number(isFcaOverdue(a))||b.data_reuniao.localeCompare(a.data_reuniao)||b.numero-a.numero):[]
  const criticalCount=rows.filter(r=>r.status==='crit').length,warningCount=rows.filter(r=>r.status==='warn').length,stableCount=rows.filter(r=>r.status==='ok').length
- return <section className="depositors-discovery"><PageHeader eyebrow="CARTEIRA" title="Depositantes" description="Selecione um cliente para abrir a visão 360º do período, com operação, resultado e FCAs relacionados." actions={<SearchField ariaLabel="Buscar depositante" value={search} onChange={setSearch} placeholder="Buscar por nome, CNPJ ou código…"/>}/>
+ return <section className="depositors-discovery">
+ <PageHeader eyebrow="CARTEIRA" title="Depositantes" description="Selecione um cliente para abrir a visão 360º do período, com operação, resultado e FCAs relacionados."/>
+ <PageToolbar ariaLabel="Ferramentas de depositantes" search={<SearchField ariaLabel="Buscar depositante" value={search} onChange={setSearch} placeholder="Buscar por nome, CNPJ ou código…"/>}/>
  {selected&&<article className="depositor-360">
    <div className="depositor-hero"><div><span className="panel-eyebrow">DEPOSITANTE SELECIONADO</span><h2>{selected.nome}</h2><p>{selected.codAllStrategy??'Sem código AllStrategy'} · CNPJ {selected.cnpj}</p></div><div className="depositor-owner"><span>Supervisor</span><strong>{supervisor?.nomeExibicao??selected.supervisorId}</strong><small>{selected.moduloId}</small></div><button className="button" onClick={()=>setSelectedCnpj('')}>Fechar visão</button></div>
    <div className="depositor-kpis"><div><span>Produção</span><strong className={`text-${metricStatus(opCurrent?.producaoPct,metaProd)}`}>{pct(opCurrent?.producaoPct)}</strong><small>Meta {pct(metaProd?.metaPct)}</small></div><div><span>Recebimento</span><strong className={`text-${metricStatus(opCurrent?.recebimentoPct,metaRec)}`}>{pct(opCurrent?.recebimentoPct)}</strong><small>Meta {pct(metaRec?.metaPct)}</small></div><div><span>Inventário</span><strong className={`text-${metricStatus(invCurrent?.totalPct,metaInv)}`}>{pct(invCurrent?.totalPct)}</strong><small>Meta {pct(metaInv?.metaPct)}</small></div><div><span>Receita realizada</span><strong>{money(finance?.receitaRealizada)}</strong><small>{attainment==null?'Sem planejamento':`${pct(attainment)} do planejado`}</small></div></div>
