@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { PageHeader } from '../components/PageHeader'
+import { SummaryMetrics } from '../components/ui/SummaryMetrics'
 import { avg, indicatorMeta, metricStatus, pct, periodKey, scoped } from '../lib/dashboard'
 import { deriveFcaStatus, isFcaOverdue, listFcas } from '../lib/fca'
 import { consumeSupervisorReturn, setFcaReturnContext } from '../lib/navigationContext'
@@ -75,12 +76,12 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
      </div>
    </article>}
 
-   <div className="portfolio-discovery-summary" aria-label="Resumo das carteiras no escopo">
-     <div><span>Supervisores</span><strong>{visibleCards.length}</strong><small>no escopo atual</small></div>
-     <div className={criticalCards?'summary-critical':''}><span>Com críticos</span><strong>{criticalCards}</strong><small>prioridade de atuação</small></div>
-     <div className={attentionCards?'summary-warning':''}><span>Em atenção</span><strong>{attentionCards}</strong><small>sem crítico na carteira</small></div>
-     <div className="summary-success"><span>Estáveis</span><strong>{stableCards}</strong><small>dentro da meta</small></div>
-   </div>
+   <SummaryMetrics ariaLabel="Resumo das carteiras no escopo" items={[
+     {key:'supervisors',label:'Supervisores',value:visibleCards.length,detail:'no escopo atual'},
+     {key:'critical',label:'Com críticos',value:criticalCards,detail:'prioridade de atuação',tone:criticalCards?'danger':'neutral'},
+     {key:'warning',label:'Em atenção',value:attentionCards,detail:'sem crítico na carteira',tone:attentionCards?'warning':'neutral'},
+     {key:'stable',label:'Estáveis',value:stableCards,detail:'dentro da meta',tone:'success'},
+   ]}/>
 
    <div className="portfolio-section-heading"><div><span>CARTEIRAS</span><h2>Leitura por supervisor</h2><p>Ordenação prioriza carteiras com depositantes críticos e, em seguida, os casos em atenção.</p></div><span className="panel-chip">{visibleCards.reduce((total,c)=>total+c.deps.length,0)} depositante(s)</span></div>
    <div className={`supervisor-grid supervisor-discovery-grid ${selected?'supervisor-grid-with-detail':''}`}>{visibleCards.map(({s,prod,rec,inv,deps,status,critCount,warnCount,fcaCount})=>{
