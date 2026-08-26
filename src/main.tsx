@@ -15,6 +15,7 @@ import './supervisors-discovery.css'
 import './depositors-discovery.css'
 import './finance-dashboard.css'
 import './fca-mobile.css'
+import './fca-workspace.css'
 import './mfa.css'
 
 createRoot(document.getElementById('root')!).render(
