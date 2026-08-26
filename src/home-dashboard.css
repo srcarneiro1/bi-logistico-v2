@@ -1,28 +1,12 @@
 .home-dashboard{display:grid;gap:var(--space-4)}
 .home-dashboard .page-header{margin-bottom:0}
 .home-kpi-section{background:transparent}
-.home-section-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-4);margin-bottom:var(--space-3)}
+.home-section-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--space-4);margin-bottom:var(--space-3)}
 .home-section-heading>div{display:grid;gap:3px}
 .home-section-heading h2{margin:0;font-size:17px;line-height:1.3;color:var(--text-primary)}
 .home-section-heading p{margin:0;max-width:760px;font-size:11px;line-height:1.5;color:var(--text-muted)}
-.home-primary-kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3)}
-.home-primary-kpis .metric-card{min-height:184px;padding:20px}
-.home-primary-kpis .metric-card:before{height:4px}
-.home-primary-kpis .metric-card>strong{font-size:32px;margin-top:16px;letter-spacing:-.035em}
-.home-primary-kpis .metric-comparisons{margin-top:16px;padding-top:14px}
-.home-primary-kpis .metric-meta{margin-top:10px}
-.home-supporting-block{margin-top:var(--space-3);padding-top:var(--space-3);border-top:1px solid var(--border-default)}
-.home-supporting-heading{display:flex;align-items:baseline;justify-content:space-between;gap:var(--space-3);margin-bottom:var(--space-2)}
-.home-supporting-heading>span{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary)}
-.home-supporting-heading>small{font-size:10px;color:var(--text-muted)}
-.home-supporting-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:var(--space-2)}
-.metric-card-supporting{min-height:126px!important;padding:14px 15px!important}
-.metric-card-supporting:before{height:2px!important}
-.metric-card-supporting>strong{font-size:22px!important;margin-top:9px!important}
-.metric-card-supporting .metric-comparisons{grid-template-columns:1fr 1fr;gap:8px;margin-top:9px;padding-top:9px}
-.metric-card-supporting .metric-comparisons small{font-size:8px}
-.metric-card-supporting .metric-comparisons b{font-size:10px}
-.metric-card-supporting .metric-meta{font-size:9px;margin-top:7px;gap:6px}
+.home-kpi-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--space-2)}
+.home-kpi-grid .metric-card-supporting{min-height:132px!important}
 .home-main-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,.82fr);gap:var(--space-3);align-items:start}
 .home-trend-panel .panel-body{padding:20px 22px 18px}
 .home-side-stack{display:grid;gap:var(--space-3)}
@@ -36,24 +20,22 @@
 .home-attention-panel .attention-row{grid-template-columns:38px minmax(180px,1fr) minmax(340px,1.7fr) 12px;padding:12px 0}
 .home-attention-panel .attention-metrics span{grid-template-columns:auto 1fr;align-items:baseline;column-gap:5px}
 
-@media(max-width:1180px){
-  .home-primary-kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:1280px){
+  .home-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
   .home-main-grid{grid-template-columns:minmax(0,1.65fr) minmax(300px,.85fr)}
 }
 
 @media(max-width:1020px){
+  .home-kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
   .home-main-grid{grid-template-columns:1fr}
   .home-side-stack{grid-template-columns:1fr 1fr}
-  .home-primary-kpis .metric-card{min-height:168px}
 }
 
 @media(max-width:760px){
-  .home-section-heading{display:grid}
+  .home-section-heading{display:grid;align-items:start}
   .home-section-heading>.panel-chip{justify-self:start}
-  .home-primary-kpis{grid-template-columns:1fr}
-  .home-primary-kpis .metric-card{min-height:0}
-  .home-primary-kpis .metric-card>strong{font-size:28px}
-  .home-supporting-kpis{grid-template-columns:1fr}
+  .home-kpi-grid{grid-template-columns:1fr}
+  .home-kpi-grid .metric-card-supporting{min-height:0!important}
   .home-side-stack{grid-template-columns:1fr}
   .home-attention-panel .attention-row{grid-template-columns:30px minmax(0,1fr) 10px}
   .home-attention-panel .attention-metrics{grid-column:2/4;grid-row:2;grid-template-columns:repeat(3,1fr)}
