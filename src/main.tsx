@@ -20,6 +20,7 @@ import './fca-workspace.css'
 import './context-ux.css'
 import './transversal-refinement.css'
 import './record-lists.css'
+import './sections-feedback.css'
 import './mfa.css'
 
 createRoot(document.getElementById('root')!).render(
