@@ -1,0 +1,89 @@
+/* Passe transversal inspirado em padrões de dashboards administrativos: mesma gramática, variantes por função. */
+
+/* Home: gestão à vista como record list compacta. */
+.home-attention-panel .attention-list{padding:8px 14px 12px}
+.home-attention-panel .attention-row{grid-template-columns:38px minmax(180px,1fr) minmax(340px,1.7fr) auto!important;border:1px solid transparent;border-radius:9px;padding:11px 10px;margin:2px 0;transition:background .15s ease,border-color .15s ease}
+.home-attention-panel .attention-row:hover{background:var(--surface-secondary);border-color:#e8eaed}
+.home-attention-panel .rank{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:#f2f3f5;font-size:9px;font-weight:800;color:var(--text-secondary)}
+.home-attention-panel .attention-row>div:nth-child(2){align-self:center}
+.home-attention-panel .attention-row>div:nth-child(2) strong{font-size:11px}
+.home-attention-panel .attention-row>div:nth-child(2) small{font-size:9px;color:var(--text-muted)}
+.home-attention-panel .attention-metrics span{padding:7px 9px;border:1px solid #edf0f2;border-radius:8px;background:#fff}
+.home-attention-panel .attention-status{align-self:center;justify-self:end}
+
+/* Detail integrations. */
+.depositor-360,.supervisor-360{display:grid;gap:var(--space-3)}
+.supervisor-360-avatar-image,.supervisor-360-avatar{width:46px;height:46px;border-radius:12px;object-fit:cover}
+.supervisor-360-avatar{display:grid;place-items:center;background:#f1f2f4;color:var(--text-primary);font-size:13px;font-weight:800}
+.depositor-360>.depositor-kpis,.supervisor-360>.supervisor-360-kpis,.fca-detail-page>.fca-detail-hero,.fca-detail-page>.fca-detail-grid-preline{display:none!important}
+.fca-detail-page .fca-cause-card{margin-top:0}
+
+/* Financeiro: hierarquia mais limpa sem virar cópia de KPI. */
+.finance-hero{border-radius:13px!important;box-shadow:var(--shadow-card)}
+.finance-support-grid{gap:8px!important}
+.finance-support-grid>div{position:relative;min-height:104px;padding:14px 15px!important;border:1px solid var(--border-default)!important;border-radius:10px!important;background:var(--surface-primary)!important;box-shadow:0 1px 2px rgba(29,31,35,.025)}
+.finance-support-grid>div:before{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:#dfe2e6}
+.finance-support-grid>div.finance-negative:before{background:var(--status-danger)}
+.finance-support-grid>div.finance-positive:before{background:var(--status-success)}
+.finance-depositors-panel .revenue-list{padding:6px 12px 12px}
+.finance-depositors-panel .revenue-row{padding:12px 10px;border:1px solid transparent;border-radius:9px;transition:background .15s ease,border-color .15s ease}
+.finance-depositors-panel .revenue-row:hover{background:var(--surface-secondary);border-color:#e8eaed}
+.finance-depositors-panel .revenue-identity strong{font-size:11px}
+.finance-depositors-panel .revenue-attainment{min-width:88px;padding-left:12px;border-left:1px solid #eceef1}
+
+/* Administração: workspace compartilhado. */
+.admin-access-page,.admin-substitutions-page{display:grid;gap:var(--space-4)}
+.admin-access-page .page-header,.admin-substitutions-page .page-header{margin-bottom:0}
+.admin-confirmation{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 14px;border:1px solid #eadb9f;border-radius:11px;background:var(--status-warning-soft);box-shadow:var(--shadow-card)}
+.admin-confirmation>div:first-child{display:flex;align-items:flex-start;gap:10px;min-width:0}
+.admin-confirmation .material-symbols-rounded{font-size:20px;color:var(--status-warning)}
+.admin-confirmation strong{display:block;font-size:11px;color:var(--text-primary)}
+.admin-confirmation p{margin:3px 0 0;max-width:760px;font-size:10px;line-height:1.45;color:var(--text-secondary)}
+.admin-confirmation-actions{display:flex;gap:8px;flex:0 0 auto}
+.admin-user-email{display:block;margin-top:3px;font-size:9px;color:var(--text-muted);font-weight:400}
+.admin-guidance{border-radius:11px!important;border-color:#dde2ea!important;background:#f8fafc!important;box-shadow:none!important}
+.coverage-panel{overflow:hidden}
+.coverage-card-grid{gap:10px!important}
+.coverage-card{border-radius:11px!important;box-shadow:0 1px 2px rgba(29,31,35,.03)!important;transition:border-color .15s ease,box-shadow .15s ease}
+.coverage-card:hover{border-color:#cfd3da!important;box-shadow:0 4px 14px rgba(29,31,35,.06)!important}
+.substitution-admin{border-top:1px solid var(--border-default)}
+.substitution-form{border-radius:11px!important;background:#fbfcfd!important}
+
+/* FCA forms: field groups mais legíveis e ações previsíveis. */
+.fca-editor-page .form-section{scroll-margin-top:90px}
+.fca-editor-page .form-grid>div{display:grid;align-content:start;gap:6px}
+.fca-editor-page .form-section>label{display:block;margin-bottom:6px}
+.fca-editor-page .action-card{transition:border-color .15s ease,box-shadow .15s ease}
+.fca-editor-page .action-card:focus-within{border-color:#c7cbd2;box-shadow:0 0 0 3px rgba(73,74,86,.05)}
+.fca-editor-page .sticky-form-actions .button-primary{min-width:130px}
+
+/* Tabelas: comportamento previsível antes do Bloco 3 completo. */
+.responsive-data-table tbody tr{transition:background .14s ease}
+.responsive-data-table tbody tr:hover{background:#fafbfc}
+.responsive-data-table th{white-space:nowrap}
+.responsive-data-table td{vertical-align:middle}
+
+/* Shell: apenas densidade e acabamento, sem redesign estrutural. */
+.filter-toolbar{box-shadow:0 1px 0 rgba(29,31,35,.035)}
+.topbar-scope{border-radius:9px!important}
+.sidebar-nav a{min-height:42px}
+
+@media(max-width:900px){
+  .finance-support-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .admin-confirmation{display:grid}
+  .admin-confirmation-actions{justify-content:flex-start}
+}
+
+@media(max-width:760px){
+  .home-attention-panel .attention-row{grid-template-columns:30px minmax(0,1fr)!important;padding:12px 8px}
+  .home-attention-panel .attention-metrics{grid-column:2;grid-row:2;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .home-attention-panel .attention-metrics span{background:var(--surface-secondary)}
+  .home-attention-panel .attention-status{grid-column:2;grid-row:3;justify-self:start;margin-top:2px}
+  .finance-support-grid{grid-template-columns:1fr!important}
+  .finance-support-grid>div{min-height:0}
+  .finance-depositors-panel .revenue-attainment{padding-left:0;border-left:0}
+  .admin-confirmation-actions{display:grid;grid-template-columns:1fr;width:100%}
+  .admin-confirmation-actions>.button{width:100%;justify-content:center}
+  .fca-editor-page .sticky-form-actions{position:static;display:grid;grid-template-columns:1fr}
+  .fca-editor-page .sticky-form-actions>.button{width:100%;justify-content:center}
+}

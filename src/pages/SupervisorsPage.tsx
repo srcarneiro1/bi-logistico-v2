@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { PageHeader } from '../components/PageHeader'
+import { MetricStatusBadge, StatusBadge } from '../components/ui/Badge'
+import { DetailHero, DetailMetrics } from '../components/ui/DetailHero'
+import { SummaryMetrics } from '../components/ui/SummaryMetrics'
 import { avg, indicatorMeta, metricStatus, pct, periodKey, scoped } from '../lib/dashboard'
 import { deriveFcaStatus, isFcaOverdue, listFcas } from '../lib/fca'
 import { consumeSupervisorReturn, setFcaReturnContext } from '../lib/navigationContext'
@@ -11,6 +14,7 @@ import type { HubBootstrap } from '../types/hub'
 const rank:Record<MetricStatus,number>={crit:3,warn:2,neutral:1,ok:0}
 const label:Record<MetricStatus,string>={ok:'Dentro da meta',warn:'Atenção',crit:'Crítico',neutral:'Sem dados no período'}
 const SUPERVISOR_DETAIL_ID='supervisor-360-detail'
+const tone=(status:MetricStatus)=>status==='crit'?'danger':status==='warn'?'warning':status==='ok'?'success':'neutral'
 
 export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilters}){
  const navigate=useNavigate()
@@ -54,33 +58,40 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
    <PageHeader eyebrow="LIDERANÇA OPERACIONAL" title="Supervisores" description="Compare carteiras e abra o responsável para analisar depositantes e FCAs pendentes no escopo atual."/>
 
    {selected&&<article id={SUPERVISOR_DETAIL_ID} className="supervisor-360 supervisor-360-expanded" aria-label={`Visão detalhada de ${selected.s.nomeExibicao}`}>
-     <div className="supervisor-360-hero">
-       <div className="supervisor-360-identity">
-         {selected.s.fotoUrl?<img src={selected.s.fotoUrl} alt=""/>:<span className="supervisor-360-avatar">{selected.s.nomeExibicao.slice(0,2).toUpperCase()}</span>}
-         <div><span className="panel-eyebrow">SUPERVISOR SELECIONADO</span><h2>{selected.s.nomeExibicao}</h2><p>{selected.deps.length} depositante(s) · {selected.fcaCount} FCA(s) no escopo · {Array.from(new Set(selected.deps.map(d=>d.moduloId))).join(', ')||'sem módulo no escopo'}</p></div>
-       </div>
-       <div className="supervisor-360-actions"><span className={`supervisor-health supervisor-health-${selected.status}`}>{cardBadge(selected.critCount,selected.warnCount,selected.status)}</span><button type="button" className="button" onClick={()=>setSelectedSupervisorId('')}>Fechar visão</button></div>
-     </div>
+     <DetailHero
+       eyebrow="Supervisor selecionado"
+       title={selected.s.nomeExibicao}
+       description={`${selected.deps.length} depositante(s) no escopo atual.`}
+       leading={selected.s.fotoUrl?<img className="supervisor-360-avatar-image" src={selected.s.fotoUrl} alt=""/>:<span className="supervisor-360-avatar">{selected.s.nomeExibicao.slice(0,2).toUpperCase()}</span>}
+       status={<MetricStatusBadge status={selected.status} label={cardBadge(selected.critCount,selected.warnCount,selected.status)}/>} 
+       meta={[
+         {label:'Depositantes',value:selected.deps.length},
+         {label:'FCAs no período',value:selected.fcaCount},
+         {label:'FCAs pendentes',value:selectedFcas.length},
+         {label:'Módulos',value:Array.from(new Set(selected.deps.map(d=>d.moduloId))).join(', ')||'Sem módulo no escopo'},
+       ]}
+       actions={<button type="button" className="button" onClick={()=>setSelectedSupervisorId('')}>Fechar visão</button>}
+     />
 
-     <div className="supervisor-360-kpis">
-       <div><span>Produção</span><strong className={`text-${metricStatus(selected.prod,metaProd)}`}>{pct(selected.prod)}</strong><small>{metaProd?.metaPct!=null?`Meta ${pct(metaProd.metaPct)}`:'Média do escopo'}</small></div>
-       <div><span>Recebimento</span><strong className={`text-${metricStatus(selected.rec,metaRec)}`}>{pct(selected.rec)}</strong><small>{metaRec?.metaPct!=null?`Meta ${pct(metaRec.metaPct)}`:'Média do escopo'}</small></div>
-       <div><span>Inventário</span><strong className={`text-${metricStatus(selected.inv,metaInv)}`}>{pct(selected.inv)}</strong><small>{metaInv?.metaPct!=null?`Meta ${pct(metaInv.metaPct)}`:'Média do escopo'}</small></div>
-       <div><span>FCAs pendentes</span><strong className={selectedFcas.length?'text-crit':''}>{selectedFcas.length}</strong><small>{selected.fcaCount} FCA(s) no período</small></div>
-     </div>
+     <DetailMetrics items={[
+       {key:'prod',label:'Produção',value:pct(selected.prod),detail:metaProd?.metaPct!=null?`Meta ${pct(metaProd.metaPct)}`:'Média do escopo',tone:tone(metricStatus(selected.prod,metaProd))},
+       {key:'rec',label:'Recebimento',value:pct(selected.rec),detail:metaRec?.metaPct!=null?`Meta ${pct(metaRec.metaPct)}`:'Média do escopo',tone:tone(metricStatus(selected.rec,metaRec))},
+       {key:'inv',label:'Inventário',value:pct(selected.inv),detail:metaInv?.metaPct!=null?`Meta ${pct(metaInv.metaPct)}`:'Média do escopo',tone:tone(metricStatus(selected.inv,metaInv))},
+       {key:'fca',label:'FCAs pendentes',value:selectedFcas.length,detail:`${selected.fcaCount} FCA(s) no período`,tone:selectedFcas.length?'danger':'neutral'},
+     ]}/>
 
      <div className="supervisor-360-grid">
-       <section className="dashboard-panel supervisor-portfolio"><div className="panel-head"><div><span className="panel-eyebrow">CARTEIRA</span><h2>Performance por depositante</h2></div><span className="panel-chip">{selected.deps.length} depositante(s)</span></div><div className="table-wrap embedded"><table className="status-table responsive-data-table"><thead><tr><th scope="col">Depositante</th><th scope="col">Módulo</th><th scope="col">Produção</th><th scope="col">Recebimento</th><th scope="col">Inventário</th><th scope="col">Status</th></tr></thead><tbody>{detailRows.map(({d,op,inv,status})=><tr key={d.cnpj}><td data-label="Depositante" data-primary="true"><button type="button" className="table-link" onClick={()=>openDepositante(d.cnpj)}><strong>{d.nome}</strong></button></td><td data-label="Módulo">{d.moduloId}</td><td data-label="Produção"><span className={`metric-cell metric-cell-${metricStatus(op?.producaoPct,metaProd)}`}>{pct(op?.producaoPct)}</span></td><td data-label="Recebimento"><span className={`metric-cell metric-cell-${metricStatus(op?.recebimentoPct,metaRec)}`}>{pct(op?.recebimentoPct)}</span></td><td data-label="Inventário"><span className={`metric-cell metric-cell-${metricStatus(inv?.totalPct,metaInv)}`}>{pct(inv?.totalPct)}</span></td><td data-label="Status"><span className={`row-status row-status-${status}`}>{label[status]}</span></td></tr>)}</tbody></table></div></section>
-       <section className="dashboard-panel supervisor-open-fcas"><div className="panel-head"><div><span className="panel-eyebrow">PENDÊNCIAS</span><h2>FCAs abertos no período</h2></div><span className={`panel-chip ${selectedFcas.length?'panel-chip-red':''}`}>{selectedFcas.length} pendente(s)</span></div>{selectedFcas.length?<div className="supervisor-fca-list">{selectedFcas.map(f=>{const overdue=isFcaOverdue(f),status=overdue?'VENCIDO':deriveFcaStatus(f);return <Link key={f.id} to={`/fca/${f.id}`} onClick={()=>setFcaReturnContext({type:'supervisor',supervisorId:selected.s.supervisorId})}><div><strong>FCA #{String(f.numero).padStart(5,'0')} · {f.depositante_nome}</strong><span>{f.indicador_nome} · {new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</span></div><span className={`status-badge status-${status}`}>{status.replace('_',' ')}</span></Link>})}</div>:<div className="table-empty">Nenhum FCA pendente para este supervisor no filtro atual.</div>}</section>
+       <section className="dashboard-panel supervisor-portfolio"><div className="panel-head"><div><span className="panel-eyebrow">CARTEIRA</span><h2>Performance por depositante</h2></div><span className="panel-chip">{selected.deps.length} depositante(s)</span></div><div className="table-wrap embedded"><table className="status-table responsive-data-table"><thead><tr><th scope="col">Depositante</th><th scope="col">Módulo</th><th scope="col">Produção</th><th scope="col">Recebimento</th><th scope="col">Inventário</th><th scope="col">Status</th></tr></thead><tbody>{detailRows.map(({d,op,inv,status})=><tr key={d.cnpj}><td data-label="Depositante" data-primary="true"><button type="button" className="table-link" onClick={()=>openDepositante(d.cnpj)}><strong>{d.nome}</strong></button></td><td data-label="Módulo">{d.moduloId}</td><td data-label="Produção"><span className={`metric-cell metric-cell-${metricStatus(op?.producaoPct,metaProd)}`}>{pct(op?.producaoPct)}</span></td><td data-label="Recebimento"><span className={`metric-cell metric-cell-${metricStatus(op?.recebimentoPct,metaRec)}`}>{pct(op?.recebimentoPct)}</span></td><td data-label="Inventário"><span className={`metric-cell metric-cell-${metricStatus(inv?.totalPct,metaInv)}`}>{pct(inv?.totalPct)}</span></td><td data-label="Status"><MetricStatusBadge status={status} label={label[status]}/></td></tr>)}</tbody></table></div></section>
+       <section className="dashboard-panel supervisor-open-fcas"><div className="panel-head"><div><span className="panel-eyebrow">PENDÊNCIAS</span><h2>FCAs abertos no período</h2></div><span className={`panel-chip ${selectedFcas.length?'panel-chip-red':''}`}>{selectedFcas.length} pendente(s)</span></div>{selectedFcas.length?<div className="supervisor-fca-list">{selectedFcas.map(f=>{const overdue=isFcaOverdue(f),status=overdue?'VENCIDO':deriveFcaStatus(f);return <Link key={f.id} to={`/fca/${f.id}`} onClick={()=>setFcaReturnContext({type:'supervisor',supervisorId:selected.s.supervisorId})}><div><strong>FCA #{String(f.numero).padStart(5,'0')} · {f.depositante_nome}</strong><span>{f.indicador_nome} · {new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</span></div><StatusBadge status={status}/></Link>})}</div>:<div className="table-empty">Nenhum FCA pendente para este supervisor no filtro atual.</div>}</section>
      </div>
    </article>}
 
-   <div className="portfolio-discovery-summary" aria-label="Resumo das carteiras no escopo">
-     <div><span>Supervisores</span><strong>{visibleCards.length}</strong><small>no escopo atual</small></div>
-     <div className={criticalCards?'summary-critical':''}><span>Com críticos</span><strong>{criticalCards}</strong><small>prioridade de atuação</small></div>
-     <div className={attentionCards?'summary-warning':''}><span>Em atenção</span><strong>{attentionCards}</strong><small>sem crítico na carteira</small></div>
-     <div className="summary-success"><span>Estáveis</span><strong>{stableCards}</strong><small>dentro da meta</small></div>
-   </div>
+   <SummaryMetrics ariaLabel="Resumo das carteiras no escopo" items={[
+     {key:'supervisors',label:'Supervisores',value:visibleCards.length,detail:'no escopo atual'},
+     {key:'critical',label:'Com críticos',value:criticalCards,detail:'prioridade de atuação',tone:criticalCards?'danger':'neutral'},
+     {key:'warning',label:'Em atenção',value:attentionCards,detail:'sem crítico na carteira',tone:attentionCards?'warning':'neutral'},
+     {key:'stable',label:'Estáveis',value:stableCards,detail:'dentro da meta',tone:'success'},
+   ]}/>
 
    <div className="portfolio-section-heading"><div><span>CARTEIRAS</span><h2>Leitura por supervisor</h2><p>Ordenação prioriza carteiras com depositantes críticos e, em seguida, os casos em atenção.</p></div><span className="panel-chip">{visibleCards.reduce((total,c)=>total+c.deps.length,0)} depositante(s)</span></div>
    <div className={`supervisor-grid supervisor-discovery-grid ${selected?'supervisor-grid-with-detail':''}`}>{visibleCards.map(({s,prod,rec,inv,deps,status,critCount,warnCount,fcaCount})=>{

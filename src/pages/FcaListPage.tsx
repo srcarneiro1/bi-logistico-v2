@@ -6,6 +6,7 @@ import { EmptyState, Skeleton } from '../components/ui/Feedback'
 import { PageToolbar } from '../components/ui/PageToolbar'
 import { Panel } from '../components/ui/Panel'
 import { SearchField } from '../components/ui/SearchField'
+import { SummaryMetrics, type SummaryMetricItem } from '../components/ui/SummaryMetrics'
 import { deriveFcaStatus, isFcaOverdue, listFcas } from '../lib/fca'
 import { clearFcaReturnContext } from '../lib/navigationContext'
 import type { DashboardFilters } from '../types/dashboard'
@@ -51,20 +52,18 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
     return true
   }),[scopedRows,status])
 
-  const summary=[
-    {value:'',label:'Todos',count:scopedRows.length,icon:'dataset',tone:'all'},
-    {value:'ABERTO',label:'Abertos',count:counts.ABERTO??0,icon:'radio_button_unchecked',tone:'open'},
-    {value:'EM_ANDAMENTO',label:'Em andamento',count:counts.EM_ANDAMENTO??0,icon:'autorenew',tone:'progress'},
-    {value:'VENCIDO',label:'Vencidos',count:counts.VENCIDO??0,icon:'error',tone:'overdue'},
-    {value:'CONCLUIDO',label:'Concluídos',count:counts.CONCLUIDO??0,icon:'check_circle',tone:'done'},
+  const summary:SummaryMetricItem[]=[
+    {key:'all',label:'Todos',value:scopedRows.length,detail:'registros no escopo',icon:'dataset',tone:'neutral',active:status==='',onClick:()=>setStatus('')},
+    {key:'open',label:'Abertos',value:counts.ABERTO??0,detail:'aguardando atuação',icon:'radio_button_unchecked',tone:'info',active:status==='ABERTO',onClick:()=>setStatus('ABERTO')},
+    {key:'progress',label:'Em andamento',value:counts.EM_ANDAMENTO??0,detail:'com plano ativo',icon:'autorenew',tone:'warning',active:status==='EM_ANDAMENTO',onClick:()=>setStatus('EM_ANDAMENTO')},
+    {key:'overdue',label:'Vencidos',value:counts.VENCIDO??0,detail:'prioridade de atuação',icon:'error',tone:'danger',active:status==='VENCIDO',onClick:()=>setStatus('VENCIDO')},
+    {key:'done',label:'Concluídos',value:counts.CONCLUIDO??0,detail:'encerrados no escopo',icon:'check_circle',tone:'success',active:status==='CONCLUIDO',onClick:()=>setStatus('CONCLUIDO')},
   ]
 
   return <section className="fca-page fca-list-page">
     <PageHeader eyebrow="CONTROLE DE DESVIOS" title="Fatos, causas e ações" description="Acompanhe registros, priorize vencimentos e abra cada FCA para consultar causa, plano de ação e rastreabilidade." actions={<Link className="button button-primary" to="/fca/novo"><span className="material-symbols-rounded">add</span>Novo FCA</Link>}/>
 
-    <div className="fca-status-summary" aria-label="Resumo por status">
-      {summary.map(item=><button key={item.label} type="button" data-tone={item.tone} aria-pressed={status===item.value} className={status===item.value?'active':''} onClick={()=>setStatus(item.value)}><span className="material-symbols-rounded" aria-hidden="true">{item.icon}</span><strong>{item.count}</strong><span>{item.label}</span></button>)}
-    </div>
+    <SummaryMetrics items={summary} ariaLabel="Resumo por status da FCA" className="fca-summary-metrics"/>
 
     <section className="fca-workspace-card" aria-label="Registros FCA">
       <div className="fca-workspace-head"><div><span className="panel-eyebrow">REGISTROS</span><h2>FCA no escopo atual</h2><p>{filtered.length} registro(s) após filtros · vencidos permanecem priorizados visualmente pelo status.</p></div><span className="panel-chip">{filters.fcaPeriodo==='ALL'?'Todos os meses':filters.fcaPeriodo}</span></div>
