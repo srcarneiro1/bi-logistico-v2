@@ -27,6 +27,7 @@ export function getFcaReturnContext():FcaReturnContext|null{
 }
 
 export function prepareFcaReturnTarget(context:FcaReturnContext|null):string{
+ sessionStorage.removeItem(FCA_RETURN_KEY)
  if(context?.type==='supervisor'){
   sessionStorage.setItem(SUPERVISOR_RETURN_KEY,context.supervisorId)
   return'/supervisores'
