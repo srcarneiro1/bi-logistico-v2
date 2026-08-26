@@ -16,9 +16,15 @@
     box-shadow:none!important;
   }
 
-  /* O badge já comunica severidade. Remove o rail que competia com o nome do depositante. */
+  /* O badge já comunica severidade. Remove todos os rails que competiam com o nome do depositante. */
   .depositors-table-wrap table.depositor-table.responsive-data-table tr::before{display:none!important}
   .depositors-table-wrap table.depositor-table.responsive-data-table tr{padding-left:13px!important}
+  .depositors-table-wrap tbody tr.depositor-row-crit:not(.selected-row) td:first-child,
+  .depositors-table-wrap tbody tr.depositor-row-warn:not(.selected-row) td:first-child,
+  .depositors-table-wrap tbody tr.depositor-row-ok:not(.selected-row) td:first-child,
+  .depositors-table-wrap tbody tr.selected-row td:first-child{
+    box-shadow:none!important;
+  }
 
   /* Stepper deve funcionar como orientação, não como carrossel. */
   .fca-form-stepper{
