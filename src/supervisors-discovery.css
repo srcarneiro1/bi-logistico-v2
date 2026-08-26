@@ -1,15 +1,6 @@
 .portfolio-discovery{display:grid;gap:var(--space-4)}
 .portfolio-discovery .page-header{margin-bottom:0}
 
-.portfolio-discovery-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-2)}
-.portfolio-discovery-summary>div{display:grid;gap:3px;padding:14px 16px;border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card)}
-.portfolio-discovery-summary span{font-size:10px;font-weight:700;letter-spacing:.055em;text-transform:uppercase;color:var(--text-secondary)}
-.portfolio-discovery-summary strong{font-size:24px;line-height:1.05;color:var(--text-primary)}
-.portfolio-discovery-summary small{font-size:9px;color:var(--text-muted)}
-.portfolio-discovery-summary .summary-critical{border-color:#f0c9cc;background:var(--status-danger-soft)}
-.portfolio-discovery-summary .summary-warning{border-color:#eadb9f;background:var(--status-warning-soft)}
-.portfolio-discovery-summary .summary-success{border-color:#d7e8dc;background:var(--status-success-soft)}
-
 .portfolio-section-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--space-4)}
 .portfolio-section-heading>div{display:grid;gap:3px}
 .portfolio-section-heading>div>span{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--text-muted)}
@@ -38,16 +29,13 @@
 .supervisor-discovery-grid .supervisor-metrics span{font-size:9px;color:var(--text-muted)}
 .supervisor-discovery-grid .supervisor-metrics b{font-size:14px}
 .supervisor-discovery-grid .supervisor-modules{margin-top:auto;padding-top:2px}
-
 .supervisors-discovery .supervisor-360{margin-bottom:0}
 
 @media(max-width:1180px){
-  .portfolio-discovery-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
   .supervisor-discovery-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
 @media(max-width:760px){
-  .portfolio-discovery-summary{grid-template-columns:1fr 1fr}
   .portfolio-section-heading{display:grid;align-items:start}
   .portfolio-section-heading>.panel-chip{justify-self:start}
   .supervisor-discovery-grid{grid-template-columns:1fr}
@@ -55,7 +43,6 @@
 }
 
 @media(max-width:480px){
-  .portfolio-discovery-summary{grid-template-columns:1fr}
   .supervisor-card-priority{display:grid;gap:3px}
   .supervisor-card-priority strong{text-align:left}
 }
