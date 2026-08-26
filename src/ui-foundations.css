@@ -17,8 +17,7 @@
 .ui-badge-success{background:var(--status-success-soft);color:#2f6d49;border-color:#d7e8dc}
 .ui-badge-warning{background:var(--status-warning-soft);color:#765b08;border-color:#eadb9f}
 .ui-badge-danger{background:var(--status-danger-soft);color:#9b1119;border-color:#f0c9cc}
-.ui-status-badge{text-transform:uppercase;letter-spacing:.025em}
-.ui-deadline-badge{font-size:9px;text-transform:none;letter-spacing:0}
+.ui-status-badge{text-transform:none;letter-spacing:0}
 
 .ui-search-field{min-height:42px;display:flex;align-items:center;gap:8px;padding:0 var(--space-3);border:1px solid #d7d9de;border-radius:10px;background:var(--surface-primary);color:var(--text-muted);box-shadow:0 1px 2px rgba(29,31,35,.025);transition:border-color .15s ease,box-shadow .15s ease}
 .ui-search-field:focus-within{border-color:#9ca0a8;box-shadow:0 0 0 3px rgba(73,74,86,.07)}
