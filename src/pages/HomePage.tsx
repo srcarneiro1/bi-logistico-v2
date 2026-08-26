@@ -6,15 +6,9 @@ import type { DashboardFilters } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
 
 function historyWindow<T extends {periodo:string}>(series:T[],periodo:string,max=18){const key=periodKey(periodo);return series.filter(x=>!key||periodKey(x.periodo)<=key).slice(-max)}
-function kpiKey(value:string){return value.toLocaleLowerCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
 
 export function HomePage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilters}){
   const kpis=mainKpis(hub,filters),ops=operationalRows(hub,filters),revenues=revenueRows(hub,filters)
-  const preferredPrimary=['leadtimeproducao','leadtimerecebimento','inventario']
-  const primaryKpis=preferredPrimary.map(key=>kpis.find(k=>kpiKey(k.label)===key)).filter((k):k is (typeof kpis)[number]=>Boolean(k))
-  for(const k of kpis){if(primaryKpis.length>=3)break;if(!primaryKpis.some(item=>kpiKey(item.label)===kpiKey(k.label)))primaryKpis.push(k)}
-  const primaryKeys=new Set(primaryKpis.map(k=>kpiKey(k.label)))
-  const supportingKpis=kpis.filter(k=>!primaryKeys.has(kpiKey(k.label)))
   const plan=sum(revenues.map(r=>r.receitaPlanejada)),real=sum(revenues.map(r=>r.receitaRealizada)),attainment=plan?real/plan:null
   const useGlobal=hub.profile.perfil==='ADMIN'&&!filters.supervisorId&&!filters.moduloId&&hub.facts.kpiGeral.length>0
   const prodTrend=historyWindow(useGlobal?trendGlobal(hub.facts.kpiGeral,'Lead Time Produção'):trendScopedOperational(hub.facts.kpiOperacional,'producaoPct',filters),filters.periodo)
@@ -25,14 +19,13 @@ export function HomePage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
   const attention=attentionRows.slice(0,6)
   const scopeDepositantes=new Set(ops.map(r=>r.cnpj)).size,scopeSupervisors=new Set(ops.map(r=>r.supervisorId)).size,scopeModules=new Set(ops.map(r=>r.moduloId)).size
   const financeGood=attainment!=null&&attainment>=1
-  const renderMetric=(k:(typeof kpis)[number],variant:'primary'|'supporting')=>{const c=kpiComparison(hub,filters,k.label,k.value);return <MetricCard key={k.label} variant={variant} label={k.label} value={pct(k.value)} status={metricStatus(k.value,k.meta)} meta={k.meta?.metaPct!=null?`Meta ${pct(k.meta.metaPct)}`:'Sem meta'} detail={k.meta?.criticoPct!=null?`Crítico < ${pct(k.meta.criticoPct)}`:undefined} delta={c.delta} gap={c.gap}/>}
+  const renderMetric=(k:(typeof kpis)[number])=>{const c=kpiComparison(hub,filters,k.label,k.value);return <MetricCard key={k.label} variant="supporting" label={k.label} value={pct(k.value)} status={metricStatus(k.value,k.meta)} meta={k.meta?.metaPct!=null?`Meta ${pct(k.meta.metaPct)}`:'Sem meta'} detail={k.meta?.criticoPct!=null?`Crítico < ${pct(k.meta.criticoPct)}`:undefined} delta={c.delta} gap={c.gap}/>}
   return <section className="home-dashboard">
     <PageHeader eyebrow="PERFORMANCE OPERACIONAL" title="Visão geral" description="Leitura consolidada dos principais indicadores, pontos de atenção e desempenho financeiro no escopo selecionado." />
 
     <section className="home-kpi-section" aria-labelledby="home-kpi-title">
-      <div className="home-section-heading"><div><span className="panel-eyebrow">INDICADORES-CHAVE</span><h2 id="home-kpi-title">Performance do período</h2><p>Os três indicadores operacionais principais ficam em primeiro plano; métricas complementares aparecem como apoio.</p></div>{filters.periodo&&<span className="panel-chip">{periodLabel(filters.periodo)}</span>}</div>
-      <div className="home-primary-kpis">{primaryKpis.map(k=>renderMetric(k,'primary'))}</div>
-      {supportingKpis.length>0&&<div className="home-supporting-block"><div className="home-supporting-heading"><span>Métricas de apoio</span><small>{supportingKpis.length} indicador(es) complementar(es)</small></div><div className="home-supporting-kpis">{supportingKpis.map(k=>renderMetric(k,'supporting'))}</div></div>}
+      <div className="home-section-heading"><div><span className="panel-eyebrow">INDICADORES-CHAVE</span><h2 id="home-kpi-title">Performance do período</h2><p>Compare os principais indicadores do período em uma única leitura.</p></div>{filters.periodo&&<span className="panel-chip">{periodLabel(filters.periodo)}</span>}</div>
+      <div className="home-kpi-grid">{kpis.slice(0,5).map(renderMetric)}</div>
     </section>
 
     <div className="home-main-grid">
