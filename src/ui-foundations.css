@@ -40,11 +40,29 @@
 .ui-toolbar>.ui-search-field{flex:1 1 auto;min-width:0}
 .ui-toolbar>select{flex:0 0 210px;width:210px;min-height:42px;border:1px solid #d7d9de;border-radius:10px;background:var(--surface-primary);box-shadow:0 1px 2px rgba(29,31,35,.025)}
 
+.ui-page-toolbar{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin:0 0 var(--space-4);padding:var(--space-3);border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card)}
+.ui-page-toolbar-embedded{margin:0;border-width:0 0 1px;border-radius:0;box-shadow:none;background:var(--surface-secondary)}
+.ui-page-toolbar-main{display:flex;align-items:center;gap:var(--space-2);min-width:0;flex:1 1 auto}
+.ui-page-toolbar-search{flex:1 1 360px;min-width:220px}
+.ui-page-toolbar-search>.ui-search-field{width:100%}
+.ui-page-toolbar-filters{display:flex;align-items:center;gap:var(--space-2);flex:0 1 auto;min-width:0}
+.ui-page-toolbar-filters>select{width:210px;min-width:160px;min-height:42px;border:1px solid #d7d9de;border-radius:10px;background:var(--surface-primary);box-shadow:0 1px 2px rgba(29,31,35,.025)}
+.ui-page-toolbar-actions{display:flex;align-items:center;gap:var(--space-2);flex:0 0 auto}
+
 @media(max-width:760px){
   .ui-panel-header{display:grid;gap:var(--space-3)}
   .ui-panel-header-trailing{justify-content:flex-start;flex-wrap:wrap}
   .ui-toolbar{display:grid;grid-template-columns:1fr}
   .ui-toolbar>select{width:100%;min-width:0}
+
+  .ui-page-toolbar,.ui-page-toolbar-main{display:grid;grid-template-columns:1fr}
+  .ui-page-toolbar{padding:var(--space-3)}
+  .ui-page-toolbar-embedded{padding:10px;border-radius:0}
+  .ui-page-toolbar-search{min-width:0}
+  .ui-page-toolbar-filters{display:grid;grid-template-columns:1fr;width:100%}
+  .ui-page-toolbar-filters>select{width:100%;min-width:0}
+  .ui-page-toolbar-actions{width:100%;display:grid;grid-template-columns:1fr}
+  .ui-page-toolbar-actions>.button{width:100%;justify-content:center}
 
   .table-wrap:has(.responsive-data-table){overflow:visible;border:0;background:transparent;box-shadow:none}
   .responsive-data-table{min-width:0!important;border-collapse:separate!important;border-spacing:0 10px!important}
