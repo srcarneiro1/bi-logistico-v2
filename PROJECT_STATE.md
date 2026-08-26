@@ -22,9 +22,10 @@ Não depender do histórico de uma conversa para reconstruir decisões. O GitHub
 - Cloudflare Pages.
 - Supabase: autenticação, FCA, auditoria, governança e substituições.
 - Google Sheets/HUB revisada: cadastros operacionais, KPIs e financeiro.
-- Forecast Planner e Preline podem ser usados como benchmarks visuais, nunca como dependência de runtime sem decisão explícita.
+- Preline Analytics/Admin é benchmark principal de UI/UX, não dependência.
+- Flowbite React passa a ser benchmark complementar de componentes/interações React (drawer, modal, tabs, table, sidebar, feedback), mas **não deve ser instalado neste estágio**.
+- O projeto atual não usa Tailwind; uma eventual adoção real de Flowbite/Tailwind exige POC/ADR isolado e decisão arquitetural explícita.
 - Não converter o projeto para Next.js/Tailwind apenas para reproduzir padrões de outra biblioteca.
-- Preline — especialmente os templates Analytics Dashboard e Admin Dashboard — é benchmark principal de UI/UX, não dependência.
 
 ## Guardrails funcionais
 
@@ -37,7 +38,9 @@ Não depender do histórico de uma conversa para reconstruir decisões. O GitHub
 - Mudanças pequenas, isoladas e validáveis; evitar grandes patches multifuncionais.
 - Não fazer merge sem autorização explícita do usuário.
 - **Responsividade é requisito de aceite:** cada bloco visual deve ser construído e validado para desktop, tablet e mobile, e não adaptado apenas no final.
-- Em mobile, preferir composição específica (cards, toolbars compactas, progressive disclosure e alvos de toque adequados) em vez de apenas comprimir layouts desktop.
+- Em mobile, conteúdo essencial não deve depender de arraste horizontal; preferir grid, cards, progressive disclosure e alvos de toque adequados.
+- Estados semânticos não devem ser repetidos por múltiplos sinais concorrentes sem ganho de informação.
+- Navegação para detalhes deve preservar contexto de origem sempre que o usuário espera retornar ao mesmo item/visão.
 
 ## Segurança de acesso — CONCLUÍDA NESTA FASE
 
@@ -53,8 +56,6 @@ Concluído e mergeado:
 - Security Advisor sem alertas de RLS/função privilegiada; `Leaked Password Protection Disabled` permanece apenas quando indisponível no plano.
 
 ## Roadmap UI/UX — objetivo 10/10
-
-Benchmark principal: Preline Analytics/Admin como referência de hierarquia, densidade, cards, tabelas, filtros, estados de feedback e responsividade, sem instalar a biblioteca.
 
 ### Foundations e Shell — CONCLUÍDOS
 
@@ -76,40 +77,53 @@ Entregue:
 - Depositantes: busca/priorização/status e cards mobile dedicados.
 - Financeiro: headline metrics, escala correta acima de 100%, cores semânticas e rails de severidade.
 - FCA: responsividade inicial em lista/detalhe/novo/editar.
-- PR #38: compactação final dos filtros globais no mobile e correção definitiva dos cards mobile de Depositantes.
+- PR #38: compactação final dos filtros globais no mobile e correção dos cards mobile de Depositantes.
 
 ### FCA — REDESENHO PRELINE EM VALIDAÇÃO
 
-Branch atual: `ui/fca-preline-redesign`.
+PR draft #39 — branch `ui/fca-preline-redesign`.
 
-Objetivo: elevar o FCA de “funcional e responsivo” para uma experiência administrativa/analítica mais próxima dos padrões visuais do Preline Admin/Analytics, sem alterar lógica, permissões, dados ou segurança.
+Objetivo: elevar o FCA de “funcional e responsivo” para uma experiência administrativa/analítica mais próxima de Preline Admin/Analytics, sem alterar lógica, permissões, dados ou segurança.
 
-Em implementação/validação:
-- listagem com summary cards semânticos e workspace único para busca, filtro e registros;
-- tabela com identidade primária mais forte e CTA explícito de abertura;
-- detalhe com hero do registro, metadados agrupados, causa em superfície principal e resumo executivo das ações;
-- plano de ação em timeline visual;
-- auditoria em timeline separada;
-- Novo/Editar com stepper de três etapas e seções numeradas;
-- nova camada `fca-workspace.css` sobre `fca-mobile.css`, preservando o comportamento responsivo já validado;
+Em validação:
+- summary cards semânticos e workspace único para busca/filtro/listagem;
+- tabela com identidade primária e CTA explícito;
+- detalhe com hero, metadados agrupados, causa em superfície principal e resumo das ações;
+- plano de ação e auditoria em timelines;
+- Novo/Editar com fluxo visual de três etapas e seções numeradas;
+- stepper mobile sem carrossel/arraste obrigatório;
+- Depositantes mobile com summary 2x2 e sem rail de severidade redundante ao lado do nome;
+- retorno contextual de FCA para o mesmo Supervisor ou Depositante de origem;
+- contexto de retorno consumido para evitar navegação obsoleta;
 - desktop, tablet e mobile fazem parte do aceite.
 
 Não fazer merge deste bloco sem nova autorização explícita após validação do Preview.
 
+## Auditoria UX/UI transversal — ACHADOS
+
+1. **Administração/Acessos é o principal gap restante.** A tela atual é funcional, mas pouco rica em exploração e gestão. O backend hoje suporta com segurança listar usuários e conceder/revogar Admin; não criar ações fictícias além disso.
+2. Próximo redesign de Acessos deve incluir busca/filtros, summary stats, melhor distinção entre governança e perfil operacional, detalhe contextual (drawer/modal), confirmações próprias e mobile em cards.
+3. Substituições deve receber o mesmo padrão de workspace, filtros, status e detalhe progressivo.
+4. Criar padrão transversal de navegação contextual/breadcrumb para telas de detalhe onde fizer sentido.
+5. Revisar drawers/modais/tabs como primitives do design system, inspirados em Preline/Flowbite, sem introduzir Tailwind neste ciclo.
+6. Revisar acessibilidade transversal: foco, navegação por teclado, touch targets, contraste e estados de confirmação.
+7. Consolidar CSS somente depois de estabilizar esses padrões; não fazer limpeza ampla agora.
+
 ### Próximos blocos após FCA
 
-1. Administração/Acessos/Substituições — revisar densidade e responsividade sem alterar governança.
-2. Passe final de consistência entre páginas: headers, toolbars, estados de feedback e acessibilidade.
-3. Revisão mobile transversal das páginas restantes.
-4. Redução da dívida CSS somente no final, após validar regressões.
+1. Administração/Acessos — redesign de gestão dentro das capacidades reais do backend.
+2. Administração/Substituições — workspace e mobile.
+3. Navegação contextual + drawers/modais/tabs reutilizáveis.
+4. Passe final de consistência entre páginas e acessibilidade.
+5. Redução da dívida CSS no final.
 
 ## Próximo ciclo ao retomar
 
 Ao receber **`retomar BI Logístico`**:
 1. confirmar `main` e PRs abertos;
 2. não reabrir segurança salvo novo incidente;
-3. verificar o estado do redesenho FCA/Preview;
-4. se FCA já validado/mergeado, seguir para Administração/Acessos/Substituições;
+3. verificar PR #39 e feedback do Preview;
+4. se FCA já validado/mergeado, seguir para Administração/Acessos;
 5. validar sempre desktop + tablet + mobile;
-6. manter Preline Analytics/Admin como benchmark, sem adicionar dependência;
+6. manter Preline Analytics/Admin + Flowbite React como benchmarks, sem adicionar dependências de styling neste estágio;
 7. deixar limpeza ampla de CSS por último.
