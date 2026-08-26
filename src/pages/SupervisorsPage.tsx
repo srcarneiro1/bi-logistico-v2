@@ -61,7 +61,7 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
          {selected.s.fotoUrl?<img src={selected.s.fotoUrl} alt=""/>:<span className="supervisor-360-avatar">{selected.s.nomeExibicao.slice(0,2).toUpperCase()}</span>}
          <div><span className="panel-eyebrow">SUPERVISOR SELECIONADO</span><h2>{selected.s.nomeExibicao}</h2><p>{selected.deps.length} depositante(s) · {selected.fcaCount} FCA(s) no escopo · {Array.from(new Set(selected.deps.map(d=>d.moduloId))).join(', ')||'sem módulo no escopo'}</p></div>
        </div>
-       <div className="supervisor-360-actions"><span className={`supervisor-health supervisor-health-${selected.status}`}>{cardBadge(selected.critCount,selected.warnCount,selected.status)}</span><button type="button" className="button" onClick={()=>setSelectedSupervisorId('')}>Fechar visão</button></div>
+       <div className="supervisor-360-actions"><MetricStatusBadge status={selected.status} label={cardBadge(selected.critCount,selected.warnCount,selected.status)}/><button type="button" className="button" onClick={()=>setSelectedSupervisorId('')}>Fechar visão</button></div>
      </div>
 
      <div className="supervisor-360-kpis">
