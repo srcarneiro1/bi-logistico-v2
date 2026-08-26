@@ -2,7 +2,10 @@ import { useEffect, useMemo, useState } from 'react'
 import { PageHeader } from '../components/PageHeader'
 import { Badge } from '../components/ui/Badge'
 import { EmptyState, Skeleton } from '../components/ui/Feedback'
+import { PageToolbar } from '../components/ui/PageToolbar'
 import { Panel, PanelHeader } from '../components/ui/Panel'
+import { SearchField } from '../components/ui/SearchField'
+import { SummaryMetrics } from '../components/ui/SummaryMetrics'
 import { listGovernanceUsers, setGovernanceAdmin, type GovernanceUser } from '../lib/governance'
 import type { HubBootstrap } from '../types/hub'
 
@@ -24,6 +27,9 @@ export function AdminAccessPage({hub}:{hub:HubBootstrap}){
   const[changingId,setChangingId]=useState<string|null>(null)
   const[error,setError]=useState<string|null>(null)
   const[message,setMessage]=useState<string|null>(null)
+  const[search,setSearch]=useState('')
+  const[roleFilter,setRoleFilter]=useState('ALL')
+  const[pendingChange,setPendingChange]=useState<{user:GovernanceUser;makeAdmin:boolean}|null>(null)
   const isOwner=hub.profile.governanceRole==='OWNER'
 
   async function load(){
@@ -38,19 +44,27 @@ export function AdminAccessPage({hub}:{hub:HubBootstrap}){
   useEffect(()=>{void load()},[isOwner])
 
   const counts=useMemo(()=>({
+    owner:users.filter(user=>user.governanceRole==='OWNER').length,
     admins:users.filter(user=>user.governanceRole==='ADMIN').length,
     users:users.filter(user=>user.governanceRole==='USER').length,
+    inactive:users.filter(user=>!user.ativo).length,
   }),[users])
 
+  const visibleUsers=useMemo(()=>users.filter(user=>{
+    if(roleFilter!=='ALL'&&user.governanceRole!==roleFilter)return false
+    if(!search.trim())return true
+    const q=search.trim().toLocaleLowerCase('pt-BR')
+    return `${user.nome} ${user.email} ${user.perfilOperacional} ${roleLabel(user.governanceRole)}`.toLocaleLowerCase('pt-BR').includes(q)
+  }),[users,search,roleFilter])
+
   async function changeRole(user:GovernanceUser,makeAdmin:boolean){
-    const verb=makeAdmin?'conceder acesso administrativo a':'revogar o acesso administrativo de'
-    if(!window.confirm(`Confirma ${verb} ${user.nome}?`))return
     setChangingId(user.userId)
     setError(null)
     setMessage(null)
     try{
       await setGovernanceAdmin(user.userId,makeAdmin)
       setMessage(makeAdmin?`${user.nome} agora é administrador delegado.`:`O acesso administrativo de ${user.nome} foi revogado.`)
+      setPendingChange(null)
       await load()
     }catch(err){setError(err instanceof Error?err.message:'Não foi possível alterar o acesso.')}
     finally{setChangingId(null)}
@@ -58,19 +72,37 @@ export function AdminAccessPage({hub}:{hub:HubBootstrap}){
 
   if(!isOwner)return <EmptyState tone="error" icon="lock" title="Acesso restrito ao Owner" description="Somente o proprietário do BI pode nomear ou revogar administradores."/>
 
-  return <>
-    <PageHeader eyebrow="Administração" title="Acessos" description="Governança de administradores delegados. O Owner é permanente e não pode ser alterado por esta interface."/>
+  return <section className="admin-access-page">
+    <PageHeader eyebrow="ADMINISTRAÇÃO" title="Acessos" description="Governança de administradores delegados. O Owner é permanente e não pode ser alterado por esta interface."/>
+
+    <SummaryMetrics ariaLabel="Resumo de governança" items={[
+      {key:'owner',label:'Owner',value:counts.owner,detail:'protegido',tone:'warning'},
+      {key:'admins',label:'Administradores',value:counts.admins,detail:'delegados',tone:counts.admins?'success':'neutral'},
+      {key:'users',label:'Usuários',value:counts.users,detail:'sem governança administrativa'},
+      {key:'inactive',label:'Inativos',value:counts.inactive,detail:'cadastro sem operação',tone:counts.inactive?'warning':'neutral'},
+    ]}/>
+
+    <PageToolbar
+      ariaLabel="Ferramentas de acessos"
+      search={<SearchField ariaLabel="Buscar usuário" value={search} onChange={setSearch} placeholder="Buscar por nome, e-mail ou perfil…"/>}
+      filters={<select aria-label="Filtrar governança" value={roleFilter} onChange={event=>setRoleFilter(event.target.value)}><option value="ALL">Todas as governanças</option><option value="OWNER">Owner</option><option value="ADMIN">Administradores</option><option value="USER">Usuários</option></select>}
+    />
+
+    {pendingChange&&<div className="admin-confirmation" role="alertdialog" aria-modal="true" aria-labelledby="admin-confirm-title">
+      <div><span className="material-symbols-rounded" aria-hidden="true">verified_user</span><div><strong id="admin-confirm-title">Confirmar alteração de governança</strong><p>{pendingChange.makeAdmin?`Conceder acesso administrativo a ${pendingChange.user.nome}?`:`Revogar o acesso administrativo de ${pendingChange.user.nome}?`} O perfil operacional e o escopo logístico não serão alterados.</p></div></div>
+      <div className="admin-confirmation-actions"><button type="button" className="button" onClick={()=>setPendingChange(null)}>Cancelar</button><button type="button" className="button button-primary" disabled={changingId===pendingChange.user.userId} onClick={()=>void changeRole(pendingChange.user,pendingChange.makeAdmin)}>{changingId===pendingChange.user.userId?'Processando…':'Confirmar'}</button></div>
+    </div>}
 
     <Panel>
       <PanelHeader
         eyebrow="Governança"
         title="Usuários provisionados"
         description="Perfil operacional e autoridade administrativa são dimensões independentes. Conceder Admin não altera o escopo logístico da HUB."
-        trailing={<div style={{display:'flex',gap:8,flexWrap:'wrap'}}><Badge tone="warning">1 Owner</Badge><Badge tone="success">{counts.admins} Admin</Badge><Badge>{counts.users} Usuários</Badge></div>}
+        trailing={<span className="panel-chip">{visibleUsers.length} resultado(s)</span>}
       />
 
       {message&&<div className="notice success" role="status">{message}</div>}
-      {loading?<Skeleton lines={5}/>:error?<EmptyState tone="error" icon="error" title="Falha ao carregar acessos" description={error} action={<button type="button" className="button" onClick={()=>void load()}>Tentar novamente</button>}/>:users.length===0?<EmptyState icon="group_off" title="Nenhum usuário provisionado" description="Os usuários aparecem aqui depois de terem perfil sincronizado no BI."/>:<div className="table-wrap"><table className="responsive-data-table"><thead><tr><th scope="col">Usuário</th><th scope="col">Perfil operacional</th><th scope="col">Status</th><th scope="col">Governança</th><th scope="col">Ação</th></tr></thead><tbody>{users.map(user=><tr key={user.userId}><td data-label="Usuário"><strong>{user.nome}</strong><small style={{display:'block',marginTop:3}}>{user.email}</small></td><td data-label="Perfil operacional">{user.perfilOperacional}</td><td data-label="Status"><Badge tone={user.ativo?'success':'neutral'}>{user.ativo?'Ativo':'Inativo'}</Badge></td><td data-label="Governança"><Badge tone={roleTone(user.governanceRole)}>{roleLabel(user.governanceRole)}</Badge></td><td data-label="Ação">{user.governanceRole==='OWNER'?<span className="muted-text">Protegido</span>:user.governanceRole==='ADMIN'?<button type="button" className="button" disabled={changingId===user.userId} onClick={()=>void changeRole(user,false)}>{changingId===user.userId?'Processando…':'Revogar Admin'}</button>:<button type="button" className="button button-primary" disabled={changingId===user.userId} onClick={()=>void changeRole(user,true)}>{changingId===user.userId?'Processando…':'Tornar Admin'}</button>}</td></tr>)}</tbody></table></div>}
+      {loading?<Skeleton lines={5}/>:error?<EmptyState tone="error" icon="error" title="Falha ao carregar acessos" description={error} action={<button type="button" className="button" onClick={()=>void load()}>Tentar novamente</button>}/>:visibleUsers.length===0?<EmptyState icon="group_off" title="Nenhum usuário encontrado" description="Ajuste a busca ou o filtro de governança para consultar outros usuários."/>:<div className="table-wrap"><table className="responsive-data-table"><thead><tr><th scope="col">Usuário</th><th scope="col">Perfil operacional</th><th scope="col">Status</th><th scope="col">Governança</th><th scope="col">Ação</th></tr></thead><tbody>{visibleUsers.map(user=><tr key={user.userId}><td data-label="Usuário" data-primary="true"><strong>{user.nome}</strong><small className="admin-user-email">{user.email}</small></td><td data-label="Perfil operacional">{user.perfilOperacional}</td><td data-label="Status"><Badge tone={user.ativo?'success':'neutral'} className="ui-status-badge">{user.ativo?'Ativo':'Inativo'}</Badge></td><td data-label="Governança"><Badge tone={roleTone(user.governanceRole)}>{roleLabel(user.governanceRole)}</Badge></td><td data-label="Ação">{user.governanceRole==='OWNER'?<span className="muted-text">Protegido</span>:user.governanceRole==='ADMIN'?<button type="button" className="button" disabled={changingId===user.userId} onClick={()=>setPendingChange({user,makeAdmin:false})}>Revogar Admin</button>:<button type="button" className="button button-primary" disabled={changingId===user.userId} onClick={()=>setPendingChange({user,makeAdmin:true})}>Tornar Admin</button>}</td></tr>)}</tbody></table></div>}
     </Panel>
-  </>
+  </section>
 }
