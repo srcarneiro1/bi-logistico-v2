@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { PageHeader } from '../components/PageHeader'
 import { StatusBadge } from '../components/ui/Badge'
+import { DetailHero, DetailMetrics } from '../components/ui/DetailHero'
 import { supabase } from '../lib/supabase'
 import { deriveFcaStatus, isFcaOverdue } from '../lib/fca'
 import { getFcaReturnContext, prepareFcaReturnTarget } from '../lib/navigationContext'
@@ -46,15 +47,28 @@ export function FcaDetailPage() {
     {state?.justCreated&&<div className="notice notice-success">FCA #{String(state.justCreated).padStart(5,'0')} criado com sucesso.</div>}
     {state?.updated&&<div className="notice notice-success">FCA atualizado com sucesso.</div>}
 
-    <article className="fca-detail-hero">
-      <div className="fca-detail-identity"><div className="fca-detail-kicker"><span>{row.indicador_nome}</span><StatusBadge status={displayStatus}/></div><h2>{row.depositante_nome}</h2><p>Registro associado ao {row.modulo_id} sob responsabilidade de {row.supervisor_nome}.</p></div>
-      <dl className="fca-detail-meta"><div><dt>Data da reunião</dt><dd>{new Date(`${row.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</dd></div><div><dt>Supervisor</dt><dd>{row.supervisor_nome}</dd></div><div><dt>Módulo</dt><dd>{row.modulo_id}</dd></div><div><dt>CNPJ</dt><dd>{row.depositante_cnpj}</dd></div></dl>
-    </article>
+    <DetailHero
+      eyebrow={row.indicador_nome}
+      title={row.depositante_nome}
+      description={`Registro associado ao ${row.modulo_id} sob responsabilidade de ${row.supervisor_nome}.`}
+      status={<StatusBadge status={displayStatus}/>} 
+      meta={[
+        {label:'Data da reunião',value:new Date(`${row.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')},
+        {label:'Supervisor',value:row.supervisor_nome},
+        {label:'Módulo',value:row.modulo_id},
+        {label:'CNPJ',value:row.depositante_cnpj},
+      ]}
+      className="fca-detail-shared-hero"
+    />
 
-    <div className="fca-detail-grid-preline">
-      <article className="panel fca-cause-card"><div className="fca-card-head"><span className="fca-card-icon"><span className="material-symbols-rounded">troubleshoot</span></span><div><span>Análise</span><h2>Causa / desvio identificado</h2></div></div><p className="fca-cause-copy">{row.causa}</p></article>
-      <article className="panel fca-action-summary"><div className="fca-card-head"><span className="fca-card-icon"><span className="material-symbols-rounded">task_alt</span></span><div><span>Execução</span><h2>Resumo do plano</h2></div></div><div className="fca-action-summary-grid"><div><span>Ações válidas</span><strong>{activeActions.length}</strong></div><div><span>Concluídas</span><strong>{completedActions}</strong></div><div><span>Pendentes</span><strong>{openActions}</strong></div><div><span>Auditorias</span><strong>{audit.length}</strong></div></div></article>
-    </div>
+    <DetailMetrics items={[
+      {key:'actions',label:'Ações válidas',value:activeActions.length},
+      {key:'done',label:'Concluídas',value:completedActions,tone:completedActions===activeActions.length&&activeActions.length?'success':'neutral'},
+      {key:'open',label:'Pendentes',value:openActions,tone:openActions?'warning':'neutral'},
+      {key:'audit',label:'Eventos de auditoria',value:audit.length},
+    ]}/>
+
+    <article className="panel fca-cause-card"><div className="fca-card-head"><span className="fca-card-icon"><span className="material-symbols-rounded">troubleshoot</span></span><div><span>Análise</span><h2>Causa / desvio identificado</h2></div></div><p className="fca-cause-copy">{row.causa}</p></article>
 
     <article className="panel panel-spaced fca-plan-panel"><div className="panel-head"><div><span className="panel-eyebrow">EXECUÇÃO</span><h2>Plano de ação</h2></div><span className="panel-chip">{activeActions.length} ação(ões)</span></div>{actions.length===0?<div className="fca-plan-empty">Nenhuma ação cadastrada.</div>:<div className="fca-plan-list">{actions.map(acao=><div className={`fca-plan-item ${acao.status==='CANCELADO'?'action-cancelled':''}`} key={acao.id}><span className="fca-plan-marker">{String(acao.ordem).padStart(2,'0')}</span><div className="fca-plan-copy"><p>{acao.acao}</p><div className="fca-plan-meta"><span><span className="material-symbols-rounded">person</span>{acao.responsavel??'Sem responsável'}</span><span><span className="material-symbols-rounded">event</span>{acao.prazo?new Date(`${acao.prazo}T12:00:00`).toLocaleDateString('pt-BR'):'Sem prazo'}</span></div></div><StatusBadge status={acao.status} className="fca-plan-status"/></div>)}</div>}</article>
 
