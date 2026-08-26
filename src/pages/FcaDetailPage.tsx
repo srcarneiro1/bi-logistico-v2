@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
-import { Link, useLocation, useParams } from 'react-router-dom'
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { PageHeader } from '../components/PageHeader'
 import { supabase } from '../lib/supabase'
 import { deriveFcaStatus, isFcaOverdue } from '../lib/fca'
+import { getFcaReturnContext, prepareFcaReturnTarget } from '../lib/navigationContext'
 import type { FcaWithActions } from '../types/fca'
 
 export function FcaDetailPage() {
   const { id } = useParams()
   const location = useLocation()
+  const navigate=useNavigate()
   const [row, setRow] = useState<FcaWithActions | null>(null)
   const [audit, setAudit] = useState<Array<{ id: number; acao: string; usuario_email: string | null; criado_em: string }>>([])
   const [error, setError] = useState<string | null>(null)
@@ -26,6 +28,8 @@ export function FcaDetailPage() {
     }).catch((err: unknown) => setError(err instanceof Error ? err.message : 'Erro ao carregar FCA.'))
   }, [id])
 
+  function goBack(){navigate(prepareFcaReturnTarget(getFcaReturnContext()))}
+
   if (error) return <div className="notice notice-error">{error}</div>
   if (!row) return <div className="panel loading-panel">Carregando FCA…</div>
   const derived = deriveFcaStatus(row)
@@ -37,7 +41,7 @@ export function FcaDetailPage() {
   const openActions=activeActions.filter(a=>a.status==='ABERTO'||a.status==='EM_ANDAMENTO').length
 
   return <section className="fca-page fca-detail-page">
-    <PageHeader eyebrow="DETALHE DO REGISTRO" title={`FCA #${String(row.numero).padStart(5,'0')}`} description="Consulte o contexto, a causa, o plano de ação e a rastreabilidade do registro." actions={<><Link className="button" to="/fca"><span className="material-symbols-rounded">arrow_back</span>Voltar</Link><Link className="button button-primary" to={`/fca/${row.id}/editar`}><span className="material-symbols-rounded">edit</span>Editar FCA</Link></>}/>
+    <PageHeader eyebrow="DETALHE DO REGISTRO" title={`FCA #${String(row.numero).padStart(5,'0')}`} description="Consulte o contexto, a causa, o plano de ação e a rastreabilidade do registro." actions={<><button className="button" type="button" onClick={goBack}><span className="material-symbols-rounded">arrow_back</span>Voltar</button><Link className="button button-primary" to={`/fca/${row.id}/editar`}><span className="material-symbols-rounded">edit</span>Editar FCA</Link></>}/>
     {state?.justCreated&&<div className="notice notice-success">FCA #{String(state.justCreated).padStart(5,'0')} criado com sucesso.</div>}
     {state?.updated&&<div className="notice notice-success">FCA atualizado com sucesso.</div>}
 
