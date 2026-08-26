@@ -18,6 +18,7 @@ import './finance-dashboard.css'
 import './fca-mobile.css'
 import './fca-workspace.css'
 import './context-ux.css'
+import './transversal-refinement.css'
 import './mfa.css'
 
 createRoot(document.getElementById('root')!).render(
