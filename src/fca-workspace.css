@@ -1,0 +1,75 @@
+.fca-page{--fca-line:#e7e9ee;--fca-soft:#f8f9fb;--fca-muted:#777f8c;--fca-shadow:0 1px 2px rgba(16,24,40,.03),0 8px 24px rgba(16,24,40,.035)}
+.fca-page .page-header{padding-bottom:2px}
+
+/* Summary / KPI strip */
+.fca-list-page .fca-status-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.fca-list-page .fca-status-summary button{position:relative;display:grid;grid-template-columns:36px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;align-items:center;min-height:82px;padding:14px 15px;border:1px solid var(--fca-line);border-radius:12px;background:#fff;color:var(--text-primary);text-align:left;box-shadow:var(--fca-shadow);transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease}
+.fca-list-page .fca-status-summary button:hover{border-color:#cfd3da;box-shadow:0 4px 16px rgba(16,24,40,.07);transform:translateY(-1px)}
+.fca-list-page .fca-status-summary button.active{border-color:#c8cbd2;box-shadow:0 0 0 2px rgba(73,74,86,.06),var(--fca-shadow)}
+.fca-list-page .fca-status-summary .material-symbols-rounded{grid-row:1/3;width:36px;height:36px;border-radius:9px;display:grid;place-items:center;background:#f1f2f4;color:#555c67;font-size:18px}
+.fca-list-page .fca-status-summary strong{align-self:end;font-size:21px;line-height:1;color:var(--text-primary);letter-spacing:-.025em}
+.fca-list-page .fca-status-summary span:last-child{align-self:start;font-size:9px;font-weight:700;letter-spacing:.035em;text-transform:uppercase;color:var(--text-muted)}
+.fca-list-page .fca-status-summary button[data-tone="open"] .material-symbols-rounded{background:#f1f4ff;color:#49629b}
+.fca-list-page .fca-status-summary button[data-tone="progress"] .material-symbols-rounded{background:var(--status-warning-soft);color:#8a6908}
+.fca-list-page .fca-status-summary button[data-tone="overdue"] .material-symbols-rounded{background:var(--status-danger-soft);color:#a31b24}
+.fca-list-page .fca-status-summary button[data-tone="done"] .material-symbols-rounded{background:var(--status-success-soft);color:#326d4b}
+.fca-list-page .fca-status-summary button[data-tone="overdue"] strong{color:#a31b24}
+
+/* Preline-like table workspace */
+.fca-workspace-card{overflow:hidden;border:1px solid var(--fca-line);border-radius:13px;background:#fff;box-shadow:var(--fca-shadow)}
+.fca-workspace-head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;padding:17px 18px 13px;border-bottom:1px solid var(--fca-line)}
+.fca-workspace-head>div{display:grid;gap:2px}.fca-workspace-head .panel-eyebrow{font-size:8px}.fca-workspace-head h2{margin:0;font-size:15px;line-height:1.25;color:var(--text-primary)}.fca-workspace-head p{margin:0;font-size:9.5px;line-height:1.45;color:var(--text-muted)}
+.fca-workspace-card .fca-toolbar{padding:12px 14px;margin:0;border:0;border-bottom:1px solid var(--fca-line);border-radius:0;background:#fafbfc}
+.fca-workspace-card .fca-results{border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important}
+.fca-workspace-card .fca-table-wrap{overflow-x:auto}
+.fca-workspace-card .fca-table{min-width:880px}
+.fca-workspace-card .fca-table th{padding-top:10px;padding-bottom:10px;font-size:8px;letter-spacing:.055em;color:#8b929d;background:#fff}
+.fca-workspace-card .fca-table td{padding-top:12px;padding-bottom:12px;vertical-align:middle}
+.fca-workspace-card .fca-table tbody tr{transition:background .14s ease}
+.fca-workspace-card .fca-table tbody tr:hover{background:#fafbfc}
+.fca-record-cell{display:grid;gap:3px}.fca-record-cell>a{font-size:12px;font-weight:800;letter-spacing:.015em}.fca-record-cell small{font-size:8.5px;color:var(--text-muted)}
+.fca-entity-cell{display:grid;gap:2px;min-width:170px}.fca-entity-cell strong{font-size:11px;color:var(--text-primary)}.fca-entity-cell span{font-size:9px;color:var(--text-muted)}
+.fca-owner-cell{display:grid;gap:2px}.fca-owner-cell strong{font-size:10.5px;color:var(--text-primary)}.fca-owner-cell span{font-size:8.5px;color:var(--text-muted)}
+.fca-open-cell{text-align:right}.fca-open-link{display:inline-flex;align-items:center;gap:4px;min-height:32px;padding:0 9px;border-radius:7px;color:#515864;font-size:9px;font-weight:700;text-decoration:none}.fca-open-link:hover{background:#f0f2f5;color:#25292f}.fca-open-link .material-symbols-rounded{font-size:16px}
+
+/* Detail header / record overview */
+.fca-detail-page .page-header{margin-bottom:2px}
+.fca-detail-hero{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(360px,.8fr);gap:24px;padding:20px;border:1px solid var(--fca-line);border-radius:14px;background:#fff;box-shadow:var(--fca-shadow)}
+.fca-detail-identity{display:grid;align-content:center;gap:7px;min-width:0}.fca-detail-kicker{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.fca-detail-kicker>span:first-child{font-size:9px;font-weight:800;letter-spacing:.075em;text-transform:uppercase;color:var(--text-muted)}.fca-detail-identity h2{margin:0;font-size:24px;line-height:1.15;letter-spacing:-.025em;color:var(--text-primary);overflow-wrap:anywhere}.fca-detail-identity p{margin:0;font-size:11px;color:var(--text-secondary);overflow-wrap:anywhere}
+.fca-detail-meta{display:grid;grid-template-columns:1fr 1fr;border:1px solid #eceef1;border-radius:11px;background:#fafbfc;overflow:hidden}.fca-detail-meta>div{display:grid;gap:3px;padding:12px 13px;min-width:0;border-bottom:1px solid #eceef1}.fca-detail-meta>div:nth-child(odd){border-right:1px solid #eceef1}.fca-detail-meta>div:nth-last-child(-n+2){border-bottom:0}.fca-detail-meta dt{font-size:7.5px;font-weight:700;letter-spacing:.065em;text-transform:uppercase;color:var(--text-muted)}.fca-detail-meta dd{margin:0;font-size:10.5px;font-weight:650;color:var(--text-primary);overflow-wrap:anywhere}
+.fca-detail-grid-preline{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.65fr);gap:14px;align-items:stretch}
+.fca-cause-card{padding:0!important;overflow:hidden}.fca-cause-card .fca-card-head,.fca-action-summary .fca-card-head{display:flex;align-items:flex-start;gap:11px;padding:15px 16px;border-bottom:1px solid var(--fca-line)}.fca-card-icon{width:34px;height:34px;flex:0 0 34px;border-radius:9px;background:#f2f3f5;display:grid;place-items:center;color:#59606b}.fca-card-icon .material-symbols-rounded{font-size:18px}.fca-card-head>div{display:grid;gap:2px}.fca-card-head span{font-size:8px;font-weight:700;letter-spacing:.065em;text-transform:uppercase;color:var(--text-muted)}.fca-card-head h2{margin:0;font-size:14px}.fca-cause-copy{margin:0;padding:17px 18px 19px;font-size:11px;line-height:1.65;color:#3e444d;white-space:pre-wrap;overflow-wrap:anywhere}
+.fca-action-summary{padding:0!important;overflow:hidden}.fca-action-summary-grid{display:grid;grid-template-columns:1fr 1fr}.fca-action-summary-grid>div{display:grid;gap:2px;padding:14px 15px;border-bottom:1px solid #eceef1}.fca-action-summary-grid>div:nth-child(odd){border-right:1px solid #eceef1}.fca-action-summary-grid>div:nth-last-child(-n+2){border-bottom:0}.fca-action-summary-grid span{font-size:8px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.045em}.fca-action-summary-grid strong{font-size:19px;line-height:1.1;color:var(--text-primary)}
+
+/* Action timeline */
+.fca-detail-page .fca-plan-panel,.fca-detail-page .fca-audit-panel{overflow:hidden;padding:0}
+.fca-detail-page .fca-plan-panel>.panel-head,.fca-detail-page .fca-audit-panel>.panel-head{padding:15px 17px;border-bottom:1px solid var(--fca-line);margin:0}
+.fca-plan-list{display:grid;padding:5px 18px 9px}
+.fca-plan-item{position:relative;display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;padding:14px 0;border-bottom:1px solid #eef0f3}.fca-plan-item:last-child{border-bottom:0}.fca-plan-marker{position:relative;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#f3f4f6;border:1px solid #e4e6ea;color:#626974;font-size:9px;font-weight:800}.fca-plan-item:not(:last-child) .fca-plan-marker:after{content:'';position:absolute;top:30px;bottom:-29px;left:50%;width:1px;background:#e2e5e9}.fca-plan-copy{display:grid;gap:5px;min-width:0}.fca-plan-copy p{margin:0;font-size:10.5px;line-height:1.5;color:#353b44;overflow-wrap:anywhere}.fca-plan-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:8.5px;color:var(--text-muted)}.fca-plan-meta span{display:inline-flex;align-items:center;gap:4px}.fca-plan-meta .material-symbols-rounded{font-size:13px}.fca-plan-status{align-self:start}.fca-plan-item.action-cancelled{opacity:.55}.fca-plan-empty{padding:26px 18px;text-align:center;font-size:10px;color:var(--text-muted)}
+
+.fca-audit-timeline{display:grid;padding:12px 18px 16px}.fca-audit-event{position:relative;display:grid;gap:3px;padding:5px 0 14px 22px}.fca-audit-event:before{content:'';position:absolute;left:2px;top:9px;width:8px;height:8px;border-radius:50%;background:#fff;border:2px solid #a5aab2}.fca-audit-event:not(:last-child):after{content:'';position:absolute;left:5px;top:19px;bottom:-1px;width:1px;background:#e1e4e8}.fca-audit-event strong{font-size:9.5px;color:var(--text-primary);text-transform:capitalize}.fca-audit-event span{font-size:8.5px;color:var(--text-muted);overflow-wrap:anywhere}
+
+/* Form experience / visual stepper */
+.fca-editor-page{display:grid;gap:14px}.fca-editor-page .page-header{margin-bottom:0}.fca-form-stepper{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--fca-line);border-radius:12px;background:#fff;box-shadow:var(--fca-shadow);overflow:hidden}.fca-form-stepper>div{display:grid;grid-template-columns:30px minmax(0,1fr);column-gap:9px;align-items:center;padding:12px 14px;border-right:1px solid var(--fca-line)}.fca-form-stepper>div:last-child{border-right:0}.fca-form-stepper i{grid-row:1/3;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#f1f2f4;color:#565d68;font-size:9px;font-style:normal;font-weight:800}.fca-form-stepper strong{font-size:9.5px;color:var(--text-primary)}.fca-form-stepper span{font-size:8px;color:var(--text-muted)}
+.fca-editor-page .fca-form{counter-reset:fca-step;display:grid;gap:13px;padding:0;background:transparent;border:0;box-shadow:none}.fca-editor-page .fca-form .form-section{counter-increment:fca-step;position:relative;padding:18px;border:1px solid var(--fca-line);border-radius:13px;background:#fff;box-shadow:var(--fca-shadow)}
+.fca-editor-page .fca-form .form-section-heading{position:relative;display:flex;align-items:flex-start;gap:11px;padding-left:42px;margin-bottom:15px}.fca-editor-page .fca-form .form-section-heading:before{content:counter(fca-step);position:absolute;left:0;top:-2px;width:30px;height:30px;border-radius:9px;background:#f1f2f4;display:grid;place-items:center;color:#555d68;font-size:9px;font-weight:800}.fca-editor-page .fca-form .form-section-heading>.material-symbols-rounded{display:none}.fca-editor-page .fca-form .form-section-heading h2{font-size:14px;line-height:1.3}.fca-editor-page .fca-form .form-section-heading p{font-size:9px;line-height:1.4;color:var(--text-muted)}
+.fca-editor-page .fca-form label{font-size:8.5px;font-weight:700;color:#5f6671}.fca-editor-page .fca-form input,.fca-editor-page .fca-form select,.fca-editor-page .fca-form textarea{border-color:#dfe2e7;border-radius:8px;background:#fff;box-shadow:0 1px 1px rgba(16,24,40,.02)}.fca-editor-page .fca-form input:focus,.fca-editor-page .fca-form select:focus,.fca-editor-page .fca-form textarea:focus{border-color:#aeb4bd;box-shadow:0 0 0 3px rgba(73,74,86,.07);outline:0}
+.fca-editor-page .action-card{border-color:#e4e7eb;border-radius:11px;background:#fafbfc;box-shadow:none}.fca-editor-page .action-card-title{padding-bottom:10px;border-bottom:1px solid #e8eaed}.fca-editor-page .action-number{background:#fff;border:1px solid #dfe2e7;color:#555d68}.fca-editor-page .add-action-button{border:1px solid #d9dde2;border-radius:8px;background:#fff;color:#414750}.fca-editor-page .add-action-button:hover{background:#f5f6f8}.fca-editor-page .sticky-form-actions{position:sticky;bottom:12px;z-index:10;margin-top:1px;padding:10px;border:1px solid #e1e4e8;border-radius:11px;background:rgba(255,255,255,.94);backdrop-filter:blur(8px);box-shadow:0 12px 34px rgba(16,24,40,.11)}
+
+@media(max-width:1100px){
+  .fca-list-page .fca-status-summary{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .fca-detail-hero{grid-template-columns:1fr}.fca-detail-grid-preline{grid-template-columns:1fr}
+}
+
+@media(max-width:760px){
+  .fca-list-page .fca-status-summary{display:flex;gap:8px;overflow-x:auto;padding-bottom:3px}.fca-list-page .fca-status-summary button{flex:0 0 132px;grid-template-columns:30px minmax(0,1fr);min-height:68px;padding:11px 12px}.fca-list-page .fca-status-summary .material-symbols-rounded{width:30px;height:30px;font-size:16px}.fca-list-page .fca-status-summary strong{font-size:18px}
+  .fca-workspace-head{display:grid;gap:7px;padding:14px}.fca-workspace-card .fca-toolbar{padding:10px}
+  .fca-workspace-card .fca-table{min-width:0!important}.fca-workspace-card .fca-table tbody{padding:9px}.fca-workspace-card .fca-table tr{padding:13px!important;gap:9px 10px}.fca-workspace-card .fca-table td[data-primary="true"]{padding-right:84px!important}.fca-record-cell>a{font-size:13px}.fca-entity-cell{min-width:0}.fca-open-cell{grid-column:1/-1!important;text-align:left!important;padding-top:4px!important}.fca-open-cell:before{display:none!important}.fca-open-link{width:100%;justify-content:center;min-height:38px;background:#f4f5f7;border:1px solid #e5e7ea}.fca-workspace-card .fca-table td[data-label="Responsável"]{grid-column:1/-1}
+  .fca-detail-hero{padding:15px;gap:14px}.fca-detail-identity h2{font-size:20px}.fca-detail-meta{grid-template-columns:1fr 1fr}.fca-detail-page .fca-plan-panel>.panel-head,.fca-detail-page .fca-audit-panel>.panel-head{padding:13px 14px}.fca-plan-list{padding:4px 14px 8px}.fca-plan-item{grid-template-columns:30px minmax(0,1fr);gap:10px;padding:13px 0}.fca-plan-status{grid-column:2;justify-self:start}.fca-plan-marker{width:28px;height:28px}.fca-plan-item:not(:last-child) .fca-plan-marker:after{top:28px}.fca-audit-timeline{padding:11px 14px 14px}
+  .fca-form-stepper{display:flex;overflow-x:auto}.fca-form-stepper>div{flex:0 0 180px;padding:10px 12px}.fca-editor-page .fca-form .form-section{padding:14px}.fca-editor-page .fca-form .form-section-heading{padding-left:38px}.fca-editor-page .sticky-form-actions{position:static;padding:0;border:0;background:transparent;box-shadow:none;backdrop-filter:none}
+}
+
+@media(max-width:480px){
+  .fca-detail-meta{grid-template-columns:1fr}.fca-detail-meta>div,.fca-detail-meta>div:nth-child(odd){border-right:0;border-bottom:1px solid #eceef1}.fca-detail-meta>div:last-child{border-bottom:0}.fca-action-summary-grid{grid-template-columns:1fr 1fr}
+  .fca-form-stepper>div{flex-basis:160px}.fca-editor-page .fca-form .form-section{padding:13px}.fca-editor-page .fca-form .form-section-heading h2{font-size:13px}
+}
