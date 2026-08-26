@@ -6,6 +6,7 @@ import { EmptyState, Skeleton } from '../components/ui/Feedback'
 import { Panel } from '../components/ui/Panel'
 import { SearchField } from '../components/ui/SearchField'
 import { deriveFcaStatus, isFcaOverdue, listFcas } from '../lib/fca'
+import { clearFcaReturnContext } from '../lib/navigationContext'
 import type { DashboardFilters } from '../types/dashboard'
 import type { FcaWithActions } from '../types/fca'
 import type { HubBootstrap } from '../types/hub'
@@ -18,6 +19,7 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
   const[status,setStatus]=useState('')
 
   useEffect(()=>{
+    clearFcaReturnContext()
     setLoading(true)
     setError(null)
     void listFcas().then(setRows).catch(err=>setError(err instanceof Error?err.message:'Erro ao carregar FCA.')).finally(()=>setLoading(false))
