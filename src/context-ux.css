@@ -26,6 +26,32 @@
     box-shadow:none!important;
   }
 
+  /* Resumo FCA é informação primária: deve ficar integralmente visível, nunca como carrossel. */
+  .fca-list-page .fca-status-summary{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+    overflow:visible!important;
+    padding:0!important;
+  }
+  .fca-list-page .fca-status-summary button{
+    width:100%!important;
+    min-width:0!important;
+    min-height:64px!important;
+    padding:10px 11px!important;
+    grid-template-columns:30px minmax(0,1fr)!important;
+    flex:none!important;
+  }
+  .fca-list-page .fca-status-summary button:last-child{
+    grid-column:1/-1!important;
+  }
+  .fca-list-page .fca-status-summary .material-symbols-rounded{
+    width:30px!important;
+    height:30px!important;
+    font-size:16px!important;
+  }
+  .fca-list-page .fca-status-summary strong{font-size:18px!important}
+
   /* Stepper deve funcionar como orientação, não como carrossel. */
   .fca-form-stepper{
     display:grid!important;
@@ -46,6 +72,9 @@
 }
 
 @media(max-width:380px){
+  .fca-list-page .fca-status-summary{grid-template-columns:1fr!important}
+  .fca-list-page .fca-status-summary button:last-child{grid-column:auto!important}
+
   .fca-form-stepper{grid-template-columns:1fr!important}
   .fca-form-stepper>div{grid-template-columns:24px minmax(0,1fr)!important;border-right:0!important;border-bottom:1px solid var(--fca-line)!important}
   .fca-form-stepper>div:last-child{border-bottom:0!important}
