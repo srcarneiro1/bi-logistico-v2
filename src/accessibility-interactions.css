@@ -1,0 +1,47 @@
+/* Passe transversal de acessibilidade visual e estados interativos. */
+
+:where(a,button,input,select,textarea,[tabindex]):focus{outline:none}
+:where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:2px solid rgba(219,8,18,.62);outline-offset:2px}
+
+.button,.table-link,.fca-open-link,.sidebar-nav a,.ui-summary-metric,.chart-legend button{transition:background .15s ease,border-color .15s ease,box-shadow .15s ease,color .15s ease,opacity .15s ease,transform .15s ease}
+.button:focus-visible,.table-link:focus-visible,.fca-open-link:focus-visible,.sidebar-nav a:focus-visible,.ui-summary-metric:focus-visible,.chart-legend button:focus-visible{box-shadow:0 0 0 3px rgba(219,8,18,.12)}
+
+.button:disabled,button:disabled,[aria-disabled="true"]{cursor:not-allowed;opacity:.55;box-shadow:none!important;transform:none!important}
+.button:not(:disabled):active,.ui-summary-metric:not(:disabled):active{transform:translateY(1px)}
+
+[aria-pressed="true"],[aria-selected="true"],.selected-row,.ui-summary-metric.is-active{outline:0}
+[aria-pressed="true"]{border-color:var(--border-strong)}
+.selected-row{box-shadow:inset 3px 0 0 var(--brand-primary)}
+
+input,select,textarea{min-height:40px}
+textarea{min-height:88px}
+input:focus-visible,select:focus-visible,textarea:focus-visible{border-color:#aeb4bd!important;box-shadow:0 0 0 3px rgba(73,74,86,.08)!important}
+
+/* Alvos interativos recorrentes não ficam pequenos demais. */
+.sidebar-nav a,.sidebar-collapse,.sidebar-mobile-close,.mobile-menu-button,.topbar-filter-reset{min-width:40px;min-height:40px}
+.fca-open-link,.table-link{min-height:34px}
+.chart-point-hit{outline:none}
+.chart-point-hit:focus-visible{stroke:rgba(219,8,18,.55);stroke-width:3}
+
+/* Hover só quando o dispositivo realmente suporta hover. */
+@media(hover:hover) and (pointer:fine){
+  .button:not(:disabled):hover,.fca-open-link:hover,.table-link:hover{filter:brightness(.985)}
+  .responsive-data-table tbody tr:hover{background:#fafbfc}
+}
+
+@media(max-width:760px){
+  .button,.ui-search-field,select,input{min-height:44px}
+  .sidebar-nav a,.sidebar-collapse,.sidebar-mobile-close,.mobile-menu-button,.topbar-filter-reset{min-width:44px;min-height:44px}
+  .fca-open-link,.table-link{min-height:42px}
+}
+
+@media(forced-colors:active){
+  :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:2px solid Highlight;outline-offset:2px}
+  .ui-badge,.panel-chip,.module-badge,.metric-cell{border:1px solid CanvasText}
+  .selected-row{box-shadow:inset 3px 0 0 Highlight}
+  .chart-legend button i,.sync-dot,.health-dot{forced-color-adjust:none}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
