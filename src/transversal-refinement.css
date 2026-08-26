@@ -2,13 +2,14 @@
 
 /* Home: gestão à vista como record list compacta. */
 .home-attention-panel .attention-list{padding:8px 14px 12px}
-.home-attention-panel .attention-row{border:1px solid transparent;border-radius:9px;padding:11px 10px;margin:2px 0;transition:background .15s ease,border-color .15s ease}
+.home-attention-panel .attention-row{grid-template-columns:38px minmax(180px,1fr) minmax(340px,1.7fr) auto!important;border:1px solid transparent;border-radius:9px;padding:11px 10px;margin:2px 0;transition:background .15s ease,border-color .15s ease}
 .home-attention-panel .attention-row:hover{background:var(--surface-secondary);border-color:#e8eaed}
 .home-attention-panel .rank{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:#f2f3f5;font-size:9px;font-weight:800;color:var(--text-secondary)}
 .home-attention-panel .attention-row>div:nth-child(2){align-self:center}
 .home-attention-panel .attention-row>div:nth-child(2) strong{font-size:11px}
 .home-attention-panel .attention-row>div:nth-child(2) small{font-size:9px;color:var(--text-muted)}
 .home-attention-panel .attention-metrics span{padding:7px 9px;border:1px solid #edf0f2;border-radius:8px;background:#fff}
+.home-attention-panel .attention-status{align-self:center;justify-self:end}
 
 /* Detail integrations. */
 .depositor-360,.supervisor-360{display:grid;gap:var(--space-3)}
@@ -74,8 +75,10 @@
 }
 
 @media(max-width:760px){
-  .home-attention-panel .attention-row{padding:12px 8px}
+  .home-attention-panel .attention-row{grid-template-columns:30px minmax(0,1fr)!important;padding:12px 8px}
+  .home-attention-panel .attention-metrics{grid-column:2;grid-row:2;grid-template-columns:repeat(3,minmax(0,1fr))}
   .home-attention-panel .attention-metrics span{background:var(--surface-secondary)}
+  .home-attention-panel .attention-status{grid-column:2;grid-row:3;justify-self:start;margin-top:2px}
   .finance-support-grid{grid-template-columns:1fr!important}
   .finance-support-grid>div{min-height:0}
   .finance-depositors-panel .revenue-attainment{padding-left:0;border-left:0}
