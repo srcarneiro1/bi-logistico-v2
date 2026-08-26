@@ -19,6 +19,7 @@ import './fca-mobile.css'
 import './fca-workspace.css'
 import './context-ux.css'
 import './transversal-refinement.css'
+import './record-lists.css'
 import './mfa.css'
 
 createRoot(document.getElementById('root')!).render(
