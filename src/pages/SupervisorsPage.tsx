@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { PageHeader } from '../components/PageHeader'
 import { avg, indicatorMeta, metricStatus, pct, periodKey, scoped } from '../lib/dashboard'
 import { deriveFcaStatus, isFcaOverdue, listFcas } from '../lib/fca'
+import { consumeSupervisorReturn, setFcaReturnContext } from '../lib/navigationContext'
 import type { FcaWithActions } from '../types/fca'
 import type { DashboardFilters, MetricStatus } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
@@ -15,7 +16,7 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
  const navigate=useNavigate()
  const [selectedSupervisorId,setSelectedSupervisorId]=useState(filters.supervisorId)
  const [fcas,setFcas]=useState<FcaWithActions[]>([])
- useEffect(()=>setSelectedSupervisorId(filters.supervisorId),[filters.supervisorId])
+ useEffect(()=>{const restored=consumeSupervisorReturn();setSelectedSupervisorId(restored||filters.supervisorId)},[filters.supervisorId])
  useEffect(()=>{void listFcas().then(setFcas).catch(()=>setFcas([]))},[])
  const metaProd=indicatorMeta(hub,'Lead Time Produção'),metaRec=indicatorMeta(hub,'Lead Time Recebimento'),metaInv=indicatorMeta(hub,'Inventário')
  const scopedOp=scoped(hub.facts.kpiOperacional,filters),scopedInv=scoped(hub.facts.kpiInventarioDepositante,filters)
@@ -70,7 +71,7 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
 
      <div className="supervisor-360-grid">
        <section className="dashboard-panel supervisor-portfolio"><div className="panel-head"><div><span className="panel-eyebrow">CARTEIRA</span><h2>Performance por depositante</h2></div><span className="panel-chip">{selected.deps.length} depositante(s)</span></div><div className="table-wrap embedded"><table className="status-table responsive-data-table"><thead><tr><th scope="col">Depositante</th><th scope="col">Módulo</th><th scope="col">Produção</th><th scope="col">Recebimento</th><th scope="col">Inventário</th><th scope="col">Status</th></tr></thead><tbody>{detailRows.map(({d,op,inv,status})=><tr key={d.cnpj}><td data-label="Depositante" data-primary="true"><button type="button" className="table-link" onClick={()=>openDepositante(d.cnpj)}><strong>{d.nome}</strong></button></td><td data-label="Módulo">{d.moduloId}</td><td data-label="Produção"><span className={`metric-cell metric-cell-${metricStatus(op?.producaoPct,metaProd)}`}>{pct(op?.producaoPct)}</span></td><td data-label="Recebimento"><span className={`metric-cell metric-cell-${metricStatus(op?.recebimentoPct,metaRec)}`}>{pct(op?.recebimentoPct)}</span></td><td data-label="Inventário"><span className={`metric-cell metric-cell-${metricStatus(inv?.totalPct,metaInv)}`}>{pct(inv?.totalPct)}</span></td><td data-label="Status"><span className={`row-status row-status-${status}`}>{label[status]}</span></td></tr>)}</tbody></table></div></section>
-       <section className="dashboard-panel supervisor-open-fcas"><div className="panel-head"><div><span className="panel-eyebrow">PENDÊNCIAS</span><h2>FCAs abertos no período</h2></div><span className={`panel-chip ${selectedFcas.length?'panel-chip-red':''}`}>{selectedFcas.length} pendente(s)</span></div>{selectedFcas.length?<div className="supervisor-fca-list">{selectedFcas.map(f=>{const overdue=isFcaOverdue(f),status=overdue?'VENCIDO':deriveFcaStatus(f);return <Link key={f.id} to={`/fca/${f.id}`}><div><strong>FCA #{String(f.numero).padStart(5,'0')} · {f.depositante_nome}</strong><span>{f.indicador_nome} · {new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</span></div><span className={`status-badge status-${status}`}>{status.replace('_',' ')}</span></Link>})}</div>:<div className="table-empty">Nenhum FCA pendente para este supervisor no filtro atual.</div>}</section>
+       <section className="dashboard-panel supervisor-open-fcas"><div className="panel-head"><div><span className="panel-eyebrow">PENDÊNCIAS</span><h2>FCAs abertos no período</h2></div><span className={`panel-chip ${selectedFcas.length?'panel-chip-red':''}`}>{selectedFcas.length} pendente(s)</span></div>{selectedFcas.length?<div className="supervisor-fca-list">{selectedFcas.map(f=>{const overdue=isFcaOverdue(f),status=overdue?'VENCIDO':deriveFcaStatus(f);return <Link key={f.id} to={`/fca/${f.id}`} onClick={()=>setFcaReturnContext({type:'supervisor',supervisorId:selected.s.supervisorId})}><div><strong>FCA #{String(f.numero).padStart(5,'0')} · {f.depositante_nome}</strong><span>{f.indicador_nome} · {new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</span></div><span className={`status-badge status-${status}`}>{status.replace('_',' ')}</span></Link>})}</div>:<div className="table-empty">Nenhum FCA pendente para este supervisor no filtro atual.</div>}</section>
      </div>
    </article>}
 

@@ -22,9 +22,10 @@ Não depender do histórico de uma conversa para reconstruir decisões. O GitHub
 - Cloudflare Pages.
 - Supabase: autenticação, FCA, auditoria, governança e substituições.
 - Google Sheets/HUB revisada: cadastros operacionais, KPIs e financeiro.
-- Forecast Planner e Preline podem ser usados como benchmarks visuais, nunca como dependência de runtime sem decisão explícita.
+- Preline Analytics/Admin é benchmark principal de UI/UX, não dependência.
+- Flowbite React passa a ser benchmark complementar de componentes/interações React (drawer, modal, tabs, table, sidebar, feedback), mas **não deve ser instalado neste estágio**.
+- O projeto atual não usa Tailwind; uma eventual adoção real de Flowbite/Tailwind exige POC/ADR isolado e decisão arquitetural explícita.
 - Não converter o projeto para Next.js/Tailwind apenas para reproduzir padrões de outra biblioteca.
-- Preline — especialmente os templates Analytics Dashboard e Admin Dashboard — é benchmark principal de UI/UX, não dependência.
 
 ## Guardrails funcionais
 
@@ -37,11 +38,11 @@ Não depender do histórico de uma conversa para reconstruir decisões. O GitHub
 - Mudanças pequenas, isoladas e validáveis; evitar grandes patches multifuncionais.
 - Não fazer merge sem autorização explícita do usuário.
 - **Responsividade é requisito de aceite:** cada bloco visual deve ser construído e validado para desktop, tablet e mobile, e não adaptado apenas no final.
-- Em mobile, preferir composição específica (cards, toolbars compactas, progressive disclosure e alvos de toque adequados) em vez de apenas comprimir layouts desktop.
+- Em mobile, conteúdo essencial não deve depender de arraste horizontal; preferir grid, cards, progressive disclosure e alvos de toque adequados.
+- Estados semânticos não devem ser repetidos por múltiplos sinais concorrentes sem ganho de informação.
+- Navegação para detalhes deve preservar contexto de origem sempre que o usuário espera retornar ao mesmo item/visão.
 
 ## Segurança de acesso — CONCLUÍDA NESTA FASE
-
-Princípio permanente: uma tela de login nunca é considerada fronteira de segurança. Toda leitura/escrita deve continuar negada quando chamada diretamente por REST/RPC/Functions sem autorização de aplicação correta.
 
 Concluído e mergeado:
 - PR #27 — hardening P0.
@@ -56,86 +57,73 @@ Concluído e mergeado:
 
 ## Roadmap UI/UX — objetivo 10/10
 
-Benchmark principal: Preline Analytics/Admin como referência de hierarquia, densidade, cards, tabelas, filtros, estados de feedback e responsividade, sem instalar a biblioteca.
-
 ### Foundations e Shell — CONCLUÍDOS
 
 PRs #21, #22 e #26.
 
 Entregue:
-- `Panel`, `PanelHeader`, `Badge`, `StatusBadge`, `SearchField`, `EmptyState`, `Skeleton`;
-- drawer acessível e responsivo;
-- sidebar desktop recolhível;
-- topbar e filter toolbar;
+- primitives compartilhados (`Panel`, `Badge`, `SearchField`, `EmptyState`, `Skeleton`);
+- drawer/sidebar/topbar/filter toolbar responsivos;
 - tabelas responsivas;
 - Supervisor 360º;
 - acessibilidade básica e regras funcionais preservadas.
 
-### Ciclo visual #31–#37 — CONCLUÍDO / CONSOLIDAÇÃO AUTORIZADA
+### Ciclo visual #31–#38 — CONCLUÍDO E MERGEADO
 
-PR #31 — Home:
-- hierarquia Primary KPI vs Supporting KPI;
-- gráfico histórico dominante;
-- financeiro/escopo como apoio;
-- pontos de atenção em largura total.
+- Home: hierarquia Primary vs Supporting KPI, histórico dominante e pontos de atenção.
+- Gráficos/feedback: rótulos temporais, tooltip/legenda, empty/loading/error e retry.
+- KPIs: densidade e hierarquia de Lead Times/Inventário.
+- Supervisores: saúde da carteira governada pela maior severidade, cards simplificados.
+- Depositantes: busca/priorização/status e cards mobile dedicados.
+- Financeiro: headline metrics, escala correta acima de 100%, cores semânticas e rails de severidade.
+- FCA: responsividade inicial em lista/detalhe/novo/editar.
+- PR #38: compactação final dos filtros globais no mobile e correção dos cards mobile de Depositantes.
 
-PR #32 — gráficos e feedback:
-- rótulos temporais com amostragem inteligente;
-- tooltip/legenda refinados;
-- `EmptyState` compartilhado;
-- estados globais de loading/error e retry.
+### FCA — REDESENHO PRELINE EM VALIDAÇÃO
 
-PR #33 — KPIs:
-- cards compactos;
-- Lead Times com maior peso;
-- Inventário com pontuação principal e dimensões de apoio;
-- histórico usando largura útil.
+PR draft #39 — branch `ui/fca-preline-redesign`.
 
-PR #34 — Supervisores:
-- resumo por criticidade;
-- cards com hierarquia mais clara;
-- saúde da carteira governada pela maior severidade dos depositantes;
-- status duplicado removido.
+Objetivo: elevar o FCA de “funcional e responsivo” para uma experiência administrativa/analítica mais próxima de Preline Admin/Analytics, sem alterar lógica, permissões, dados ou segurança.
 
-PR #35 — Depositantes:
-- busca com primitive compartilhado;
-- resumo de críticos/atenção/estáveis;
-- ordenação por severidade;
-- status explícito.
-- mobile refinado posteriormente no head final: cards próprios com identidade + status, supervisor/módulo como metadados, KPIs compactos, CNPJ no rodapé e 360º em uma coluna real.
+Em validação:
+- summary cards semânticos e workspace único para busca/filtro/listagem;
+- tabela com identidade primária e CTA explícito;
+- detalhe com hero, metadados agrupados, causa em superfície principal e resumo das ações;
+- plano de ação e auditoria em timelines;
+- Novo/Editar com fluxo visual de três etapas e seções numeradas;
+- stepper mobile sem carrossel/arraste obrigatório;
+- Depositantes mobile com summary 2x2 e sem rail de severidade redundante ao lado do nome;
+- retorno contextual de FCA para o mesmo Supervisor ou Depositante de origem;
+- contexto de retorno consumido para evitar navegação obsoleta;
+- desktop, tablet e mobile fazem parte do aceite.
 
-PR #36 — Financeiro:
-- Receita realizada e Atingimento como headline;
-- planejado/saldo como supporting metrics;
-- barras Planejado x Realizado com escala relativa para valores >100%;
-- cor semântica da barra realizada;
-- rail de severidade separado do conteúdo para preservar legibilidade.
+Não fazer merge deste bloco sem nova autorização explícita após validação do Preview.
 
-PR #37 — FCA + mobile final:
-- listagem de FCA em cards no mobile;
-- resumo de status compacto e horizontal em telas pequenas;
-- detalhe responsivo;
-- Novo/Editar FCA em grids adequados a tablet/mobile;
-- botões e ações com touch targets adequados;
-- tratamento específico para 980px, 760px, 480px e casos estreitos.
+## Auditoria UX/UI transversal — ACHADOS
 
-O head final do ciclo inclui também o refinamento mobile de Depositantes e deve ser consolidado em `main` como uma única entrega final.
+1. **Administração/Acessos é o principal gap restante.** A tela atual é funcional, mas pouco rica em exploração e gestão. O backend hoje suporta com segurança listar usuários e conceder/revogar Admin; não criar ações fictícias além disso.
+2. Próximo redesign de Acessos deve incluir busca/filtros, summary stats, melhor distinção entre governança e perfil operacional, detalhe contextual (drawer/modal), confirmações próprias e mobile em cards.
+3. Substituições deve receber o mesmo padrão de workspace, filtros, status e detalhe progressivo.
+4. Criar padrão transversal de navegação contextual/breadcrumb para telas de detalhe onde fizer sentido.
+5. Revisar drawers/modais/tabs como primitives do design system, inspirados em Preline/Flowbite, sem introduzir Tailwind neste ciclo.
+6. Revisar acessibilidade transversal: foco, navegação por teclado, touch targets, contraste e estados de confirmação.
+7. Consolidar CSS somente depois de estabilizar esses padrões; não fazer limpeza ampla agora.
 
-### Próximo bloco
+### Próximos blocos após FCA
 
-Após consolidar o ciclo #31–#37:
-1. Administração/Acessos/Substituições — revisar densidade e responsividade sem alterar governança;
-2. passe final de consistência entre páginas: headers, toolbars, empty/loading/error states e acessibilidade;
-3. revisão mobile transversal das páginas restantes;
-4. redução da dívida CSS somente no final, sem consolidação ampla antes de validar regressões.
+1. Administração/Acessos — redesign de gestão dentro das capacidades reais do backend.
+2. Administração/Substituições — workspace e mobile.
+3. Navegação contextual + drawers/modais/tabs reutilizáveis.
+4. Passe final de consistência entre páginas e acessibilidade.
+5. Redução da dívida CSS no final.
 
 ## Próximo ciclo ao retomar
 
 Ao receber **`retomar BI Logístico`**:
 1. confirmar `main` e PRs abertos;
 2. não reabrir segurança salvo novo incidente;
-3. confirmar que o ciclo visual #31–#37 já está consolidado;
-4. seguir para Administração/Acessos/Substituições e consistência final;
+3. verificar PR #39 e feedback do Preview;
+4. se FCA já validado/mergeado, seguir para Administração/Acessos;
 5. validar sempre desktop + tablet + mobile;
-6. manter Preline Analytics/Admin como benchmark, sem adicionar dependência;
+6. manter Preline Analytics/Admin + Flowbite React como benchmarks, sem adicionar dependências de styling neste estágio;
 7. deixar limpeza ampla de CSS por último.
