@@ -1,9 +1,5 @@
-/* Hierarquia complementar: chips, feedback, charts e ações.
-   Panel/Section headers e EmptyState vivem em ui-foundations.css. */
-
-.panel-chip{display:inline-flex;align-items:center;justify-content:center;min-height:26px;padding:5px 9px;border:1px solid #e1e4e7;border-radius:999px;background:#f7f8f9;color:var(--text-secondary);font-size:9px;font-weight:700;line-height:1;white-space:nowrap}
-.panel-chip-red{border-color:#f0c9cc;background:var(--status-danger-soft);color:var(--status-danger)}
-.panel-chip-ok{border-color:#d7e8dc;background:var(--status-success-soft);color:var(--status-success)}
+/* Hierarquia complementar: feedback, charts e ações.
+   Panel/Section headers, Chip e EmptyState vivem em ui-foundations.css. */
 
 .table-empty,.empty-chart,.loading-panel{min-height:150px;display:grid;place-items:center;align-content:center;padding:28px 18px;text-align:center;font-size:10px;line-height:1.45;color:var(--text-muted)}
 .loading-panel{position:relative;gap:10px}
