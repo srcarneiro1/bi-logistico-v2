@@ -10,10 +10,18 @@
 .depositors-table-wrap .depositor-table{min-width:1020px}
 .depositors-table-wrap tbody tr{cursor:pointer}
 
+/* Seleção é estado da entidade Depositante, não um estado genérico de tabela.
+   Mantém superfície neutra e discreta; não cria rail, borda interna ou tom semântico.
+   O realce de teclado da linha continua pertencendo ao primitive compartilhado via :has(:focus-visible). */
+.depositors-table-wrap .depositor-row-selected{background:#f7f8fa}
+.depositors-table-wrap .depositor-row-selected:hover{background:#f5f6f8}
+.depositors-table-wrap .depositor-row-selected .depositor-open-button{color:var(--text-primary)}
+
 @media(max-width:980px){.depositor-grid{grid-template-columns:1fr}}
 @media(max-width:760px){
   .depositors-discovery{gap:12px}
   .depositors-table-wrap .depositor-table{min-width:0}
   .depositors-discovery .depositor-360{overflow:hidden}
   .depositor-grid{grid-template-columns:1fr;gap:12px}
+  .depositors-table-wrap .depositor-row-selected{background:var(--surface-secondary);border-color:var(--border-strong);box-shadow:var(--shadow-card)}
 }

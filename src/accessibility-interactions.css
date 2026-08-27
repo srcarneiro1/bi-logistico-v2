@@ -44,7 +44,7 @@ textarea{min-height:88px}
 @media(forced-colors:active){
   :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:2px solid Highlight;outline-offset:2px}
   .ui-badge,.ui-chip,.module-badge,.metric-cell{border:1px solid CanvasText}
-  .selected-row{outline:2px solid Highlight;outline-offset:-2px;box-shadow:none}
+  .depositor-row-selected{outline:2px solid Highlight;outline-offset:-2px;box-shadow:none}
 }
 
 /* Aqui !important é deliberado: a preferência de redução de movimento precisa vencer qualquer owner. */
