@@ -5,7 +5,6 @@
   --brand-primary:#db0812;
   --brand-primary-hover:#b8070f;
   --brand-primary-soft:#fdecee;
-
   --status-success:#3f7c59;
   --status-success-soft:#edf6f0;
   --status-warning:#a87900;
@@ -14,7 +13,6 @@
   --status-danger-soft:#fff0f1;
   --status-neutral:#6f747d;
   --status-neutral-soft:#f1f2f4;
-
   --surface-canvas:#f5f6f8;
   --surface-primary:#fff;
   --surface-secondary:#f8f9fa;
@@ -24,7 +22,6 @@
   --text-muted:#858a93;
   --border-default:#e2e4e8;
   --border-strong:#cdd0d5;
-
   --space-1:4px;
   --space-2:8px;
   --space-3:12px;
@@ -33,14 +30,13 @@
   --space-6:32px;
   --space-7:40px;
   --space-8:48px;
-
   --radius-control:8px;
   --radius-card:11px;
   --radius-pill:999px;
   --shadow-card:0 1px 3px rgba(29,31,35,.035);
   --shadow-raised:0 12px 32px rgba(29,31,35,.10);
 
-  /* Aliases de transição ainda consumidos pelo shell/login legado. */
+  /* Aliases de transição ainda consumidos pelo shell/login. */
   --red:var(--brand-primary);
   --red-dark:var(--brand-primary-hover);
   --red-soft:var(--brand-primary-soft);
@@ -62,7 +58,7 @@ html{background:var(--surface-canvas)}
 body{font-size:13px;line-height:1.45;background:var(--surface-canvas);color:var(--text-primary)}
 
 /* Controles globais: geometria única; variações de contexto ficam nos owners específicos. */
-input,select,textarea{border:1px solid var(--border-strong);border-radius:var(--radius-control);background:var(--surface-primary);color:var(--text-primary);font-size:12px}
+input,select,textarea{width:100%;padding:10px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-control);background:var(--surface-primary);color:var(--text-primary);font-size:12px}
 input,select{min-height:40px}
 textarea{line-height:1.5;resize:vertical}
 label{font-size:12px;font-weight:600;color:var(--text-secondary)}
@@ -73,7 +69,6 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .button-ghost{background:transparent}
 .button-ghost:hover,.button:hover:not(.button-primary){background:var(--surface-secondary);border-color:var(--border-strong)}
 
-/* Utilitários semânticos não mudam a superfície do componente. */
 .text-ok{color:var(--status-success)!important}
 .text-warn{color:var(--status-warning)!important}
 .text-crit{color:var(--status-danger)!important}
