@@ -27,7 +27,6 @@
 .fca-plan-meta .material-symbols-rounded{font-size:13px}
 .fca-plan-status{align-self:start}
 .fca-plan-item.action-cancelled{opacity:.55}
-.fca-plan-empty{padding:26px 18px;text-align:center;font-size:10px;color:var(--text-muted)}
 
 .fca-audit-timeline{display:grid;padding:12px 18px 16px}
 .fca-audit-event{position:relative;display:grid;gap:3px;padding:5px 0 14px 22px}
