@@ -28,16 +28,16 @@ textarea{min-height:88px}
 
 @media(max-width:760px){
   .button,.ui-search-field{min-height:44px}
-  #root :where(input,select){min-height:44px}
+  #root :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]):not([type="button"]):not([type="submit"]):not([type="reset"]),select){min-height:44px}
   .sidebar-nav a,.sidebar-collapse,.sidebar-mobile-close,.mobile-menu-button,.topbar-filter-reset{min-width:44px;min-height:44px}
   .fca-open-link,.table-link{min-height:42px}
 }
 
-/* iOS/WebKit amplia automaticamente a viewport ao focar controles com fonte menor que 16px.
-   Esta regra é deliberadamente restrita a WebKit touch/mobile e vence owners de página pela cascata final. */
+/* iOS/WebKit amplia automaticamente a viewport ao focar campos textuais com fonte menor que 16px.
+   Checkbox, radio, file e outros controles não textuais ficam fora desta regra. */
 @supports (-webkit-touch-callout:none){
   @media(max-width:760px){
-    #root :where(input,select,textarea){font-size:16px}
+    #root :where(input:not([type="checkbox"]):not([type="radio"]):not([type="file"]):not([type="hidden"]):not([type="range"]):not([type="color"]):not([type="button"]):not([type="submit"]):not([type="reset"]),select,textarea){font-size:16px}
   }
 }
 
