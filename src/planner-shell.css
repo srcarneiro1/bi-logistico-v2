@@ -100,7 +100,7 @@
   .sidebar-brand,.sidebar-collapsed .sidebar-brand{height:52px;min-height:52px;margin-bottom:20px;padding:0 4px;display:flex;flex-direction:row;justify-content:flex-start;align-items:center;gap:10px}
   .sidebar-brand img,.sidebar-collapsed .sidebar-brand img{display:block;width:86px;height:42px;object-position:left center}
   .sidebar-collapse,.sidebar-collapsed .sidebar-collapse{display:none}
-  .sidebar-mobile-close{display:grid;position:absolute;right:4px;top:9px;width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,.07);color:#fff;border:0;place-items:center}
+  .sidebar-mobile-close{display:grid;position:absolute;right:0;top:4px;width:44px;height:44px;border-radius:8px;background:rgba(255,255,255,.07);color:#fff;border:0;place-items:center}
   .sidebar-mobile-close .material-symbols-rounded{display:block;color:#fff;font-size:20px;line-height:1}
   .sidebar-mobile-close:hover{background:rgba(255,255,255,.12)}
   .sidebar-nav,.sidebar-collapsed .sidebar-nav{display:grid;grid-template-columns:minmax(0,1fr);grid-auto-flow:row;align-content:start;width:100%;gap:4px;padding:0}
@@ -109,11 +109,11 @@
   .sidebar-nav a .material-symbols-rounded{flex:0 0 20px}
   .nav-label,.sidebar-collapsed .nav-label{display:block;min-width:0}
   .nav-section-label,.sidebar-collapsed .nav-section-label{display:block;padding:16px 11px 6px}
-  .sidebar-user,.sidebar-collapsed .sidebar-user{margin-top:auto;grid-template-columns:32px minmax(0,1fr) 30px;justify-items:stretch;padding:14px 3px 0}
+  .sidebar-user,.sidebar-collapsed .sidebar-user{margin-top:auto;grid-template-columns:32px minmax(0,1fr) 44px;justify-items:stretch;padding:14px 3px 0}
   .sidebar-user-copy,.sidebar-collapsed .sidebar-user-copy{display:grid}
-  .sidebar-user>button,.sidebar-collapsed .sidebar-user>button{display:grid}
+  .sidebar-user>button,.sidebar-collapsed .sidebar-user>button{display:grid;width:44px;height:44px}
   .topbar{padding-left:18px;padding-right:18px}
-  .mobile-menu-button{display:grid}
+  .mobile-menu-button{display:grid;width:44px;height:44px}
   .filter-toolbar{padding-left:18px;padding-right:18px}
   .content{padding:24px 18px 38px}
 }
