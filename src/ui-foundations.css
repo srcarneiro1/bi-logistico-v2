@@ -1,5 +1,5 @@
-/* UI Foundations v1
-   New reusable primitives live here. Do not duplicate page-specific rules into this layer. */
+/* UI Foundations V2 — primitives de interface compartilhados.
+   Tabelas/record lists vivem exclusivamente em record-lists.css. */
 
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 
@@ -9,6 +9,12 @@
 .ui-panel-header h2{margin:0;font-size:15px;line-height:1.3;color:var(--text-primary)}
 .ui-panel-header p{margin:0;max-width:720px;font-size:11px;line-height:1.45;color:var(--text-muted)}
 .ui-panel-header-trailing{display:flex;align-items:center;gap:var(--space-2);flex:0 0 auto}
+
+.ui-section-header{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--space-4);min-width:0}
+.ui-section-header-copy{display:grid;gap:3px;min-width:0}
+.ui-section-header h2{margin:0;font-size:17px;line-height:1.3;color:var(--text-primary)}
+.ui-section-header p{margin:0;max-width:760px;font-size:11px;line-height:1.45;color:var(--text-muted)}
+.ui-section-header-trailing{display:flex;align-items:center;gap:var(--space-2);flex:0 0 auto}
 .ui-eyebrow{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
 
 .ui-badge{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-height:24px;padding:4px 8px;border:1px solid transparent;border-radius:var(--radius-pill);font-size:10px;font-weight:700;line-height:1;white-space:nowrap}
@@ -25,22 +31,19 @@
 .ui-search-field input{min-height:40px;padding:0;border:0!important;box-shadow:none!important;background:transparent;font-size:12px}
 .ui-search-field input:focus,.ui-search-field input:focus-visible{outline:none!important;box-shadow:none!important}
 
-.ui-empty-state{min-height:170px;padding:var(--space-6) var(--space-4);display:grid;place-items:center;align-content:center;gap:var(--space-3);text-align:center;color:var(--text-muted)}
-.ui-empty-state>.material-symbols-rounded{font-size:30px;color:var(--text-muted)}
-.ui-empty-state>div{display:grid;gap:5px;max-width:480px}
-.ui-empty-state strong{font-size:13px;color:var(--text-primary)}
-.ui-empty-state p{margin:0;font-size:11px;line-height:1.5;color:var(--text-muted)}
-.ui-empty-state-error>.material-symbols-rounded,.ui-empty-state-error strong{color:var(--status-danger)}
-.ui-empty-state-action{margin-top:var(--space-1)}
+.ui-empty-state{min-height:150px;padding:28px 18px;display:grid;place-items:center;align-content:center;gap:10px;text-align:center;color:var(--text-muted)}
+.ui-empty-state>.material-symbols-rounded{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#f2f3f5;color:#6d737c;font-size:21px}
+.ui-empty-state>div{display:grid;gap:5px;max-width:500px}
+.ui-empty-state strong{font-size:12px;color:var(--text-primary)}
+.ui-empty-state p{margin:0;font-size:10px;line-height:1.5;color:var(--text-muted)}
+.ui-empty-state-error>.material-symbols-rounded{background:var(--status-danger-soft);color:var(--status-danger)}
+.ui-empty-state-error strong{color:var(--status-danger)}
+.ui-empty-state-action{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:var(--space-1)}
 
 .ui-skeleton{display:grid;gap:10px;padding:var(--space-4);overflow:hidden}
 .ui-skeleton span{height:14px;border-radius:6px;background:linear-gradient(90deg,#eef0f2 25%,#f7f8f9 50%,#eef0f2 75%);background-size:200% 100%;animation:ui-skeleton-shimmer 1.3s linear infinite}
 .ui-skeleton span:nth-child(2n){width:82%}.ui-skeleton span:nth-child(3n){width:64%}
 @keyframes ui-skeleton-shimmer{to{background-position:-200% 0}}
-
-.ui-toolbar{display:flex;align-items:center;gap:10px;margin-bottom:var(--space-4);background:transparent}
-.ui-toolbar>.ui-search-field{flex:1 1 auto;min-width:0}
-.ui-toolbar>select{flex:0 0 210px;width:210px;min-height:42px;border:1px solid #d7d9de;border-radius:10px;background:var(--surface-primary);box-shadow:0 1px 2px rgba(29,31,35,.025)}
 
 .ui-page-toolbar{display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);margin:0 0 var(--space-4);padding:var(--space-3);border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card)}
 .ui-page-toolbar-embedded{margin:0;border-width:0 0 1px;border-radius:0;box-shadow:none;background:var(--surface-secondary)}
@@ -55,22 +58,24 @@
 .ui-summary-metric{min-width:0;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:var(--space-3);padding:var(--space-3) var(--space-4);border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card);color:var(--text-primary);text-align:left}
 button.ui-summary-metric{font:inherit;cursor:pointer;transition:border-color .15s ease,box-shadow .15s ease,background .15s ease}
 button.ui-summary-metric:hover{border-color:var(--border-strong);box-shadow:0 4px 16px rgba(29,31,35,.06)}
-.ui-summary-metric.is-active{border-color:#aeb2ba;box-shadow:inset 0 -3px 0 var(--brand-primary),var(--shadow-card)}
+.ui-summary-metric.is-active{border-color:#aeb2ba;background:var(--surface-secondary);box-shadow:0 0 0 1px rgba(73,74,86,.06)}
 .ui-summary-metric-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:9px;background:var(--status-neutral-soft);color:var(--status-neutral);font-size:18px}
 .ui-summary-metric-copy{display:grid;gap:2px;min-width:0}
 .ui-summary-metric-copy>span{font-size:9px;font-weight:700;letter-spacing:.055em;text-transform:uppercase;color:var(--text-secondary)}
 .ui-summary-metric-copy>strong{font-size:22px;line-height:1.05;letter-spacing:-.02em;color:var(--text-primary);overflow-wrap:anywhere}
 .ui-summary-metric-copy>small{font-size:9px;line-height:1.25;color:var(--text-muted)}
-.ui-summary-metric-danger{border-color:#f0c9cc;background:var(--status-danger-soft)}
-.ui-summary-metric-danger .ui-summary-metric-icon{background:#fff0f1;color:var(--status-danger)}
+
+/* Tons semânticos ficam localizados no conteúdo; a superfície permanece neutra. */
+.ui-summary-metric-danger,.ui-summary-metric-warning,.ui-summary-metric-success,.ui-summary-metric-info{border-color:var(--border-default);background:var(--surface-primary)}
+.ui-summary-metric-danger .ui-summary-metric-icon{background:var(--status-danger-soft);color:var(--status-danger)}
 .ui-summary-metric-danger .ui-summary-metric-copy>strong{color:var(--status-danger)}
-.ui-summary-metric-warning{border-color:#eadb9f;background:var(--status-warning-soft)}
-.ui-summary-metric-warning .ui-summary-metric-icon{background:#fff9e8;color:var(--status-warning)}
-.ui-summary-metric-success{border-color:#d7e8dc;background:var(--status-success-soft)}
-.ui-summary-metric-success .ui-summary-metric-icon{background:#f5fbf7;color:var(--status-success)}
+.ui-summary-metric-warning .ui-summary-metric-icon{background:var(--status-warning-soft);color:var(--status-warning)}
+.ui-summary-metric-warning .ui-summary-metric-copy>strong{color:var(--status-warning)}
+.ui-summary-metric-success .ui-summary-metric-icon{background:var(--status-success-soft);color:var(--status-success)}
+.ui-summary-metric-success .ui-summary-metric-copy>strong{color:var(--status-success)}
 .ui-summary-metric-info .ui-summary-metric-icon{background:#f1f4ff;color:#49629b}
 
-/* Summary que também atua como controle de filtro: superfície neutra e sem rails decorativos. */
+/* Summary que também atua como controle de filtro: neutro, compacto e sem rails. */
 .ui-summary-metrics-filters .ui-summary-metric{background:var(--surface-primary);border-color:var(--border-default);box-shadow:0 1px 2px rgba(29,31,35,.025)}
 .ui-summary-metrics-filters .ui-summary-metric-copy>strong{color:var(--text-primary)}
 .ui-summary-metrics-filters button.ui-summary-metric:hover{background:var(--surface-secondary);border-color:var(--border-strong);box-shadow:0 2px 8px rgba(29,31,35,.045)}
@@ -78,10 +83,10 @@ button.ui-summary-metric:hover{border-color:var(--border-strong);box-shadow:0 4p
 .ui-summary-metrics-filters .ui-summary-metric.is-active .ui-summary-metric-copy>span{color:var(--text-primary)}
 
 @media(max-width:760px){
-  .ui-panel-header{display:grid;gap:var(--space-3)}
-  .ui-panel-header-trailing{justify-content:flex-start;flex-wrap:wrap}
-  .ui-toolbar{display:grid;grid-template-columns:1fr}
-  .ui-toolbar>select{width:100%;min-width:0}
+  .ui-panel-header,.ui-section-header{display:grid;gap:var(--space-3);align-items:start}
+  .ui-panel-header-trailing,.ui-section-header-trailing{justify-content:flex-start;flex-wrap:wrap}
+  .ui-section-header h2{font-size:16px}
+  .ui-section-header p{font-size:10px}
 
   .ui-page-toolbar,.ui-page-toolbar-main{display:grid;grid-template-columns:1fr}
   .ui-page-toolbar{padding:var(--space-3)}
@@ -99,39 +104,15 @@ button.ui-summary-metric:hover{border-color:var(--border-strong);box-shadow:0 4p
   .ui-summary-metrics-filters .ui-summary-metric{min-height:62px;padding:9px 10px}
   .ui-summary-metrics-filters .ui-summary-metric-copy>small{display:none}
 
-  .table-wrap:has(.responsive-data-table){overflow:visible;border:0;background:transparent;box-shadow:none}
-  .responsive-data-table{min-width:0!important;border-collapse:separate!important;border-spacing:0 10px!important}
-  .responsive-data-table thead{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
-  .responsive-data-table tbody{display:grid;gap:10px}
-  .responsive-data-table tr{display:grid!important;grid-template-columns:1fr 1fr;gap:10px 14px;padding:14px 14px 13px;background:var(--surface-primary);border:1px solid var(--border-default);border-radius:12px;box-shadow:var(--shadow-card)}
-  .responsive-data-table td{display:grid!important;grid-template-columns:1fr;gap:4px;padding:0!important;border:0!important;text-align:left!important;min-width:0}
-  .responsive-data-table td::before{content:attr(data-label);display:block;font-size:9px;line-height:1.2;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted)}
-  .responsive-data-table td[data-primary="true"]{grid-column:1/-1;padding-bottom:10px!important;border-bottom:1px solid #edf0f2!important}
-  .responsive-data-table td[data-full="true"]{grid-column:1/-1}
-  .responsive-data-table td>*{max-width:100%}
-  .responsive-data-table .table-link,.responsive-data-table .depositor-open-button{width:auto;text-align:left}
-  .responsive-data-table .mono{overflow-wrap:anywhere}
-  .responsive-data-table .table-empty{grid-column:1/-1;display:block!important;padding:20px!important;text-align:center!important}
-
-  /* Gestão à vista vira cartões compactos em vez de preservar a grade desktop comprimida. */
-  .attention-list{padding:8px 12px 12px}
-  .attention-row{position:relative;display:grid!important;grid-template-columns:28px minmax(0,1fr);gap:8px 10px;align-items:start;padding:14px 4px;border-bottom:1px solid #edf0f2}
-  .attention-row>.rank{grid-column:1;grid-row:1 / span 2;padding-top:2px}
-  .attention-row>div:nth-child(2){grid-column:2;grid-row:1;display:grid;gap:2px;min-width:0}
-  .attention-row>div:nth-child(2) strong{font-size:13px;line-height:1.25}
-  .attention-row>.attention-metrics{grid-column:2;grid-row:2;display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:4px}
-  .attention-row>.attention-metrics span{padding:8px 9px;border-radius:8px;background:var(--surface-secondary);border:1px solid #edf0f2}
-  .attention-row>.attention-metrics b{font-size:11px;line-height:1.2}
-  .attention-row>.health-dot{position:absolute;right:4px;top:17px;width:8px;height:8px}
+  .ui-empty-state{min-height:130px}
+  .ui-empty-state-action{width:100%}
+  .ui-empty-state-action>.button{width:100%;justify-content:center}
 }
 
 @media(max-width:480px){
   .ui-summary-metrics{grid-template-columns:1fr}
   .ui-summary-metrics-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ui-summary-metrics-filters>.ui-summary-metric:last-child:nth-child(odd){grid-column:1/-1}
-  .responsive-data-table tr{grid-template-columns:1fr}
-  .responsive-data-table td[data-primary="true"],.responsive-data-table td[data-full="true"]{grid-column:auto}
-  .attention-row>.attention-metrics{grid-template-columns:1fr}
 }
 
 @media(prefers-reduced-motion:reduce){.ui-skeleton span{animation:none}}

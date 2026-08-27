@@ -4,6 +4,7 @@ import { Badge } from '../components/ui/Badge'
 import { EmptyState } from '../components/ui/Feedback'
 import { PageToolbar } from '../components/ui/PageToolbar'
 import { SearchField } from '../components/ui/SearchField'
+import { SectionHeader } from '../components/ui/SectionHeader'
 import { SummaryMetrics } from '../components/ui/SummaryMetrics'
 import { deleteSupervisorPhoto, uploadSupervisorPhoto } from '../lib/api'
 import type { HubBootstrap, HubSupervisor } from '../types/hub'
@@ -68,7 +69,7 @@ export function AdminSupervisorsPage({hub,onRefresh}:{hub:HubBootstrap;onRefresh
   if(!isAdmin)return <EmptyState tone="error" icon="lock" title="Área exclusiva para administradores" description="Somente Owner ou Administrador pode gerenciar fotos de supervisores."/>
 
   return <section className="admin-supervisors-page">
-    <PageHeader eyebrow="ADMINISTRAÇÃO" title="Supervisores" description="Gerencie apenas as fotos usadas pelo BI. Nome, e-mail, SupervisorID, módulos e demais dados continuam sendo controlados pela HUB."/>
+    <PageHeader eyebrow="ADMINISTRAÇÃO" title="Fotos de supervisores" description="Gerencie apenas as fotos usadas pelo BI. Nome, e-mail, SupervisorID, módulos e demais dados continuam sendo controlados pela HUB."/>
 
     <SummaryMetrics ariaLabel="Resumo das fotos de supervisores" items={[
       {key:'total',label:'Supervisores',value:hub.supervisors.length,detail:'cadastros da HUB',icon:'groups'},
@@ -77,12 +78,13 @@ export function AdminSupervisorsPage({hub,onRefresh}:{hub:HubBootstrap;onRefresh
       {key:'missing',label:'Sem foto',value:missing,detail:'sem imagem disponível',icon:'person_off',tone:missing?'warning':'neutral'},
     ]}/>
 
-    <PageToolbar ariaLabel="Ferramentas de supervisores" search={<SearchField ariaLabel="Buscar supervisor" value={search} onChange={setSearch} placeholder="Buscar por nome, e-mail ou ID…"/>}/>
+    <PageToolbar ariaLabel="Ferramentas de fotos de supervisores" search={<SearchField ariaLabel="Buscar supervisor" value={search} onChange={setSearch} placeholder="Buscar por nome, e-mail ou ID…"/>}/>
 
     <div className="admin-guidance"><span className="material-symbols-rounded" aria-hidden="true">image</span><div><strong>Fonte das fotos</strong><p>Uma foto cadastrada aqui tem prioridade sobre a FotoURL da HUB. JPG, PNG ou WEBP até 2 MB. Se o override for removido, o BI volta automaticamente a usar a imagem informada na HUB.</p></div></div>
     {error&&<div className="notice notice-error" role="alert">{error}</div>}
     {message&&<div className="notice notice-success" role="status">{message}</div>}
 
+    <SectionHeader eyebrow="CADASTRO VISUAL" title="Supervisores da HUB" description="A origem da foto é exibida em cada registro; o restante do cadastro permanece somente leitura nesta área." trailing={<span className="panel-chip">{supervisors.length} resultado(s)</span>}/>
     {supervisors.length===0?<EmptyState icon="group_off" title="Nenhum supervisor encontrado" description="Ajuste a busca para consultar outros supervisores."/>:<div className="admin-supervisor-grid">{supervisors.map(supervisor=>{
       const working=workingId===supervisor.supervisorId
       return <article className="admin-supervisor-card" key={supervisor.supervisorId}>

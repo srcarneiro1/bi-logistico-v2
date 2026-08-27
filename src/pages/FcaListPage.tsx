@@ -4,7 +4,7 @@ import { PageHeader } from '../components/PageHeader'
 import { StatusBadge } from '../components/ui/Badge'
 import { EmptyState, Skeleton } from '../components/ui/Feedback'
 import { PageToolbar } from '../components/ui/PageToolbar'
-import { Panel } from '../components/ui/Panel'
+import { Panel, PanelHeader } from '../components/ui/Panel'
 import { SearchField } from '../components/ui/SearchField'
 import { SummaryMetrics, type SummaryMetricItem } from '../components/ui/SummaryMetrics'
 import { deriveFcaStatus, isFcaOverdue, listFcas } from '../lib/fca'
@@ -65,8 +65,8 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
 
     <SummaryMetrics items={summary} ariaLabel="Filtrar FCA por status" className="fca-summary-metrics" variant="filters"/>
 
-    <section className="fca-workspace-card" aria-label="Registros FCA">
-      <div className="fca-workspace-head"><div><span className="panel-eyebrow">REGISTROS</span><h2>FCA no escopo atual</h2><p>{filtered.length} registro(s) após filtros · vencidos permanecem priorizados visualmente pelo status.</p></div><span className="panel-chip">{filters.fcaPeriodo==='ALL'?'Todos os meses':filters.fcaPeriodo}</span></div>
+    <Panel className="fca-workspace-card">
+      <PanelHeader eyebrow="REGISTROS" title="FCA no escopo atual" description={`${filtered.length} registro(s) após filtros · vencidos permanecem priorizados visualmente pelo status.`} trailing={<span className="panel-chip">{filters.fcaPeriodo==='ALL'?'Todos os meses':filters.fcaPeriodo}</span>}/>
       <PageToolbar
         embedded
         ariaLabel="Filtros da FCA"
@@ -74,9 +74,11 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
         filters={<select aria-label="Status da FCA" value={status} onChange={event=>setStatus(event.target.value)}><option value="">Todos os status</option><option value="ABERTO">Aberto</option><option value="EM_ANDAMENTO">Em andamento</option><option value="CONCLUIDO">Concluído</option><option value="VENCIDO">Vencido</option><option value="CANCELADO">Cancelado</option></select>}
       />
 
-      {loading&&<Panel className="fca-results"><Skeleton lines={7}/></Panel>}
-      {!loading&&error&&<Panel className="fca-results"><EmptyState tone="error" icon="error" title="Não foi possível carregar os FCAs" description={error}/></Panel>}
-      {!loading&&!error&&<Panel className="fca-results">{filtered.length===0?<EmptyState title="Nenhum FCA encontrado" description="Ajuste os filtros ou a busca para consultar outros registros."/>:<div className="table-wrap embedded fca-table-wrap"><table className="fca-table responsive-data-table"><thead><tr><th scope="col">Registro</th><th scope="col">Depositante / KPI</th><th scope="col">Responsável</th><th scope="col">Módulo</th><th scope="col">Status</th><th scope="col"><span className="sr-only">Ação</span></th></tr></thead><tbody>{filtered.map(row=>{const derived=deriveFcaStatus(row),overdue=isFcaOverdue(row),display=overdue?'VENCIDO':derived;return <tr key={row.id}><td data-label="FCA" data-primary="true"><div className="fca-record-cell"><Link className="fca-number-link" to={`/fca/${row.id}`}>#{String(row.numero).padStart(5,'0')}</Link><small>{new Date(`${row.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</small></div></td><td data-label="Depositante"><div className="fca-entity-cell"><strong>{row.depositante_nome}</strong><span>{row.indicador_nome}</span></div></td><td data-label="Responsável"><div className="fca-owner-cell"><strong>{row.supervisor_nome}</strong><span>Supervisor</span></div></td><td data-label="Módulo"><span className="module-badge">{row.modulo_id}</span></td><td data-label="Status"><StatusBadge status={display}/></td><td className="fca-open-cell"><Link className="fca-open-link" to={`/fca/${row.id}`}>Abrir<span className="material-symbols-rounded" aria-hidden="true">chevron_right</span></Link></td></tr>})}</tbody></table></div>}</Panel>}
-    </section>
+      <div className="fca-results">
+        {loading&&<Skeleton lines={7}/>} 
+        {!loading&&error&&<EmptyState tone="error" icon="error" title="Não foi possível carregar os FCAs" description={error}/>} 
+        {!loading&&!error&&(filtered.length===0?<EmptyState title="Nenhum FCA encontrado" description="Ajuste os filtros ou a busca para consultar outros registros."/>:<div className="table-wrap embedded fca-table-wrap"><table className="fca-table responsive-data-table"><thead><tr><th scope="col">Registro</th><th scope="col">Depositante / KPI</th><th scope="col">Responsável</th><th scope="col">Módulo</th><th scope="col">Status</th><th scope="col"><span className="sr-only">Ação</span></th></tr></thead><tbody>{filtered.map(row=>{const derived=deriveFcaStatus(row),overdue=isFcaOverdue(row),display=overdue?'VENCIDO':derived;return <tr key={row.id}><td data-label="FCA" data-primary="true"><div className="fca-record-cell"><Link className="fca-number-link" to={`/fca/${row.id}`}>#{String(row.numero).padStart(5,'0')}</Link><small>{new Date(`${row.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</small></div></td><td data-label="Depositante"><div className="fca-entity-cell"><strong>{row.depositante_nome}</strong><span>{row.indicador_nome}</span></div></td><td data-label="Responsável"><div className="fca-owner-cell"><strong>{row.supervisor_nome}</strong><span>Supervisor</span></div></td><td data-label="Módulo"><span className="module-badge">{row.modulo_id}</span></td><td data-label="Status"><StatusBadge status={display}/></td><td className="fca-open-cell"><Link className="fca-open-link" to={`/fca/${row.id}`}>Abrir<span className="material-symbols-rounded" aria-hidden="true">chevron_right</span></Link></td></tr>})}</tbody></table></div>)}
+      </div>
+    </Panel>
   </section>
 }
