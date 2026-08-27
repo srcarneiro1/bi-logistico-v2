@@ -77,12 +77,16 @@ export async function getSupervisorPhotoOverrides(env:Env):Promise<SupervisorPho
   const admin=adminClient(env)
   const{data,error}=await admin.from('supervisor_fotos').select('supervisor_id,foto_path,updated_at').order('supervisor_id')
   if(error)throw new Error(`SUPERVISOR_PHOTO_LIST_FAILED:${error.message}`)
-  return Promise.all((data??[]).map(async row=>({
-    supervisorId:String(row.supervisor_id),
-    fotoPath:String(row.foto_path),
-    fotoUrl:await signedPhotoUrl(admin,String(row.foto_path)),
-    updatedAt:String(row.updated_at),
-  })))
+  const photos:SupervisorPhotoOverride[]=[]
+  for(const row of data??[]){
+    try{
+      const fotoPath=String(row.foto_path)
+      photos.push({supervisorId:String(row.supervisor_id),fotoPath,fotoUrl:await signedPhotoUrl(admin,fotoPath),updatedAt:String(row.updated_at)})
+    }catch(signError){
+      console.error('supervisor photo sign fallback',String(row.supervisor_id),signError instanceof Error?signError.message:signError)
+    }
+  }
+  return photos
 }
 
 export async function saveSupervisorPhoto(env:Env,supervisorId:string,file:File,actorId:string):Promise<SupervisorPhotoOverride>{
