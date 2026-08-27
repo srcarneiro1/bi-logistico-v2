@@ -6,7 +6,7 @@
 .home-main-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,.82fr);gap:var(--space-3);align-items:start}
 .home-trend-panel .panel-body{padding:20px 22px 18px}
 .home-side-stack{display:grid;gap:var(--space-3)}
-.home-side-stack>.dashboard-panel,.home-side-stack>.ui-panel{min-width:0}
+.home-side-stack>.ui-panel{min-width:0}
 .home-scope-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:12px;gap:8px}
 .home-scope-grid>div{display:grid;gap:6px;min-height:76px;padding:12px 13px;border:1px solid var(--border-default);border-radius:var(--radius-control);background:var(--surface-secondary)}
 .home-scope-grid span{font-size:10px;color:var(--text-secondary)}
