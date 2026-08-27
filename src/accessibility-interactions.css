@@ -32,6 +32,14 @@ textarea{min-height:88px}
   .fca-open-link,.table-link{min-height:42px}
 }
 
+/* iOS/WebKit amplia automaticamente a viewport ao focar controles com fonte menor que 16px.
+   Esta regra é deliberadamente restrita a WebKit touch/mobile e vence owners de página pela cascata final. */
+@supports (-webkit-touch-callout:none){
+  @media(max-width:760px){
+    #root :where(input,select,textarea){font-size:16px}
+  }
+}
+
 @media(forced-colors:active){
   :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:2px solid Highlight;outline-offset:2px}
   .ui-badge,.ui-chip,.module-badge,.metric-cell{border:1px solid CanvasText}
