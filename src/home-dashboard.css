@@ -12,6 +12,16 @@
 .home-scope-grid span{font-size:10px;color:var(--text-secondary)}
 .home-scope-grid strong{font-size:20px;color:var(--text-primary)}
 
+/* Desktop: a coluna de apoio não deve comandar a altura do painel principal. */
+@media(min-width:1021px){
+  .home-side-stack .finance-summary{padding:6px 14px}
+  .home-side-stack .finance-summary>div{padding:7px 0}
+  .home-side-stack .progress-track{margin:2px 14px 0}
+  .home-side-stack .panel-note{margin:8px 14px 12px}
+  .home-side-stack .home-scope-grid{padding:10px}
+  .home-side-stack .home-scope-grid>div{min-height:62px;padding:10px 12px;gap:4px}
+}
+
 .home-attention-panel{margin-top:0}
 .home-attention-panel .attention-list{display:grid;padding:8px 14px 12px}
 .home-attention-panel .attention-row{display:grid;grid-template-columns:38px minmax(180px,1fr) minmax(340px,1.7fr) auto;gap:10px;align-items:center;padding:11px 10px;border:1px solid transparent;border-radius:9px;margin:2px 0;transition:background .15s ease,border-color .15s ease}
