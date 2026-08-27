@@ -27,7 +27,8 @@ textarea{min-height:88px}
 }
 
 @media(max-width:760px){
-  .button,.ui-search-field,select,input{min-height:44px}
+  .button,.ui-search-field{min-height:44px}
+  #root :where(input,select){min-height:44px}
   .sidebar-nav a,.sidebar-collapse,.sidebar-mobile-close,.mobile-menu-button,.topbar-filter-reset{min-width:44px;min-height:44px}
   .fca-open-link,.table-link{min-height:42px}
 }
