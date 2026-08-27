@@ -63,7 +63,7 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
   return <section className="fca-page fca-list-page">
     <PageHeader eyebrow="CONTROLE DE DESVIOS" title="Fatos, causas e ações" description="Acompanhe registros, priorize vencimentos e abra cada FCA para consultar causa, plano de ação e rastreabilidade." actions={<Link className="button button-primary" to="/fca/novo"><span className="material-symbols-rounded">add</span>Novo FCA</Link>}/>
 
-    <SummaryMetrics items={summary} ariaLabel="Resumo por status da FCA" className="fca-summary-metrics"/>
+    <SummaryMetrics items={summary} ariaLabel="Filtrar FCA por status" className="fca-summary-metrics" variant="filters"/>
 
     <section className="fca-workspace-card" aria-label="Registros FCA">
       <div className="fca-workspace-head"><div><span className="panel-eyebrow">REGISTROS</span><h2>FCA no escopo atual</h2><p>{filtered.length} registro(s) após filtros · vencidos permanecem priorizados visualmente pelo status.</p></div><span className="panel-chip">{filters.fcaPeriodo==='ALL'?'Todos os meses':filters.fcaPeriodo}</span></div>

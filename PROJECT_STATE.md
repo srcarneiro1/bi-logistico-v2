@@ -16,11 +16,14 @@ Ao receber esse comando em um chat novo:
 
 Não depender do histórico de uma conversa para reconstruir decisões. O GitHub é a fonte persistente do projeto.
 
-## Fonte obrigatória de UI/UX
+## Fontes obrigatórias de UI/UX
 
-Antes de qualquer criação ou alteração visual, ler **`docs/BI_LOGISTICO_UI_UX_SKILL.md`**.
+Antes de qualquer criação ou alteração visual, ler nesta ordem:
 
-Essa skill passa a ser a fonte de verdade para:
+1. **`docs/BI_LOGISTICO_UI_UX_SKILL.md`** — fonte de verdade da gramática visual e de interação.
+2. **`docs/BI_LOGISTICO_DESIGN_LAYOUT_MEMORY.md`** — memória persistente de decisões, achados, referências externas pesquisadas e backlog visual ativo.
+
+Esses documentos cobrem:
 - anatomia de páginas;
 - hierarquia de KPIs;
 - cards;
@@ -33,20 +36,22 @@ Essa skill passa a ser a fonte de verdade para:
 - feedback states;
 - responsividade;
 - acessibilidade;
-- consistência entre Home, KPIs, Supervisores, Depositantes, Financeiro, FCA e Administração.
+- consistência entre Home, KPIs, Supervisores, Depositantes, Financeiro, FCA e Administração;
+- decisões recentes de design/layout e anti-patterns já identificados.
 
-Nenhuma tela nova ou revisão visual deve ser considerada concluída sem passar pelo checklist dessa skill.
+Nenhuma tela nova ou revisão visual deve ser considerada concluída sem passar pelo checklist da skill e pelas decisões registradas na memória de design.
 
 ## Stack e fronteiras
 
 - React + TypeScript + Vite.
 - Cloudflare Pages.
-- Supabase: autenticação, FCA, auditoria, governança e substituições.
+- Supabase: autenticação, FCA, auditoria, governança, substituições e fotos internas de supervisores.
 - Google Sheets/HUB revisada: cadastros operacionais, KPIs e financeiro.
 - Preline Analytics/Admin é benchmark principal de UI/UX, não dependência.
-- Flowbite React é benchmark complementar de componentes/interações React (drawer, modal, tabs, table, sidebar, feedback), mas **não deve ser instalado neste estágio**.
-- O projeto atual não usa Tailwind; uma eventual adoção real de Flowbite/Tailwind exige POC/ADR isolado e decisão arquitetural explícita.
-- Não converter o projeto para Next.js/Tailwind apenas para reproduzir padrões de outra biblioteca.
+- Flowbite React, shadcn/ui, Tremor, TailAdmin e Mosaic podem ser usados como benchmarks de composição/componentes.
+- Radix Primitives e React Aria são candidatos incrementais para componentes comportamentais complexos quando houver justificativa técnica.
+- O projeto atual não usa Tailwind; uma eventual adoção real de Tailwind/Flowbite/shadcn/Tremor exige POC/ADR isolado e decisão arquitetural explícita.
+- Não converter o projeto para Next.js/Tailwind apenas para reproduzir padrões de outra biblioteca ou template.
 
 ## Guardrails funcionais
 
@@ -62,6 +67,7 @@ Nenhuma tela nova ou revisão visual deve ser considerada concluída sem passar 
 - Em mobile, conteúdo essencial não deve depender de arraste horizontal; preferir grid, cards, progressive disclosure e alvos de toque adequados.
 - Estados semânticos não devem ser repetidos por múltiplos sinais concorrentes sem ganho de informação.
 - Navegação para detalhes deve preservar contexto de origem sempre que o usuário espera retornar ao mesmo item/visão.
+- Em cards, evitar rails/faixas/bordas coloridas decorativas no topo. Semântica deve ser comunicada de forma localizada e consistente.
 
 ## Segurança de acesso — CONCLUÍDA NESTA FASE
 
@@ -76,6 +82,19 @@ Concluído e mergeado:
 - RPCs públicos de governança com `SECURITY INVOKER` + RLS.
 - Security Advisor sem alertas de RLS/função privilegiada; `Leaked Password Protection Disabled` permanece apenas quando indisponível no plano.
 
+## Fotos de supervisores — CONCLUÍDO
+
+PR #46 mergeado.
+
+- Upload administrativo em **Administração → Fotos de supervisores**.
+- Bucket Supabase `supervisor-fotos` privado.
+- URLs assinadas por 24h.
+- JPG/PNG/WEBP até 2 MB com validação real de assinatura binária.
+- Escrita/remoção somente por backend Cloudflare com Owner/Admin + AAL2.
+- `SupervisorID` validado contra a HUB.
+- Foto interna tem prioridade; `FotoURL` da HUB/SharePoint permanece como fallback.
+- `service_role` possui apenas as permissões necessárias para operar a tabela; `anon` e `authenticated` não possuem DML direto.
+
 ## Roadmap UI/UX — objetivo 10/10
 
 ### Foundations e Shell — CONCLUÍDOS
@@ -89,7 +108,7 @@ Entregue:
 - Supervisor 360º;
 - acessibilidade básica e regras funcionais preservadas.
 
-### Ciclo visual #31–#39 — CONCLUÍDO E MERGEADO
+### Ciclo visual #31–#44 — CONCLUÍDO E MERGEADO
 
 - Home: hierarquia Primary vs Supporting KPI, histórico dominante e pontos de atenção.
 - Gráficos/feedback: rótulos temporais, tooltip/legenda, empty/loading/error e retry.
@@ -98,35 +117,35 @@ Entregue:
 - Depositantes: busca/priorização/status e cards mobile dedicados.
 - Financeiro: headline metrics, escala correta acima de 100%, cores semânticas e rails de severidade.
 - FCA: redesign Preline, workspace de listagem, detalhe, timelines, formulários por etapas, navegação contextual e mobile sem carrossel obrigatório.
-- PR #38: compactação final dos filtros globais no mobile e correção dos cards mobile de Depositantes.
-- PR #39: redesign FCA + correções UX transversais de Depositantes e navegação contextual.
+- SummaryMetrics, DetailHero/DetailMetrics, StatusBadge/MetricStatusBadge, tabelas/record-lists, sections/feedback e acessibilidade/interações foram normalizados em primitives/padrões compartilhados.
 
-## Auditoria UX/UI transversal — ACHADOS
+## Auditoria UX/UI transversal — ACHADOS ATUAIS
 
-1. **Administração/Acessos é o principal gap restante.** A tela atual é funcional, mas pouco rica em exploração e gestão. O backend hoje suporta com segurança listar usuários e conceder/revogar Admin; não criar ações fictícias além disso.
-2. Próximo redesign de Acessos deve incluir busca/filtros, summary stats, melhor distinção entre governança e perfil operacional, detalhe contextual (drawer/modal), confirmações próprias e mobile em cards.
-3. Substituições deve receber o mesmo padrão de workspace, filtros, status e detalhe progressivo.
-4. Criar padrão transversal de navegação contextual/breadcrumb para telas de detalhe onde fizer sentido.
-5. Revisar drawers/modais/tabs como primitives do design system, inspirados em Preline/Flowbite, sem introduzir Tailwind neste ciclo.
-6. Revisar acessibilidade transversal: foco, navegação por teclado, touch targets, contraste e estados de confirmação.
-7. Consolidar CSS somente depois de estabilizar esses padrões; não fazer limpeza ampla agora.
-8. Usar `docs/BI_LOGISTICO_UI_UX_SKILL.md` como checklist obrigatório antes de qualquer PR visual.
+1. **FCA voltou a ser o principal gap visual percebido pelo usuário.** Os cards/botões de status e parte do workspace parecem mais grosseiros e diferentes das outras abas. Corrigir sem alterar regras de FCA.
+2. **Depositantes:** a faixa colorida superior de `DetailMetrics` foi explicitamente considerada feia. Rever o primitive compartilhado, avaliando impacto em Supervisor 360 antes da mudança.
+3. FCA ainda possui CSS legado de `.fca-status-summary` em `fca-workspace.css`, apesar de a tela já usar `SummaryMetrics`.
+4. Depositantes ainda possui CSS legado de `.depositors-summary` e overrides mobile extensos. Não limpar junto do redesign; estabilizar primeiro.
+5. Administração/Acessos e Substituições continuam candidatas a refinamento, mas feedback visual explícito de FCA/Depositantes tem prioridade.
+6. Revisar drawers/modais/tabs como primitives quando necessário; preferir POC incremental com Radix/React Aria se comportamento acessível próprio estiver ficando frágil.
+7. Revisar acessibilidade transversal: foco, navegação por teclado, touch targets, contraste e estados de confirmação.
+8. Consolidar CSS somente depois de estabilizar os padrões; não fazer limpeza ampla simultânea a redesign.
 
 ### Próximos blocos
 
-1. Administração/Acessos — redesign de gestão dentro das capacidades reais do backend.
-2. Administração/Substituições — workspace e mobile.
-3. Navegação contextual + drawers/modais/tabs reutilizáveis.
-4. Passe final de consistência entre todas as páginas usando a UI/UX Skill.
-5. Redução da dívida CSS no final.
+1. FCA — normalizar summaries/status filters, workspace e ações com o restante do BI.
+2. Depositantes — remover/reformular rail superior dos DetailMetrics e validar impacto transversal.
+3. Revisão visual FCA detalhe/formulários conforme screenshots do usuário.
+4. Administração/Acessos e Substituições — refinamentos restantes.
+5. Redução controlada da dívida CSS, por concern e com evidência de seletor substituído.
 
 ## Próximo ciclo ao retomar
 
 Ao receber **`retomar BI Logístico`**:
 1. confirmar `main` e PRs abertos;
-2. ler `docs/BI_LOGISTICO_UI_UX_SKILL.md` antes de qualquer alteração visual;
-3. não reabrir segurança salvo novo incidente;
-4. seguir para Administração/Acessos, salvo novo feedback funcional mais prioritário;
-5. validar sempre desktop + tablet + mobile;
-6. manter Preline Analytics/Admin + Flowbite React como benchmarks, sem adicionar dependências de styling neste estágio;
-7. deixar limpeza ampla de CSS por último.
+2. ler `docs/BI_LOGISTICO_UI_UX_SKILL.md`;
+3. ler `docs/BI_LOGISTICO_DESIGN_LAYOUT_MEMORY.md`;
+4. não reabrir segurança salvo novo incidente;
+5. priorizar o último feedback visual explícito do usuário — atualmente FCA e Depositantes;
+6. validar sempre desktop + tablet + mobile;
+7. manter Tailwind/shadcn/Preline/Flowbite/Tremor/TailAdmin como benchmarks enquanto não houver ADR de adoção;
+8. deixar limpeza ampla de CSS por último.

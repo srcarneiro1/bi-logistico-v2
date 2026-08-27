@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 
 export type SummaryMetricTone='neutral'|'success'|'warning'|'danger'|'info'
+export type SummaryMetricsVariant='default'|'filters'
 
 export interface SummaryMetricItem {
   key:string
@@ -14,8 +15,8 @@ export interface SummaryMetricItem {
   ariaLabel?:string
 }
 
-export function SummaryMetrics({items,ariaLabel='Resumo da página',className=''}:{items:SummaryMetricItem[];ariaLabel?:string;className?:string}){
-  return <div className={`ui-summary-metrics ${className}`.trim()} aria-label={ariaLabel}>
+export function SummaryMetrics({items,ariaLabel='Resumo da página',className='',variant='default'}:{items:SummaryMetricItem[];ariaLabel?:string;className?:string;variant?:SummaryMetricsVariant}){
+  return <div className={`ui-summary-metrics ui-summary-metrics-${variant} ${className}`.trim()} role="group" aria-label={ariaLabel}>
     {items.map(item=>{
       const tone=item.tone??'neutral'
       const content=<>
