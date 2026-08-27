@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PageHeader } from '../components/PageHeader'
 import { StatusBadge } from '../components/ui/Badge'
+import { Chip } from '../components/ui/Chip'
 import { EmptyState, Skeleton } from '../components/ui/Feedback'
 import { PageToolbar } from '../components/ui/PageToolbar'
 import { Panel, PanelHeader } from '../components/ui/Panel'
@@ -66,7 +67,7 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
     <SummaryMetrics items={summary} ariaLabel="Filtrar FCA por status" className="fca-summary-metrics" variant="filters"/>
 
     <Panel className="fca-workspace-card">
-      <PanelHeader eyebrow="REGISTROS" title="FCA no escopo atual" description={`${filtered.length} registro(s) após filtros · vencidos permanecem priorizados visualmente pelo status.`} trailing={<span className="panel-chip">{filters.fcaPeriodo==='ALL'?'Todos os meses':filters.fcaPeriodo}</span>}/>
+      <PanelHeader eyebrow="REGISTROS" title="FCA no escopo atual" description={`${filtered.length} registro(s) após filtros · vencidos permanecem priorizados visualmente pelo status.`} trailing={<Chip>{filters.fcaPeriodo==='ALL'?'Todos os meses':filters.fcaPeriodo}</Chip>}/>
       <PageToolbar
         embedded
         ariaLabel="Filtros da FCA"
