@@ -1,4 +1,4 @@
-.fca-page{--fca-line:#e7e9ee;--fca-soft:#f8f9fb;--fca-muted:#777f8c;--fca-shadow:var(--shadow-card);display:grid;gap:var(--space-4)}
+.fca-page{display:grid;gap:var(--space-4)}
 .fca-page .page-header{padding-bottom:2px}
 
 /* A listagem usa os primitives compartilhados; aqui ficam somente ajustes próprios do conteúdo FCA. */
