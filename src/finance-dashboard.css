@@ -1,3 +1,14 @@
+/* Primitives financeiros compartilhados por Home, Depositante e Financeiro. */
+.finance-summary{display:grid;grid-template-columns:1fr;gap:0;padding:10px 17px}
+.finance-summary>div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid #f0f1f3}
+.finance-summary>div:last-child{border-bottom:0}
+.finance-summary span{font-size:11px;color:var(--text-secondary)}
+.finance-summary strong{font-size:17px;color:var(--text-primary)}
+.finance-summary .finance-alert strong{color:var(--status-danger)}
+.progress-track{height:5px;margin:4px 17px 0;border-radius:var(--radius-pill);background:#eceef1;overflow:hidden}
+.progress-track i{display:block;height:100%;border-radius:inherit;background:var(--brand-primary)}
+.progress-track.good i{background:var(--status-success)}
+
 .finance-page{display:grid;gap:var(--space-4)}
 .finance-page .page-header{margin-bottom:0}
 

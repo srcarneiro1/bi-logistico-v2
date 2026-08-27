@@ -18,6 +18,13 @@ const label:Record<MetricStatus,string>={ok:'Dentro da meta',warn:'Atenção',cr
 const SUPERVISOR_DETAIL_ID='supervisor-360-detail'
 const tone=(status:MetricStatus)=>status==='crit'?'danger':status==='warn'?'warning':status==='ok'?'success':'neutral'
 
+function SupervisorPhoto({name,src,detail=false}:{name:string;src?:string|null;detail?:boolean}){
+ const[failed,setFailed]=useState(false)
+ useEffect(()=>setFailed(false),[src])
+ if(src&&!failed)return <img className={detail?'supervisor-360-avatar-image':'supervisor-card-avatar-image'} src={src} alt="" loading={detail?'eager':'lazy'} decoding="async" onError={()=>setFailed(true)}/>
+ return <span className={detail?'supervisor-360-avatar':'supervisor-avatar'} aria-hidden="true">{name.slice(0,2).toUpperCase()}</span>
+}
+
 export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilters}){
  const navigate=useNavigate()
  const [selectedSupervisorId,setSelectedSupervisorId]=useState(filters.supervisorId)
@@ -64,7 +71,7 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
        eyebrow="Supervisor selecionado"
        title={selected.s.nomeExibicao}
        description={`${selected.deps.length} depositante(s) no escopo atual.`}
-       leading={selected.s.fotoUrl?<img className="supervisor-360-avatar-image" src={selected.s.fotoUrl} alt=""/>:<span className="supervisor-360-avatar">{selected.s.nomeExibicao.slice(0,2).toUpperCase()}</span>}
+       leading={<SupervisorPhoto name={selected.s.nomeExibicao} src={selected.s.fotoUrl} detail/>}
        status={<MetricStatusBadge status={selected.status} label={cardBadge(selected.critCount,selected.warnCount,selected.status)}/>} 
        meta={[
          {label:'Depositantes',value:selected.deps.length},
@@ -99,7 +106,7 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
    <div className={`supervisor-grid supervisor-discovery-grid ${selected?'supervisor-grid-with-detail':''}`}>{visibleCards.map(({s,prod,rec,inv,deps,status,critCount,warnCount,fcaCount})=>{
      const isSelected=selectedSupervisorId===s.supervisorId
      return <button type="button" className={`supervisor-card supervisor-card-${status} ${isSelected?'selected':''}`} key={s.supervisorId} aria-expanded={isSelected} aria-controls={SUPERVISOR_DETAIL_ID} onClick={()=>setSelectedSupervisorId(isSelected?'':s.supervisorId)}>
-       <div className="supervisor-head">{s.fotoUrl?<img src={s.fotoUrl} alt=""/>:<span className="supervisor-avatar">{s.nomeExibicao.slice(0,2).toUpperCase()}</span>}<div><strong>{s.nomeExibicao}</strong><span>{deps.length} depositante(s) · {fcaCount} FCA(s)</span></div><span className="supervisor-card-open material-symbols-rounded" aria-hidden="true">{isSelected?'expand_less':'chevron_right'}</span></div>
+       <div className="supervisor-head"><SupervisorPhoto name={s.nomeExibicao} src={s.fotoUrl}/><div><strong>{s.nomeExibicao}</strong><span>{deps.length} depositante(s) · {fcaCount} FCA(s)</span></div><span className="supervisor-card-open material-symbols-rounded" aria-hidden="true">{isSelected?'expand_less':'chevron_right'}</span></div>
        <div className={`supervisor-card-priority supervisor-card-priority-${status}`}><span>Saúde da carteira</span><strong className={`text-${status}`}>{cardBadge(critCount,warnCount,status)}</strong></div>
        <div className="supervisor-metrics"><div><span>Produção</span><b className={`text-${metricStatus(prod,metaProd)}`}>{pct(prod)}</b></div><div><span>Recebimento</span><b className={`text-${metricStatus(rec,metaRec)}`}>{pct(rec)}</b></div><div><span>Inventário</span><b className={`text-${metricStatus(inv,metaInv)}`}>{pct(inv)}</b></div></div>
        <div className="supervisor-modules">{Array.from(new Set(deps.map(d=>d.moduloId))).map(m=><span key={m}>{m}</span>)}</div>

@@ -1,25 +1,37 @@
-/* Hierarquia complementar: chips, feedback legado, charts e ações.
+/* Hierarquia complementar: chips, feedback, charts e ações.
    Panel/Section headers e EmptyState vivem em ui-foundations.css. */
 
 .panel-chip{display:inline-flex;align-items:center;justify-content:center;min-height:26px;padding:5px 9px;border:1px solid #e1e4e7;border-radius:999px;background:#f7f8f9;color:var(--text-secondary);font-size:9px;font-weight:700;line-height:1;white-space:nowrap}
 .panel-chip-red{border-color:#f0c9cc;background:var(--status-danger-soft);color:var(--status-danger)}
 .panel-chip-ok{border-color:#d7e8dc;background:var(--status-success-soft);color:var(--status-success)}
 
-/* Estados legados simples ainda usados fora do primitive EmptyState. */
 .table-empty,.empty-chart,.loading-panel{min-height:150px;display:grid;place-items:center;align-content:center;padding:28px 18px;text-align:center;font-size:10px;line-height:1.45;color:var(--text-muted)}
 .loading-panel{position:relative;gap:10px}
 .loading-panel:before{content:'';width:20px;height:20px;border-radius:50%;border:2px solid #dfe2e6;border-top-color:var(--brand-primary);animation:bi-section-spin .75s linear infinite}
 
-/* Notices usam a mesma densidade e hierarquia sem competir com conteúdo principal. */
-.notice,.scope-note,.analytics-warning,.substitute-context,.admin-guidance{border-radius:11px;box-shadow:none}
+.notice,.scope-note,.analytics-warning,.substitute-context,.admin-guidance{border-radius:var(--radius-card);box-shadow:none}
 .notice{padding:11px 13px;font-size:10px;line-height:1.45}
 .notice-success,.notice.success{border:1px solid #d7e8dc;background:var(--status-success-soft);color:#2f6d49}
 .notice-error,.notice.error{border:1px solid #f0c9cc;background:var(--status-danger-soft);color:#8f161d}
 
-/* Charts: uma única gramática visual e nenhuma legenda essencial via swipe. */
+.analytics-warning{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;margin-bottom:20px;border:1px solid #ead89a;background:#fff7dc;color:#765b08}
+.analytics-warning>.material-symbols-rounded{flex:0 0 auto;font-size:19px}
+.analytics-warning>div{display:grid;gap:2px;min-width:0}
+.analytics-warning strong{font-size:12px}
+.analytics-warning span{font-size:11px;line-height:1.45}
+
+.admin-guidance,.scope-note,.substitute-context{display:flex;gap:11px;align-items:flex-start;padding:12px 14px;border:1px solid var(--border-default);background:var(--surface-primary);margin-bottom:14px}
+.admin-guidance>.material-symbols-rounded,.scope-note>.material-symbols-rounded,.substitute-context>.material-symbols-rounded{flex:0 0 auto;color:var(--text-secondary);font-size:19px}
+.admin-guidance>div,.scope-note>div,.substitute-context>div{display:grid;gap:3px;min-width:0}
+.admin-guidance strong,.scope-note strong,.substitute-context strong{font-size:11px;color:var(--text-primary)}
+.admin-guidance p,.scope-note p,.substitute-context p{margin:0;font-size:10px;line-height:1.45;color:var(--text-secondary)}
+.scope-note{background:var(--surface-secondary)}
+.substitute-context{background:#f5f8f8;border-color:#dce6e5}
+.substitute-context>.material-symbols-rounded{color:#719c9a}
+
 .simple-chart{display:grid;gap:10px;min-width:0}
 .simple-chart-plot{padding:2px 0 0}
-.simple-chart svg{overflow:hidden}
+.simple-chart svg{overflow:visible}
 .chart-grid{stroke:#e9ebee}
 .chart-axis{font-size:9px;fill:#8b919a}
 .chart-x{font-size:8.5px}
@@ -28,9 +40,7 @@
 .chart-legend button{min-height:28px;padding:4px 8px;border-radius:999px;font-size:9px;box-shadow:none}
 .chart-tooltip{border-radius:9px;box-shadow:0 10px 26px rgba(29,31,35,.12)}
 
-/* Ações principais e secundárias mantêm alinhamento e touch target previsíveis. */
 .page-header-actions,.form-actions,.admin-confirmation-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.button{min-height:38px}
 .button .material-symbols-rounded{font-size:17px}
 
 @keyframes bi-section-spin{to{transform:rotate(360deg)}}
@@ -38,8 +48,8 @@
 @media(max-width:760px){
   .chart-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding-top:8px;overflow:visible}
   .chart-legend button{width:100%;justify-content:flex-start;min-width:0;white-space:normal;text-align:left}
-
   .table-empty,.empty-chart,.loading-panel{min-height:130px}
+  .admin-guidance,.scope-note,.substitute-context{padding:11px}
   .page-header-actions,.form-actions,.admin-confirmation-actions{width:100%;display:grid;grid-template-columns:1fr}
   .page-header-actions>.button,.form-actions>.button,.admin-confirmation-actions>.button{width:100%;justify-content:center}
 }

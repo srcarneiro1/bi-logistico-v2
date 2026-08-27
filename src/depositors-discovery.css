@@ -1,15 +1,23 @@
 .depositors-discovery{display:grid;gap:var(--space-4)}
 .depositors-discovery .page-header{margin-bottom:0}
+
 .depositor-360{display:grid;gap:var(--space-3)}
+.depositor-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:var(--space-3);align-items:stretch}
+.depositor-grid>.dashboard-panel,.depositor-grid>.ui-panel{min-width:0}
+.depositor-fcas{min-width:0}
+.fca-mini-list>a{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:11px 15px;color:inherit;text-decoration:none}
+.fca-mini-list>a>div{display:grid;gap:3px;min-width:0}
+.fca-mini-list strong{font-size:11px;color:var(--text-primary);overflow-wrap:anywhere}
+.fca-mini-list span{font-size:9px;color:var(--text-muted)}
 
 /* Desktop: a largura mínima da base é específica desta tabela; a anatomia vem de record-lists.css. */
 .depositors-table-wrap .depositor-table{min-width:1020px}
 .depositors-table-wrap tbody tr{cursor:pointer}
 
+@media(max-width:980px){.depositor-grid{grid-template-columns:1fr}}
 @media(max-width:760px){
   .depositors-discovery{gap:12px}
   .depositors-table-wrap .depositor-table{min-width:0}
   .depositors-discovery .depositor-360{overflow:hidden}
-  .depositors-discovery .depositor-grid{display:grid;grid-template-columns:1fr;gap:12px}
-  .depositors-discovery .depositor-grid>.dashboard-panel,.depositors-discovery .depositor-grid>.ui-panel{min-width:0}
+  .depositor-grid{grid-template-columns:1fr;gap:12px}
 }
