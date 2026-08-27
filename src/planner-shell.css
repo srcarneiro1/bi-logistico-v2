@@ -18,6 +18,8 @@
 .sidebar-nav a:hover{background:rgba(255,255,255,.07);color:#fff}
 .sidebar-nav a.active{background:rgba(255,255,255,.09);color:#fff}
 .sidebar-nav a.active:before{content:'';position:absolute;left:0;top:7px;bottom:7px;width:3px;border-radius:4px;background:var(--brand-primary)}
+.nav-section-label{display:block;padding:17px 12px 6px;font-size:8px;font-weight:700;letter-spacing:.13em;color:#aeb0b6}
+.admin-nav-item{border-top:1px solid rgba(255,255,255,.09);margin-top:8px}
 .sidebar-user{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);padding:14px 3px 0;display:grid;grid-template-columns:32px minmax(0,1fr) 30px;gap:8px;align-items:center}
 .user-avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#5d5e68;font-size:11px;font-weight:700}
 .sidebar-user-copy{display:grid;min-width:0}
@@ -33,7 +35,7 @@
 .sidebar-collapsed .sidebar-collapse .shell-menu-icon{font-size:18px}
 .sidebar-collapsed .sidebar-nav a{justify-content:center;padding:9px}
 .sidebar-collapsed .sidebar-nav a.active:before{left:-3px}
-.sidebar-collapsed .nav-label{display:none}
+.sidebar-collapsed .nav-label,.sidebar-collapsed .nav-section-label{display:none}
 .sidebar-collapsed .sidebar-user{grid-template-columns:1fr;justify-items:center;padding-left:0;padding-right:0}
 .sidebar-collapsed .sidebar-user-copy,.sidebar-collapsed .sidebar-user>button{display:none}
 
