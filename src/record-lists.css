@@ -15,15 +15,23 @@
 .responsive-data-table strong{font-size:10.5px;line-height:1.25;color:var(--text-primary)}
 .responsive-data-table small{font-size:8.5px;line-height:1.35;color:var(--text-muted)}
 .responsive-data-table .mono{font-size:9.5px;color:var(--text-secondary)}
-.responsive-data-table .module-badge{min-height:24px;padding:4px 8px;border-radius:var(--radius-pill);font-size:9px}
+
+/* Shared table tokens */
+.module-badge{display:inline-flex;align-items:center;justify-content:center;min-height:24px;padding:4px 8px;border:1px solid var(--border-default);border-radius:var(--radius-pill);background:var(--status-neutral-soft);color:var(--text-secondary);font-size:9px;font-weight:700;line-height:1;white-space:nowrap}
+.metric-cell{display:inline-flex;align-items:center;justify-content:center;min-width:66px;min-height:24px;padding:4px 8px;border-radius:var(--radius-pill);font-size:10px;font-weight:700;line-height:1;white-space:nowrap}
+.metric-cell-ok{background:var(--status-success-soft);color:#2f6d49}
+.metric-cell-warn{background:var(--status-warning-soft);color:#765b08}
+.metric-cell-crit{background:var(--status-danger-soft);color:#9b1119}
+.metric-cell-neutral{background:var(--status-neutral-soft);color:var(--status-neutral)}
 .responsive-data-table .ui-status-badge{min-height:24px;padding:4px 8px;font-size:9px}
-.responsive-data-table .metric-cell{min-width:66px;display:inline-flex;justify-content:center}
 
 /* Primary identity / row actions */
 .table-primary,.fca-record-cell,.fca-entity-cell,.fca-owner-cell{display:grid;gap:2px;min-width:0}
 .table-primary>strong,.fca-entity-cell>strong,.fca-owner-cell>strong{overflow-wrap:anywhere}
-.table-link,.depositor-open-button,.fca-number-link{color:var(--text-primary);text-decoration:none}
+.table-link,.depositor-open-button,.fca-number-link{display:inline-flex;align-items:center;min-width:0;color:var(--text-primary);text-decoration:none}
+.depositor-open-button{width:100%;justify-content:flex-start;border:0;background:transparent;padding:2px 0;text-align:left}
 .table-link:hover,.depositor-open-button:hover,.fca-number-link:hover{color:var(--brand-primary)}
+.fca-number-link{font-weight:800}
 .fca-open-cell{text-align:right}
 .fca-open-link{min-height:32px;display:inline-flex;align-items:center;gap:4px;padding:0 9px;border-radius:8px;color:var(--text-secondary);font-size:9px;font-weight:700;text-decoration:none;transition:background .14s ease,color .14s ease}
 .fca-open-link:hover{background:#eef0f3;color:var(--text-primary)}
