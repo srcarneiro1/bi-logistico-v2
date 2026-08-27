@@ -31,6 +31,17 @@ Correção:
 
 Regra permanente: um primitive que aceita semanticamente `<a>` ou `<button>` deve normalizar explicitamente a aparência dos dois elementos. Não depender de user-agent styles.
 
+### Aliases sem owner na aba Supervisores
+
+A revisão posterior ao feedback visual encontrou classes mantidas no JSX sem regra CSS, função de acessibilidade ou responsabilidade funcional:
+
+- `supervisors-discovery`;
+- `supervisor-360-expanded`;
+- `supervisor-portfolio`;
+- `status-table` na tabela do Supervisor 360, onde o seletor não possuía owner aplicável.
+
+Esses aliases foram removidos. A tela passa a depender apenas de `portfolio-discovery`, `supervisor-360`, `supervisor-360-grid`, `Panel` e `responsive-data-table`, que possuem owners reais.
+
 ## Mobile / iOS
 
 ### Zoom automático ao focar campos
@@ -51,13 +62,37 @@ Correção:
 - inputs/selects mobile também recebem touch target mínimo efetivo de 44px com precedência suficiente para vencer regras locais compactas;
 - desktop não é alterado.
 
+### Filtros globais mobile
+
+Foi identificado um conflito estrutural adicional no shell:
+
+- `planner-shell.css` reservava 32–34px para selects/reset no mobile;
+- a camada de acessibilidade exigia 44px;
+- o botão de reset podia ultrapassar a coluna fixa de 32/34px e os selects tinham owner local abaixo do touch target oficial.
+
+Correção no owner:
+
+- coluna do reset passa a 44px nos breakpoints mobile;
+- selects do toolbar passam a nascer com 44px de altura;
+- reset passa a 44x44px;
+- a camada de acessibilidade deixa de compensar um layout estruturalmente menor.
+
+### Outros touch targets revisados
+
+- legenda interativa do `SimpleLineChart`: 44px no mobile, mantendo grid sem swipe obrigatório;
+- `icon-button` da gestão de coberturas: 44x44px no mobile;
+- chips editáveis de substitutos: mínimo de 44px no mobile;
+- links/ações de tabelas: continuam em 42–44px conforme função;
+- summaries e CTAs principais já atendiam ao padrão.
+
 Regra permanente mobile:
 
 1. conteúdo essencial não depende de swipe horizontal;
 2. touch target recorrente deve ficar em ~44px;
 3. campos focáveis no iOS devem ter fonte efetiva >=16px;
 4. nunca desabilitar pinch zoom para esconder o problema;
-5. correções mobile devem ocorrer no owner/foundation correto, não em patches por página.
+5. correções mobile devem ocorrer no owner/foundation correto, não em patches por página;
+6. se a camada de acessibilidade precisa vencer uma geometria fixa do owner, revisar o owner antes de aumentar especificidade.
 
 ## Scanner final de dívida visual
 
@@ -67,6 +102,7 @@ Revisão posterior ao #52:
 - `panel-chip`: ausente da árvore atual;
 - `dashboard-panel`: removido do owner de Supervisores; `supervisors-discovery.css` usa apenas `.ui-panel` no grid 360;
 - aliases de status do Supervisor sem efeito: removidos no #52;
+- aliases adicionais sem owner na aba Supervisores: removidos nesta rodada;
 - `SimpleLineChart.css`: permanece owner único de charts;
 - `record-lists.css`: permanece owner único da transformação desktop table → mobile record card;
 - `table-empty`: reservado para contexto de tabela; fora de tabela usar `EmptyState`;
