@@ -5,10 +5,6 @@
 .depositor-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:var(--space-3);align-items:stretch}
 .depositor-grid>.ui-panel{min-width:0}
 .depositor-fcas{min-width:0}
-.fca-mini-list>a{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:11px 15px;color:inherit;text-decoration:none}
-.fca-mini-list>a>div{display:grid;gap:3px;min-width:0}
-.fca-mini-list strong{font-size:11px;color:var(--text-primary);overflow-wrap:anywhere}
-.fca-mini-list span{font-size:9px;color:var(--text-muted)}
 
 /* Desktop: a largura mínima da base é específica desta tabela; a anatomia vem de record-lists.css. */
 .depositors-table-wrap .depositor-table{min-width:1020px}
