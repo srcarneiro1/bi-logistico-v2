@@ -88,7 +88,19 @@ export function trendScopedInventory(rows:HubKpiInventarioDepositante[],filters:
   filtered.forEach(r=>{if(r.totalPct!=null){const key=periodKey(r.periodo);const g=grouped.get(key)??{periodo:r.periodo,values:[]};g.values.push(r.totalPct);grouped.set(key,g)}})
   return Array.from(grouped.values(),g=>({periodo:g.periodo,value:avg(g.values)})).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo)))
 }
-export function inventoryAggregate(rows:HubKpiInventarioDepositante[],filters:DashboardFilters){const r=scoped(rows,filters);return {prazo:avg(r.map(x=>x.prazoPct)),endereco:avg(r.map(x=>x.enderecoPct)),unidade:avg(r.map(x=>x.unidadePct)),sku:avg(r.map(x=>x.skuPct)),total:avg(r.map(x=>x.totalPct))}}
+export function inventoryAggregate(hub:HubBootstrap,filters:DashboardFilters){
+  const isGlobalAdmin=hub.profile.perfil==='ADMIN'&&!filters.supervisorId&&!filters.moduloId
+  const availableKeys=hub.facts.kpiInventario.map(r=>periodKey(r.periodo)).filter(Boolean).sort()
+  const targetKey=filters.periodo?periodKey(filters.periodo):(availableKeys.at(-1)??'')
+  const official=hub.facts.kpiInventario.filter(r=>Boolean(targetKey)&&periodKey(r.periodo)===targetKey)
+  if(isGlobalAdmin&&official.length){
+    const value=(name:string)=>official.find(r=>normalize(r.kpiTipo)===normalize(name))?.valorPct??null
+    const globalInventory=hub.facts.kpiGeral.find(r=>periodKey(r.periodo)===targetKey&&normalize(r.kpi)===normalize('Inventário'))?.valorPct??null
+    return {prazo:value('Prazo'),endereco:value('Endereço'),unidade:value('Unidade'),sku:value('SKU'),total:value('Pontuação Total')??globalInventory,source:'official' as const}
+  }
+  const r=scoped(hub.facts.kpiInventarioDepositante,filters)
+  return {prazo:avg(r.map(x=>x.prazoPct)),endereco:avg(r.map(x=>x.enderecoPct)),unidade:avg(r.map(x=>x.unidadePct)),sku:avg(r.map(x=>x.skuPct)),total:avg(r.map(x=>x.totalPct)),source:'depositante-average' as const}
+}
 
 export function kpiComparison(hub:HubBootstrap,filters:DashboardFilters,name:string,current:number|null|undefined){
   const global=hub.profile.perfil==='ADMIN'&&!filters.supervisorId&&!filters.moduloId
