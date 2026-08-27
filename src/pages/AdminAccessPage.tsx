@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { PageHeader } from '../components/PageHeader'
 import { Badge } from '../components/ui/Badge'
+import { Chip } from '../components/ui/Chip'
 import { EmptyState, Skeleton } from '../components/ui/Feedback'
 import { PageToolbar } from '../components/ui/PageToolbar'
 import { Panel, PanelHeader } from '../components/ui/Panel'
@@ -98,7 +99,7 @@ export function AdminAccessPage({hub}:{hub:HubBootstrap}){
         eyebrow="GOVERNANÇA"
         title="Usuários provisionados"
         description="Perfil operacional e autoridade administrativa são dimensões independentes. Conceder Admin não altera o escopo logístico da HUB."
-        trailing={<span className="panel-chip">{visibleUsers.length} resultado(s)</span>}
+        trailing={<Chip>{visibleUsers.length} resultado(s)</Chip>}
       />
 
       {message&&<div className="notice success" role="status">{message}</div>}
