@@ -7,7 +7,7 @@ import { DetailHero, DetailMetrics } from '../components/ui/DetailHero'
 import { EmptyState, Skeleton } from '../components/ui/Feedback'
 import { Panel, PanelHeader } from '../components/ui/Panel'
 import { supabase } from '../lib/supabase'
-import { deriveFcaStatus, isFcaOverdue } from '../lib/fca'
+import { deriveFcaDisplayStatus } from '../lib/fca'
 import { getFcaReturnContext, prepareFcaReturnTarget } from '../lib/navigationContext'
 import type { FcaWithActions } from '../types/fca'
 
@@ -37,9 +37,7 @@ export function FcaDetailPage() {
 
   if(error)return <Panel><EmptyState tone="error" icon="error" title="Não foi possível carregar o FCA" description={error}/></Panel>
   if(!row)return <Panel><Skeleton lines={6}/></Panel>
-  const derived = deriveFcaStatus(row)
-  const overdue = isFcaOverdue(row)
-  const displayStatus=overdue?'VENCIDO':derived
+  const displayStatus=deriveFcaDisplayStatus(row)
   const actions=[...(row.fca_acoes??[])].sort((a,b)=>a.ordem-b.ordem)
   const activeActions=actions.filter(a=>a.status!=='CANCELADO')
   const completedActions=activeActions.filter(a=>a.status==='CONCLUIDO').length
