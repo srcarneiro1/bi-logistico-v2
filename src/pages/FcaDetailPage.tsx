@@ -61,7 +61,6 @@ export function FcaDetailPage() {
         {label:'Módulo',value:row.modulo_id},
         {label:'CNPJ',value:row.depositante_cnpj},
       ]}
-      className="fca-detail-shared-hero"
     />
 
     <DetailMetrics items={[
@@ -73,8 +72,8 @@ export function FcaDetailPage() {
 
     <Panel as="article" className="fca-cause-card"><PanelHeader eyebrow="ANÁLISE" title="Causa / desvio identificado"/><p className="fca-cause-copy">{row.causa}</p></Panel>
 
-    <Panel as="article" className="fca-plan-panel"><PanelHeader eyebrow="EXECUÇÃO" title="Plano de ação" trailing={<Chip>{activeActions.length} ação(ões)</Chip>}/>{actions.length===0?<div className="fca-plan-empty">Nenhuma ação cadastrada.</div>:<div className="fca-plan-list">{actions.map(acao=><div className={`fca-plan-item ${acao.status==='CANCELADO'?'action-cancelled':''}`} key={acao.id}><span className="fca-plan-marker">{String(acao.ordem).padStart(2,'0')}</span><div className="fca-plan-copy"><p>{acao.acao}</p><div className="fca-plan-meta"><span><span className="material-symbols-rounded">person</span>{acao.responsavel??'Sem responsável'}</span><span><span className="material-symbols-rounded">event</span>{acao.prazo?new Date(`${acao.prazo}T12:00:00`).toLocaleDateString('pt-BR'):'Sem prazo'}</span></div></div><StatusBadge status={acao.status} className="fca-plan-status"/></div>)}</div>}</Panel>
+    <Panel as="article" className="fca-plan-panel"><PanelHeader eyebrow="EXECUÇÃO" title="Plano de ação" trailing={<Chip>{activeActions.length} ação(ões)</Chip>}/>{actions.length===0?<EmptyState icon="task_alt" title="Nenhuma ação cadastrada" description="Este FCA ainda não possui ações registradas."/>:<div className="fca-plan-list">{actions.map(acao=><div className={`fca-plan-item ${acao.status==='CANCELADO'?'action-cancelled':''}`} key={acao.id}><span className="fca-plan-marker">{String(acao.ordem).padStart(2,'0')}</span><div className="fca-plan-copy"><p>{acao.acao}</p><div className="fca-plan-meta"><span><span className="material-symbols-rounded">person</span>{acao.responsavel??'Sem responsável'}</span><span><span className="material-symbols-rounded">event</span>{acao.prazo?new Date(`${acao.prazo}T12:00:00`).toLocaleDateString('pt-BR'):'Sem prazo'}</span></div></div><StatusBadge status={acao.status} className="fca-plan-status"/></div>)}</div>}</Panel>
 
-    <Panel as="article" className="fca-audit-panel"><PanelHeader eyebrow="RASTREABILIDADE" title="Histórico do registro" trailing={<Chip>{audit.length} evento(s)</Chip>}/>{audit.length?<div className="fca-audit-timeline">{audit.map(item=><div className="fca-audit-event" key={item.id}><strong>{item.acao.replaceAll('_',' ').toLocaleLowerCase('pt-BR')}</strong><span>{new Date(item.criado_em).toLocaleString('pt-BR')} · {item.usuario_email??'Sistema'}</span></div>)}</div>:<div className="fca-plan-empty">Sem eventos de auditoria disponíveis.</div>}</Panel>
+    <Panel as="article" className="fca-audit-panel"><PanelHeader eyebrow="RASTREABILIDADE" title="Histórico do registro" trailing={<Chip>{audit.length} evento(s)</Chip>}/>{audit.length?<div className="fca-audit-timeline">{audit.map(item=><div className="fca-audit-event" key={item.id}><strong>{item.acao.replaceAll('_',' ').toLocaleLowerCase('pt-BR')}</strong><span>{new Date(item.criado_em).toLocaleString('pt-BR')} · {item.usuario_email??'Sistema'}</span></div>)}</div>:<EmptyState icon="history" title="Sem eventos de auditoria" description="Ainda não há eventos de auditoria disponíveis para este registro."/>}</Panel>
   </section>
 }

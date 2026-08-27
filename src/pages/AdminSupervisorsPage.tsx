@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { PageHeader } from '../components/PageHeader'
 import { Badge } from '../components/ui/Badge'
 import { Chip } from '../components/ui/Chip'
+import { ContextNotice } from '../components/ui/ContextNotice'
 import { EmptyState } from '../components/ui/Feedback'
 import { PageToolbar } from '../components/ui/PageToolbar'
 import { SearchField } from '../components/ui/SearchField'
@@ -81,7 +82,7 @@ export function AdminSupervisorsPage({hub,onRefresh}:{hub:HubBootstrap;onRefresh
 
     <PageToolbar ariaLabel="Ferramentas de fotos de supervisores" search={<SearchField ariaLabel="Buscar supervisor" value={search} onChange={setSearch} placeholder="Buscar por nome, e-mail ou ID…"/>}/>
 
-    <div className="admin-guidance"><span className="material-symbols-rounded" aria-hidden="true">image</span><div><strong>Fonte das fotos</strong><p>Uma foto cadastrada aqui tem prioridade sobre a FotoURL da HUB. JPG, PNG ou WEBP até 2 MB. Se o override for removido, o BI volta automaticamente a usar a imagem informada na HUB.</p></div></div>
+    <ContextNotice icon="image" title="Fonte das fotos" description="Uma foto cadastrada aqui tem prioridade sobre a FotoURL da HUB. JPG, PNG ou WEBP até 2 MB. Se o override for removido, o BI volta automaticamente a usar a imagem informada na HUB."/>
     {error&&<div className="notice notice-error" role="alert">{error}</div>}
     {message&&<div className="notice notice-success" role="status">{message}</div>}
 

@@ -1,5 +1,6 @@
 import { PageHeader } from '../components/PageHeader'
 import { SubstitutionManager } from '../components/SubstitutionManager'
+import { ContextNotice } from '../components/ui/ContextNotice'
 import { EmptyState } from '../components/ui/Feedback'
 import { SummaryMetrics } from '../components/ui/SummaryMetrics'
 import type { HubBootstrap } from '../types/hub'
@@ -19,7 +20,7 @@ export function AdminSubstitutionsPage({hub,onRefresh}:{hub:HubBootstrap;onRefre
      {key:'future',label:'Futuras',value:future,detail:'coberturas programadas',icon:'event_upcoming',tone:future?'info':'neutral'},
      {key:'closed',label:'Encerradas',value:closed,detail:'histórico no cadastro',icon:'history'},
    ]}/>
-   <div className="admin-guidance"><span className="material-symbols-rounded" aria-hidden="true">info</span><div><strong>Fluxo de cadastro</strong><p>Cadastre primeiro a pessoa substituta com ID, nome e e-mail. Depois crie a cobertura associando supervisor titular, módulo e período. O e-mail é a chave usada para liberar o acesso temporário.</p></div></div>
+   <ContextNotice title="Fluxo de cadastro" description="Cadastre primeiro a pessoa substituta com ID, nome e e-mail. Depois crie a cobertura associando supervisor titular, módulo e período. O e-mail é a chave usada para liberar o acesso temporário."/>
    <SubstitutionManager hub={hub} onRefresh={onRefresh} startOpen/>
  </section>
 }

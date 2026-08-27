@@ -1,11 +1,12 @@
-/* Acessibilidade visual e estados interativos compartilhados. */
+/* Acessibilidade visual e estados interativos compartilhados.
+   Carregada por último para governar estados sem depender de força de especificidade. */
 
 :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:2px solid rgba(219,8,18,.62);outline-offset:2px}
 
 .button,.table-link,.fca-open-link,.sidebar-nav a,.ui-summary-metric,.chart-legend button{transition:background .15s ease,border-color .15s ease,box-shadow .15s ease,color .15s ease,opacity .15s ease,transform .15s ease}
 .button:focus-visible,.table-link:focus-visible,.fca-open-link:focus-visible,.sidebar-nav a:focus-visible,.ui-summary-metric:focus-visible,.chart-legend button:focus-visible{box-shadow:0 0 0 3px rgba(219,8,18,.12)}
 
-.button:disabled,button:disabled,[aria-disabled="true"]{cursor:not-allowed;opacity:.55;box-shadow:none!important;transform:none!important}
+.button:disabled,button:disabled,[aria-disabled="true"]{cursor:not-allowed;opacity:.55;box-shadow:none;transform:none}
 .button:not(:disabled):active,.ui-summary-metric:not(:disabled):active{transform:translateY(1px)}
 
 [aria-pressed="true"]{border-color:var(--border-strong)}
@@ -37,6 +38,7 @@ textarea{min-height:88px}
   .selected-row{outline:2px solid Highlight;outline-offset:-2px;box-shadow:none}
 }
 
+/* Aqui !important é deliberado: a preferência de redução de movimento precisa vencer qualquer owner. */
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important}
 }

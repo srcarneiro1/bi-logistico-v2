@@ -1,0 +1,7 @@
+/* Utilities semânticas de alta precedência.
+   Carregadas após os owners de página para não depender de !important. */
+.text-ok{color:var(--status-success)}
+.text-warn{color:var(--status-warning)}
+.text-crit{color:var(--status-danger)}
+.text-neutral{color:var(--status-neutral)}
+.muted-text{color:var(--text-muted)}

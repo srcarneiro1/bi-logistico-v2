@@ -4,6 +4,7 @@ import { PageHeader } from '../components/PageHeader'
 import { MetricStatusBadge, StatusBadge } from '../components/ui/Badge'
 import { Chip } from '../components/ui/Chip'
 import { DetailHero, DetailMetrics } from '../components/ui/DetailHero'
+import { EmptyState } from '../components/ui/Feedback'
 import { Panel, PanelHeader } from '../components/ui/Panel'
 import { SectionHeader } from '../components/ui/SectionHeader'
 import { SummaryMetrics } from '../components/ui/SummaryMetrics'
@@ -92,7 +93,7 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
 
      <div className="supervisor-360-grid">
        <Panel className="supervisor-portfolio"><PanelHeader eyebrow="CARTEIRA" title="Performance por depositante" trailing={<Chip>{selected.deps.length} depositante(s)</Chip>}/><div className="table-wrap embedded"><table className="status-table responsive-data-table"><thead><tr><th scope="col">Depositante</th><th scope="col">Módulo</th><th scope="col">Produção</th><th scope="col">Recebimento</th><th scope="col">Inventário</th><th scope="col">Status</th></tr></thead><tbody>{detailRows.map(({d,op,inv,status})=><tr key={d.cnpj}><td data-label="Depositante" data-primary="true"><button type="button" className="table-link" onClick={()=>openDepositante(d.cnpj)}><strong>{d.nome}</strong></button></td><td data-label="Módulo">{d.moduloId}</td><td data-label="Produção"><span className={`metric-cell metric-cell-${metricStatus(op?.producaoPct,metaProd)}`}>{pct(op?.producaoPct)}</span></td><td data-label="Recebimento"><span className={`metric-cell metric-cell-${metricStatus(op?.recebimentoPct,metaRec)}`}>{pct(op?.recebimentoPct)}</span></td><td data-label="Inventário"><span className={`metric-cell metric-cell-${metricStatus(inv?.totalPct,metaInv)}`}>{pct(inv?.totalPct)}</span></td><td data-label="Status"><MetricStatusBadge status={status} label={label[status]}/></td></tr>)}</tbody></table></div></Panel>
-       <Panel className="supervisor-open-fcas"><PanelHeader eyebrow="PENDÊNCIAS" title="FCAs abertos no período" trailing={<Chip tone={selectedFcas.length?'danger':'neutral'}>{selectedFcas.length} pendente(s)</Chip>}/>{selectedFcas.length?<div className="supervisor-fca-list">{selectedFcas.map(f=>{const overdue=isFcaOverdue(f),status=overdue?'VENCIDO':deriveFcaStatus(f);return <Link key={f.id} to={`/fca/${f.id}`} onClick={()=>setFcaReturnContext({type:'supervisor',supervisorId:selected.s.supervisorId})}><div><strong>FCA #{String(f.numero).padStart(5,'0')} · {f.depositante_nome}</strong><span>{f.indicador_nome} · {new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</span></div><StatusBadge status={status}/></Link>})}</div>:<div className="table-empty">Nenhum FCA pendente para este supervisor no filtro atual.</div>}</Panel>
+       <Panel className="supervisor-open-fcas"><PanelHeader eyebrow="PENDÊNCIAS" title="FCAs abertos no período" trailing={<Chip tone={selectedFcas.length?'danger':'neutral'}>{selectedFcas.length} pendente(s)</Chip>}/>{selectedFcas.length?<div className="supervisor-fca-list">{selectedFcas.map(f=>{const overdue=isFcaOverdue(f),status=overdue?'VENCIDO':deriveFcaStatus(f);return <Link key={f.id} to={`/fca/${f.id}`} onClick={()=>setFcaReturnContext({type:'supervisor',supervisorId:selected.s.supervisorId})}><div><strong>FCA #{String(f.numero).padStart(5,'0')} · {f.depositante_nome}</strong><span>{f.indicador_nome} · {new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</span></div><StatusBadge status={status}/></Link>})}</div>:<EmptyState icon="task_alt" title="Nenhum FCA pendente" description="Este supervisor não possui FCA aberto ou vencido no filtro atual."/>}</Panel>
      </div>
    </article>}
 
@@ -104,11 +105,11 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
    ]}/>
 
    <SectionHeader eyebrow="CARTEIRAS" title="Leitura por supervisor" description="Ordenação prioriza carteiras com depositantes críticos e, em seguida, os casos em atenção." trailing={<Chip>{visibleCards.reduce((total,c)=>total+c.deps.length,0)} depositante(s)</Chip>}/>
-   <div className={`supervisor-grid supervisor-discovery-grid ${selected?'supervisor-grid-with-detail':''}`}>{visibleCards.map(({s,prod,rec,inv,deps,status,critCount,warnCount,fcaCount})=>{
+   <div className="supervisor-grid">{visibleCards.map(({s,prod,rec,inv,deps,status,critCount,warnCount,fcaCount})=>{
      const isSelected=selectedSupervisorId===s.supervisorId
-     return <button type="button" className={`supervisor-card supervisor-card-${status} ${isSelected?'selected':''}`} key={s.supervisorId} aria-expanded={isSelected} aria-controls={SUPERVISOR_DETAIL_ID} onClick={()=>setSelectedSupervisorId(isSelected?'':s.supervisorId)}>
+     return <button type="button" className={`supervisor-card ${isSelected?'selected':''}`} key={s.supervisorId} aria-expanded={isSelected} aria-controls={SUPERVISOR_DETAIL_ID} onClick={()=>setSelectedSupervisorId(isSelected?'':s.supervisorId)}>
        <div className="supervisor-head"><SupervisorPhoto name={s.nomeExibicao} src={s.fotoUrl}/><div><strong>{s.nomeExibicao}</strong><span>{deps.length} depositante(s) · {fcaCount} FCA(s)</span></div><span className="supervisor-card-open material-symbols-rounded" aria-hidden="true">{isSelected?'expand_less':'chevron_right'}</span></div>
-       <div className={`supervisor-card-priority supervisor-card-priority-${status}`}><span>Saúde da carteira</span><strong className={`text-${status}`}>{cardBadge(critCount,warnCount,status)}</strong></div>
+       <div className="supervisor-card-priority"><span>Saúde da carteira</span><strong className={`text-${status}`}>{cardBadge(critCount,warnCount,status)}</strong></div>
        <div className="supervisor-metrics"><div><span>Produção</span><b className={`text-${metricStatus(prod,metaProd)}`}>{pct(prod)}</b></div><div><span>Recebimento</span><b className={`text-${metricStatus(rec,metaRec)}`}>{pct(rec)}</b></div><div><span>Inventário</span><b className={`text-${metricStatus(inv,metaInv)}`}>{pct(inv)}</b></div></div>
        <div className="supervisor-modules">{Array.from(new Set(deps.map(d=>d.moduloId))).map(m=><span key={m}>{m}</span>)}</div>
      </button>

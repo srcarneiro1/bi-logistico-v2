@@ -61,10 +61,10 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
     {key:'done',label:'Concluídos',value:counts.CONCLUIDO??0,detail:'encerrados no escopo',icon:'check_circle',tone:'success',active:status==='CONCLUIDO',onClick:()=>setStatus('CONCLUIDO')},
   ]
 
-  return <section className="fca-page fca-list-page">
+  return <section className="fca-page">
     <PageHeader eyebrow="CONTROLE DE DESVIOS" title="Fatos, causas e ações" description="Acompanhe registros, priorize vencimentos e abra cada FCA para consultar causa, plano de ação e rastreabilidade." actions={<Link className="button button-primary" to="/fca/novo"><span className="material-symbols-rounded">add</span>Novo FCA</Link>}/>
 
-    <SummaryMetrics items={summary} ariaLabel="Filtrar FCA por status" className="fca-summary-metrics" variant="filters"/>
+    <SummaryMetrics items={summary} ariaLabel="Filtrar FCA por status" variant="filters"/>
 
     <Panel className="fca-workspace-card">
       <PanelHeader eyebrow="REGISTROS" title="FCA no escopo atual" description={`${filtered.length} registro(s) após filtros · vencidos permanecem priorizados visualmente pelo status.`} trailing={<Chip>{filters.fcaPeriodo==='ALL'?'Todos os meses':filters.fcaPeriodo}</Chip>}/>

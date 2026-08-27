@@ -1,4 +1,4 @@
-.fca-page{--fca-line:#e7e9ee;--fca-soft:#f8f9fb;--fca-muted:#777f8c;--fca-shadow:var(--shadow-card);display:grid;gap:var(--space-4)}
+.fca-page{display:grid;gap:var(--space-4)}
 .fca-page .page-header{padding-bottom:2px}
 
 /* A listagem usa os primitives compartilhados; aqui ficam somente ajustes próprios do conteúdo FCA. */
@@ -27,7 +27,6 @@
 .fca-plan-meta .material-symbols-rounded{font-size:13px}
 .fca-plan-status{align-self:start}
 .fca-plan-item.action-cancelled{opacity:.55}
-.fca-plan-empty{padding:26px 18px;text-align:center;font-size:10px;color:var(--text-muted)}
 
 .fca-audit-timeline{display:grid;padding:12px 18px 16px}
 .fca-audit-event{position:relative;display:grid;gap:3px;padding:5px 0 14px 22px}
@@ -113,7 +112,6 @@
   .fca-editor-page .action-card-title{display:grid;grid-template-columns:auto 1fr auto}
   .fca-editor-page .sticky-form-actions{position:static;display:grid;grid-template-columns:1fr;padding:0;border:0;background:transparent;box-shadow:none;backdrop-filter:none}
   .fca-editor-page .sticky-form-actions .button,.fca-editor-page .sticky-form-actions button{width:100%;min-height:46px;justify-content:center}
-  .fca-page .substitute-context{align-items:flex-start}
 }
 
 @media(max-width:480px){

@@ -1,272 +1,219 @@
-# BI Logístico V2 — Auditoria de Consistência UI/UX
+# BI Logístico V2 — Auditoria Final de Consistência UI/UX
 
-> Auditoria operacional baseada em `docs/BI_LOGISTICO_UI_UX_SKILL.md`.
+> Estado de referência após os ciclos #47, #48, #49 e #51, complementado pela auditoria final de 2026-08-27.
 >
-> Objetivo: identificar inconsistências transversais e corrigi-las por padrão compartilhado, não por página isolada.
+> Fonte de regras: `docs/BI_LOGISTICO_UI_UX_SKILL.md` + `docs/BI_LOGISTICO_DESIGN_LAYOUT_MEMORY.md`.
 
-## Escopo
+## 1. Objetivo
 
-Páginas auditadas:
+Garantir que a aplicação não apenas **pareça** padronizada, mas que a consistência esteja representada no código: mesma função → mesmo primitive → um único owner visual.
 
-- Visão Geral;
-- KPIs;
-- Supervisores;
-- Depositantes;
-- Financeiro;
-- FCA — lista, detalhe, novo e editar;
-- Administração — Acessos e Substituições;
-- Shell global — sidebar, topbar e filtros globais.
+A auditoria considera como dívida qualquer situação em que:
 
-## Critério de severidade
+- duas folhas CSS implementam a mesma anatomia;
+- uma página mantém alias histórico sem consumidor;
+- `!important` é usado para vencer CSS da própria aplicação;
+- um estado semântico é comunicado por múltiplos rails/fundos/classes redundantes;
+- loading/empty/error são recriados localmente apesar de existir primitive;
+- uma classe permanece no JSX sem produzir comportamento, semântica ou teste necessário;
+- mobile depende de swipe horizontal para informação essencial.
 
-- **P0 — funcional/UX crítico:** quebra navegação, leitura ou uso mobile.
-- **P1 — consistência de produto:** mesmo padrão funcional aparece com anatomias diferentes.
-- **P2 — refinamento visual:** diferença de densidade, spacing ou acabamento sem quebra de fluxo.
-- **P3 — dívida técnica:** CSS/componente duplicado que ainda não afeta diretamente o usuário.
-
-## Achados transversais
-
-### P1 — Toolbars locais não seguem uma anatomia única
-
-Situação atual:
-
-- FCA possui toolbar local separada para busca + status;
-- Depositantes usa busca como `actions` do `PageHeader`;
-- telas administrativas ainda não possuem um workspace/toolbars coerentes entre si;
-- parte do CSS de toolbar está em `ui-foundations.css`, parte em CSS específico de página.
-
-Padrão obrigatório:
+## 2. Gramática oficial
 
 ```text
-PAGE HEADER
-- contexto/título/descrição
-- CTA primário da página
-
-PAGE TOOLBAR
-- busca
-- filtros locais
-- ações secundárias
+Shell
+└─ PageHeader
+   ├─ Summary / Headline quando aplicável
+   ├─ PageToolbar quando há busca/filtros locais
+   ├─ SectionHeader para seção aberta
+   ├─ Panel + PanelHeader para conteúdo encapsulado
+   ├─ conteúdo / tabela / detalhe
+   └─ feedback contextual
 ```
 
-A busca não deve competir visualmente com CTA do header.
+Primitives oficiais:
+
+- `PageHeader`
+- `Panel` / `PanelHeader`
+- `SectionHeader`
+- `PageToolbar`
+- `SearchField`
+- `SummaryMetrics`
+- `DetailHero` / `DetailMetrics`
+- `MetricCard`
+- `Badge` / `StatusBadge` / `MetricStatusBadge`
+- `Chip`
+- `ContextNotice`
+- `EmptyState`
+- `Skeleton`
+
+Regras semânticas:
+
+- `Badge` = estado/status;
+- `Chip` = contexto, contagem ou escopo;
+- `ContextNotice` = orientação contextual não crítica;
+- `EmptyState` = ausência de conteúdo fora de tabela;
+- `table-empty` = somente célula/linha de tabela;
+- vermelho de marca não deve funcionar como decoração de criticidade;
+- cards permanecem neutros; semântica fica em badge, ícone, valor ou progressão.
+
+## 3. Ownership CSS
+
+A cascata oficial segue esta ordem:
+
+1. `styles.css` — reset + autenticação;
+2. `design-system.css` — tokens, base global, controles e botões;
+3. `planner-shell.css` — shell, navegação, filtros globais e PageHeader;
+4. foundations/primitives compartilhados;
+5. owners de página/domínio;
+6. `ui-utilities.css` — utilities semânticas de alta precedência;
+7. `accessibility-interactions.css` — estados acessíveis finais.
+
+Owners principais:
+
+| Responsabilidade | Owner |
+|---|---|
+| Tokens / controles globais | `design-system.css` |
+| Shell / topbar / filtros / PageHeader | `planner-shell.css` |
+| Panel, SectionHeader, Summary, Chip, EmptyState | `ui-foundations.css` |
+| DetailHero / DetailMetrics | `detail-primitives.css` |
+| Tabelas responsivas / record cards | `record-lists.css` |
+| Charts | `components/SimpleLineChart.css` |
+| Home | `home-dashboard.css` |
+| KPIs | `kpis-dashboard.css` |
+| Supervisores | `supervisors-discovery.css` |
+| Depositantes | `depositors-discovery.css` |
+| Financeiro | `finance-dashboard.css` |
+| FCA lista/detalhe/form | `fca-workspace.css` |
+| Administração geral / Substituições | `admin-workspace.css` |
+| Fotos de supervisores | `admin-supervisors.css` |
+| Feedback contextual / notices | `sections-feedback.css` |
+| Utilities semânticas | `ui-utilities.css` |
+| Estados de interação/acessibilidade | `accessibility-interactions.css` |
+
+`SimpleLineChart.css` é o único owner de charts. `record-lists.css` é o único owner da transformação tabela desktop → record card mobile.
+
+## 4. Matriz aba por aba
+
+| Superfície | Anatomia | Primitives / owner | Resultado da auditoria | Status |
+|---|---|---|---|---|
+| Visão Geral | PageHeader → KPI section → panels → gestão à vista | `PageHeader`, `SectionHeader`, `MetricCard`, `Panel`, `Chip`, `EmptyState`; `home-dashboard.css` | Removidos aliases de panel/escopo, rail semântico e empty state genérico. Finance summary é compartilhado de forma deliberada com Financeiro/Depositante. | **CONFORME** |
+| KPIs | PageHeader → KPI overview → análise → histórico → tabela | `MetricCard`, `SectionHeader`, `Panel`, `Chip`, responsive table; `kpis-dashboard.css` | Breakpoints não dependem mais de `!important`. Composição de inventário é especialização funcional, não linguagem paralela. | **CONFORME** |
+| Supervisores | PageHeader → Detail 360 opcional → Summary → cards | `DetailHero`, `DetailMetrics`, `SummaryMetrics`, `Panel`, `Chip`, `EmptyState`; `supervisors-discovery.css` | Removidos modificadores `supervisor-card-*` sem efeito, aliases de grid/panel e empty state local. Card mantém identidade própria por ser seletor de entidade. | **CONFORME** |
+| Depositantes | PageHeader → Toolbar → Detail 360 opcional → Summary → tabela | `PageToolbar`, `SearchField`, `DetailHero`, `DetailMetrics`, `Panel`, `Chip`, `Skeleton`, `EmptyState`, responsive table; `depositors-discovery.css` | Tabela mobile usa owner compartilhado; FCA relacionado usa Skeleton/EmptyState; sem rails ou classes de severidade na linha. | **CONFORME** |
+| Financeiro | PageHeader → headline → Summary → aviso condicional → panels | `SummaryMetrics`, `ContextNotice`, `Panel`, `Chip`, `EmptyState`; `finance-dashboard.css` | Headline financeiro permanece como especialização legítima. Guardrail de despesa preservado. Rails removidos; lista de receita pertence somente ao owner financeiro. | **EXCEÇÃO JUSTIFICADA / CONFORME** |
+| FCA — Lista | PageHeader → Summary filtro → Panel → Toolbar → tabela | `SummaryMetrics` variant `filters`, `Panel`, `PageToolbar`, `SearchField`, `Chip`, `Skeleton`, `EmptyState`, responsive table | Removidas classes `fca-list-page`/`fca-summary-metrics` sem owner. Sem carrossel obrigatório e sem cards inteiros tingidos por status. | **CONFORME** |
+| FCA — Detalhe | PageHeader → DetailHero → DetailMetrics → panels | `DetailHero`, `DetailMetrics`, `Panel`, `Chip`, `StatusBadge`, `EmptyState`, `Skeleton`; `fca-workspace.css` | Removido hero paralelo e alias `fca-detail-shared-hero`; ausência de ações/auditoria usa EmptyState oficial. Timeline continua especializada por domínio. | **CONFORME** |
+| FCA — Novo | PageHeader → Stepper → ContextNotice opcional → formulário | `FcaFormStepper`, `ContextNotice`, notices, botões; `fca-workspace.css` | Removidos `form-panel`, `section-title-row` e `substitute-context`; formulário tem owner único. Stepper é especialização funcional compartilhada com edição. | **CONFORME** |
+| FCA — Editar | PageHeader → Stepper → ContextNotice opcional → formulário | mesmos primitives de Novo FCA | Markup e feedback alinhados ao fluxo de criação; loading/error usam Panel + Skeleton/EmptyState. | **CONFORME** |
+| Administração — Acessos | PageHeader → Summary → Toolbar → confirmação → Panel/tabela | `SummaryMetrics`, `PageToolbar`, `Panel`, `Chip`, `Badge`, `EmptyState`, `Skeleton`; `admin-workspace.css` | Confirmação é região contextual, não falso modal. Feedback success usa classe oficial. Tabela mobile usa record cards compartilhados. | **CONFORME** |
+| Administração — Substituições | PageHeader → Summary → ContextNotice → workspace | `SummaryMetrics`, `ContextNotice`, `Panel`, `Chip`, `Badge`, `EmptyState`; `admin-workspace.css` | Removidos `admin-guidance`, `substitution-admin-first` e estado CSS `coverage-card.is-active` sem consumidor. Formulários permanecem especialização legítima. | **CONFORME** |
+| Administração — Fotos de supervisores | PageHeader → Summary → Toolbar → ContextNotice → SectionHeader → cards | `SummaryMetrics`, `PageToolbar`, `ContextNotice`, `SectionHeader`, `Badge`, `Chip`, `EmptyState`; `admin-supervisors.css` | Grid de mídia permanece especializado. Sem rails. Gestão de foto não interfere em cadastro HUB. | **CONFORME** |
+
+## 5. Resíduos removidos nesta auditoria
+
+Famílias eliminadas por não representarem mais comportamento real:
+
+- `dashboard-panel`;
+- `panel-chip` manual — substituído por `Chip`;
+- `depositor-row-*`;
+- `fca-mobile.css`;
+- `fca-list-page`;
+- `fca-summary-metrics`;
+- `fca-detail-shared-hero`;
+- `form-panel` no FCA;
+- `section-title-row` no FCA;
+- `supervisor-card-${status}`;
+- `supervisor-card-priority-${status}`;
+- `supervisor-discovery-grid`;
+- `supervisor-grid-with-detail`;
+- `admin-guidance`;
+- `scope-note`;
+- `substitute-context`;
+- `substitution-admin-first`;
+- `coverage-card.is-active` sem consumidor;
+- `empty-chart` como empty state genérico;
+- `loading-panel` sem consumidor;
+- variáveis locais FCA não utilizadas;
+- CSS duplicado de chart em `sections-feedback.css`.
 
-**Ação:** criar primitive compartilhado `PageToolbar` e migrar FCA/Depositantes primeiro.
+## 6. `!important` — classificação final
 
----
+### Removidos
 
-### P1 — Summary metrics possuem múltiplas anatomias
+Não se aceita mais `!important` para:
 
-Situação atual:
+- utilities de status (`text-ok`, `text-warn`, `text-crit`, `text-neutral`);
+- SearchField;
+- grids de KPI;
+- DetailHero/DetailMetrics;
+- record cards/tabelas mobile;
+- shell e breakpoints;
+- disabled state comum.
 
-- Home usa Primary/Supporting KPI;
-- KPIs usa composição própria;
-- Supervisores/Depositantes usam summaries próprios;
-- FCA possui status summary próprio;
-- Administração/Substituições usa `admin-summary-card`.
+Esses casos foram substituídos por ownership e ordem de cascata corretos.
 
-A diferença funcional é válida, mas spacing, label, contagem e comportamento mobile devem obedecer uma anatomia compartilhada.
+### Exceções deliberadas
 
-**Ação futura:** criar primitives/variants de `SummaryMetric` e `SummaryStrip`.
+1. `prefers-reduced-motion` em `accessibility-interactions.css`.
+   - Precisa vencer qualquer animação/transição declarada por um owner.
+   - É requisito de preferência do usuário, portanto a alta precedência é intencional.
 
----
+2. `font-family:'Material Symbols Rounded'!important` no hardening inline de `index.html`.
+   - Mantido deliberadamente por histórico de regressão em que ligatures passaram a aparecer como texto bruto (`space_dashboard`, `search`, etc.).
+   - É infraestrutura de iconografia, não styling de página.
+   - Não remover junto de cleanup visual; qualquer alteração exige teste isolado de carregamento de fontes/ícones.
 
-### P1 — Tabelas/listas ainda dependem de exceções por página
+## 7. Charts
 
-A base `responsive-data-table` já resolve grande parte do mobile, porém Depositantes, FCA e Administração possuem overrides específicos.
+`SimpleLineChart.css` é a única fonte de verdade para:
 
-Padrão obrigatório:
+- plot;
+- eixo/grid;
+- pontos;
+- legenda;
+- tooltip;
+- mobile;
+- reduced motion local.
 
-- desktop: tabela quando comparação entre colunas é importante;
-- mobile: card/lista com identidade, status, metadados, KPIs e CTA;
-- nenhuma informação essencial deve depender de scroll horizontal.
+No mobile a legenda usa grade e **não** scroll horizontal obrigatório.
 
-**Ação futura:** consolidar anatomia de `ResponsiveRecordList`/table-card somente após estabilizar as páginas administrativas.
+## 8. Feedback states
 
----
+Regra final:
 
-### P1 — Detail/360 views têm padrões diferentes
+- carregamento de bloco → `Skeleton`;
+- ausência fora de tabela → `EmptyState`;
+- ausência em célula de tabela → `table-empty`;
+- sucesso/erro compacto → `.notice notice-success|notice-error`;
+- orientação contextual → `ContextNotice`;
+- alerta operacional global → `analytics-warning`.
 
-Hoje Supervisor 360, Depositante 360 e FCA Detail usam composições diferentes para:
+Não criar novos `empty-*`, `guidance-*` ou `context-*` locais sem justificar nova função.
 
-- hero;
-- owner/context;
-- metadata;
-- actions;
-- secondary content.
+## 9. Critério de concluído
 
-A informação pode variar, mas a gramática deveria ser:
+Uma tela está conforme quando:
 
-```text
-DETAIL HERO
-identity + semantic status + actions
+- a mesma função usa o mesmo primitive;
+- o owner CSS é identificável;
+- não há classe fantasma para uma geração visual anterior;
+- não existe folha posterior apenas para corrigir outra folha;
+- semantic color não vira decoração da superfície;
+- mobile preserva todas as informações essenciais sem swipe lateral;
+- loading/empty/error/success são previsíveis;
+- diferença visual corresponde a diferença funcional real.
 
-DETAIL METRICS
-primary/supporting
+## 10. Regra para futuras mudanças
 
-DETAIL WORKSPACE
-main content + supporting context
+Antes de criar CSS novo:
 
-SECONDARY DISCLOSURE
-history/audit/technical context
-```
+1. procurar primitive equivalente;
+2. procurar owner da função;
+3. verificar a mesma função em pelo menos duas outras telas;
+4. preferir composição a override;
+5. não usar `!important` para resolver conflito interno de cascata;
+6. se um padrão surgir em 3+ superfícies, promover a primitive;
+7. validar desktop, tablet, mobile e mobile estreito no Preview Cloudflare do HEAD exato.
 
-**Ação futura:** definir `EntityHero`/`DetailHero` e padrões de disclosure.
-
----
-
-### P1 — Administração/Acessos é o maior gap visual restante
-
-A página já usa primitives (`Panel`, `Badge`, `EmptyState`), porém ainda se comporta como uma tabela administrativa simples.
-
-O backend disponível permite com segurança:
-
-- listar usuários provisionados;
-- distinguir Owner/Admin/User;
-- visualizar perfil operacional/status;
-- conceder Admin;
-- revogar Admin.
-
-Não criar ações sem backend.
-
-Melhorias de UX possíveis sem alterar governança:
-
-- summary stats;
-- busca e filtros;
-- detalhe de usuário em drawer;
-- distinção visual entre governança e perfil operacional;
-- confirmação própria em modal em vez de `window.confirm`;
-- cards mobile;
-- acesso à auditoria quando a fonte disponível suportar.
-
----
-
-### P1 — Administração/Substituições precisa adotar o mesmo workspace
-
-A página possui summary + guidance + `SubstitutionManager`, mas a composição não segue ainda o mesmo modelo de listagem/gestão do restante do produto.
-
-**Ação futura:** workspace com toolbar, lista/coberturas, status, progressive disclosure e formulário/contexto em painel coerente.
-
----
-
-### P2 — PageHeader está bem adotado, mas ações precisam de regra única
-
-A maioria das páginas usa `PageHeader`, o que é positivo.
-
-Regra consolidada:
-
-- header contém CTA primário e ações de navegação do contexto;
-- busca, status e filtros locais não pertencem ao header;
-- mobile empilha ações sem reduzir touch target;
-- descrições curtas e com função.
-
----
-
-### P2 — Shell está funcionalmente consistente
-
-Pontos positivos atuais:
-
-- sidebar desktop recolhível;
-- drawer mobile com focus trap e Escape;
-- navegação administrativa separada;
-- topbar com escopo ativo;
-- filtro global separado do conteúdo;
-- filtros contextuais ocultos em detalhe/edição quando apropriado.
-
-O shell não precisa de redesign estrutural neste momento. Ajustes futuros devem ser de tokens/densidade/acessibilidade, não de arquitetura.
-
----
-
-### P2 — Feedback states ainda precisam de passe transversal
-
-Já existem `Skeleton`, `EmptyState`, notices e retry em partes do BI.
-
-Falta garantir cobertura consistente em:
-
-- Administração;
-- Substituições;
-- detalhes assíncronos;
-- erros de mutação;
-- confirmações sensíveis.
-
----
-
-### P3 — CSS específico cresceu demais
-
-Arquivos de página cumprem função de estabilização, mas há padrões repetidos entre:
-
-- Home;
-- KPIs;
-- Supervisores;
-- Depositantes;
-- Financeiro;
-- FCA;
-- Administração.
-
-Não consolidar tudo agora.
-
-Regra: promover para foundation somente quando a anatomia compartilhada estiver validada em três ou mais superfícies.
-
-## Roadmap de normalização
-
-### Bloco 1 — Shell + PageHeader + Toolbars
-
-- manter shell atual;
-- criar `PageToolbar` primitive;
-- migrar FCA List;
-- migrar Depositantes;
-- fixar spacing e comportamento mobile em foundation.
-
-### Bloco 2 — Summary metrics/cards
-
-- inventariar summaries;
-- criar variants compartilhadas;
-- migrar FCA, Supervisores, Depositantes e Administração.
-
-### Bloco 3 — Tabelas/listas
-
-- consolidar desktop table anatomy;
-- consolidar mobile record-card anatomy;
-- remover overrides redundantes progressivamente.
-
-### Bloco 4 — Detail/360 views
-
-- criar padrão hero + metrics + workspace + disclosure;
-- alinhar Supervisor, Depositante e FCA.
-
-### Bloco 5 — Forms
-
-- consolidar seção, ajuda, error state, actions e steps;
-- aplicar a FCA e Substituições.
-
-### Bloco 6 — Administração/Acessos/Substituições
-
-- redesign dentro das capacidades reais do backend;
-- drawer/modal/tabs quando agregarem produtividade;
-- mobile dedicado.
-
-### Bloco 7 — Acessibilidade + feedback
-
-- foco;
-- teclado;
-- contraste;
-- aria;
-- loading/empty/error/success;
-- confirmação própria.
-
-### Bloco 8 — Consolidação CSS
-
-Somente após validação visual/funcional dos blocos anteriores.
-
-## Definição de concluído da auditoria
-
-A auditoria não termina quando todas as páginas ficam visualmente iguais.
-
-Ela termina quando:
-
-- a mesma função usa a mesma anatomia;
-- padrões novos começam em primitives, não em CSS de página;
-- mobile não exige gestos horizontais para conteúdo essencial;
-- status tem uma única semântica;
-- ações aparecem em posições previsíveis;
-- detalhes preservam contexto de origem;
-- novas telas podem ser construídas consultando a skill sem inventar uma linguagem nova.
+O objetivo não é tornar todas as abas idênticas. É garantir que **diferenças visuais expressem diferenças de função, e não diferenças de implementação histórica**.
