@@ -18,6 +18,18 @@ function supervisorExists(rows:string[][],supervisorId:string){
   return rows.slice(1).some(row=>String(row[0]??'').trim()===supervisorId)
 }
 
+function imageSignature(bytes:Uint8Array){
+  if(bytes.length>=3&&bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff)return'image/jpeg'
+  if(bytes.length>=8&&bytes[0]===0x89&&bytes[1]===0x50&&bytes[2]===0x4e&&bytes[3]===0x47&&bytes[4]===0x0d&&bytes[5]===0x0a&&bytes[6]===0x1a&&bytes[7]===0x0a)return'image/png'
+  if(bytes.length>=12&&String.fromCharCode(...bytes.slice(0,4))==='RIFF'&&String.fromCharCode(...bytes.slice(8,12))==='WEBP')return'image/webp'
+  return''
+}
+
+async function validateImageContent(file:File){
+  const bytes=new Uint8Array(await file.slice(0,12).arrayBuffer())
+  if(imageSignature(bytes)!==file.type)throw new Error('SUPERVISOR_PHOTO_CONTENT_INVALID')
+}
+
 async function authorize(request:Request,env:Env){
   const token=bearerToken(request)
   if(!token)throw new Error('AUTH_REQUIRED')
@@ -35,7 +47,7 @@ function errorResponse(error:unknown){
   if(message==='AAL2_REQUIRED')return json({error:'Confirme seu segundo fator para administrar fotos.'},{status:403})
   if(message==='ADMIN_REQUIRED')return json({error:'Área exclusiva para administradores.'},{status:403})
   if(message==='SUPERVISOR_NOT_FOUND')return json({error:'Supervisor não encontrado na HUB.'},{status:404})
-  if(message==='SUPERVISOR_PHOTO_TYPE_INVALID')return json({error:'Use uma imagem JPG, PNG ou WEBP.'},{status:400})
+  if(message==='SUPERVISOR_PHOTO_TYPE_INVALID'||message==='SUPERVISOR_PHOTO_CONTENT_INVALID')return json({error:'Use uma imagem JPG, PNG ou WEBP válida.'},{status:400})
   if(message==='SUPERVISOR_PHOTO_SIZE_INVALID')return json({error:'A imagem deve ter no máximo 2 MB.'},{status:400})
   if(message.startsWith('SUPERVISOR_PHOTO_'))return json({error:'Não foi possível atualizar a foto no Supabase.'},{status:500})
   return json({error:'Falha ao administrar a foto do supervisor.'},{status:500})
@@ -49,6 +61,7 @@ export const onRequestPost:PagesFunction<Env>=async({request,env})=>{
     const supervisorId=String(form.get('supervisorId')??'').trim()
     const file=form.get('file')
     if(!supervisorId||!file||typeof file==='string')return json({error:'Selecione o supervisor e uma imagem.'},{status:400})
+    await validateImageContent(file)
 
     const rawHub=await readHub(env)
     if(!supervisorExists(rawHub.supervisors,supervisorId))throw new Error('SUPERVISOR_NOT_FOUND')
