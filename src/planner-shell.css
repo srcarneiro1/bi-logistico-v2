@@ -21,10 +21,10 @@
 .sidebar-user{margin-top:auto;border-top:1px solid rgba(255,255,255,.12);padding:14px 3px 0;display:grid;grid-template-columns:32px minmax(0,1fr) 30px;gap:8px;align-items:center}
 .user-avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:#5d5e68;font-size:11px;font-weight:700}
 .sidebar-user-copy{display:grid;min-width:0}
-.sidebar-user strong{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.sidebar-user span{font-size:9px;color:#c7c9cd}
-.sidebar-user button{width:30px;height:30px;border:0;border-radius:6px;background:transparent;color:#d6d7da;display:grid;place-items:center}
-.sidebar-user button:hover{background:rgba(255,255,255,.08);color:#fff}
+.sidebar-user-copy>strong{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sidebar-user-copy>span{font-size:9px;color:#c7c9cd}
+.sidebar-user>button{width:30px;height:30px;border:0;border-radius:6px;background:transparent;color:#d6d7da;display:grid;place-items:center}
+.sidebar-user>button:hover{background:rgba(255,255,255,.08);color:#fff}
 
 .sidebar-collapsed .sidebar{padding-left:10px;padding-right:10px}
 .sidebar-collapsed .sidebar-brand{height:84px;min-height:84px;margin-bottom:16px;padding:2px 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px}
