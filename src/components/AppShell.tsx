@@ -27,7 +27,7 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
   const isGovernanceAdmin=hub.profile.governanceRole==='OWNER'||hub.profile.governanceRole==='ADMIN'
   const isOwner=hub.profile.governanceRole==='OWNER'
   const adminItems=[
-    ...(isGovernanceAdmin?[{to:'/administracao/supervisores',label:'Supervisores',icon:'badge'}]:[]),
+    ...(isGovernanceAdmin?[{to:'/administracao/supervisores',label:'Fotos de supervisores',icon:'badge'}]:[]),
     ...(isGovernanceAdmin?[{to:'/administracao/substituicoes',label:'Substituições',icon:'event_repeat'}]:[]),
     ...(isOwner?[{to:'/administracao/acessos',label:'Acessos',icon:'manage_accounts'}]:[]),
   ]
