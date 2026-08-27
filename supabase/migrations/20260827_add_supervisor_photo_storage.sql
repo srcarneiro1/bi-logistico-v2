@@ -13,7 +13,7 @@ insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_typ
 values (
   'supervisor-fotos',
   'supervisor-fotos',
-  true,
+  false,
   2097152,
   array['image/jpeg','image/png','image/webp']::text[]
 )
