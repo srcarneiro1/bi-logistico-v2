@@ -1,5 +1,5 @@
 import { supabase } from './supabase'
-import type { FcaActionStatus, FcaWithActions, NewFcaAction } from '../types/fca'
+import type { FcaActionStatus, FcaDisplayStatus, FcaWithActions, NewFcaAction } from '../types/fca'
 
 export interface CreateFcaInput {
   dataReuniao: string
@@ -74,7 +74,7 @@ export async function listFcaPeriods(): Promise<string[]> {
   return Array.from(new Set((data ?? []).map(row=>String(row.data_reuniao).slice(0,7)).filter(period=>/^\d{4}-\d{2}$/.test(period))))
 }
 
-export function deriveFcaStatus(fca: FcaWithActions) {
+export function deriveFcaStatus(fca: FcaWithActions): Exclude<FcaDisplayStatus,'VENCIDO'> {
   if (fca.status_registro === 'CANCELADO') return 'CANCELADO'
   const relevant = (fca.fca_acoes ?? []).filter((acao) => acao.status !== 'CANCELADO')
   if (relevant.length === 0) return 'ABERTO'
@@ -86,4 +86,10 @@ export function deriveFcaStatus(fca: FcaWithActions) {
 export function isFcaOverdue(fca: FcaWithActions, today = new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo'}).format(new Date())) {
   if (fca.status_registro === 'CANCELADO') return false
   return (fca.fca_acoes ?? []).some((acao) => Boolean(acao.prazo) && acao.prazo! < today && acao.status !== 'CONCLUIDO' && acao.status !== 'CANCELADO')
+}
+
+export function deriveFcaDisplayStatus(fca:FcaWithActions,today?:string):FcaDisplayStatus {
+  const workflowStatus=deriveFcaStatus(fca)
+  if(workflowStatus==='CANCELADO'||workflowStatus==='CONCLUIDO')return workflowStatus
+  return isFcaOverdue(fca,today)?'VENCIDO':workflowStatus
 }
