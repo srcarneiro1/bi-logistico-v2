@@ -1,4 +1,5 @@
 export type FcaActionStatus = 'ABERTO' | 'EM_ANDAMENTO' | 'CONCLUIDO' | 'CANCELADO'
+export type FcaDisplayStatus = FcaActionStatus | 'VENCIDO'
 
 export interface NewFcaAction {
   acao: string

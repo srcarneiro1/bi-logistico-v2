@@ -23,6 +23,7 @@
 .metric-cell-warn{background:var(--status-warning-soft);color:#765b08}
 .metric-cell-crit{background:var(--status-danger-soft);color:#9b1119}
 .metric-cell-neutral{background:var(--status-neutral-soft);color:var(--status-neutral)}
+/* Contexto de tabela reduz somente a densidade do primitive, sem redefinir seus tons. */
 .responsive-data-table .ui-status-badge{min-height:24px;padding:4px 8px;font-size:9px}
 
 /* Primary identity / row actions */
@@ -42,11 +43,15 @@
 .responsive-data-table tr.selected-row{background:var(--surface-secondary);box-shadow:inset 0 0 0 1px #d5d8de}
 .responsive-data-table tr.selected-row:hover{background:#f4f5f7}
 
-/* Mini listas equivalentes de FCA em Supervisor/Depositante. */
-.supervisor-fca-list,.fca-mini-list{display:grid}
-.supervisor-fca-list>a,.fca-mini-list>a{transition:background .14s ease,border-color .14s ease,box-shadow .14s ease;border-bottom:1px solid #edf0f2}
-.supervisor-fca-list>a:last-child,.fca-mini-list>a:last-child{border-bottom:0}
-.supervisor-fca-list>a:hover,.fca-mini-list>a:hover{background:#fafbfc}
+/* FCA compacto é um único componente compartilhado por Supervisor e Depositante. */
+.fca-compact-list{display:grid}
+.fca-compact-list>a{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 15px;color:inherit;text-decoration:none;transition:background .14s ease,border-color .14s ease,box-shadow .14s ease;border-bottom:1px solid #edf0f2}
+.fca-compact-list>a:last-child{border-bottom:0}
+.fca-compact-list>a:hover{background:#fafbfc}
+.fca-compact-copy{display:grid;gap:3px;min-width:0}
+.fca-compact-copy>strong{font-size:11px;color:var(--text-primary);overflow-wrap:anywhere}
+.fca-compact-meta{font-size:9px;color:var(--text-muted)}
+.fca-compact-list .ui-status-badge{flex:0 0 auto}
 
 /* Admin actions: visually secondary until explicitly dangerous/primary. */
 .admin-access-page .responsive-data-table td:last-child{width:1%;white-space:nowrap;text-align:right}
@@ -79,11 +84,8 @@
   .responsive-data-table td.fca-open-cell::before,.admin-access-page .responsive-data-table td:last-child::before{display:none}
   .fca-open-link,.admin-access-page .responsive-data-table td:last-child .button{width:100%;min-height:38px;justify-content:center}
 
-  /* As duas mini-listas têm a mesma anatomia em mobile. */
-  .supervisor-fca-list,.fca-mini-list{gap:9px;padding:8px 0}
-  .supervisor-fca-list>a,.fca-mini-list>a{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin:0;padding:13px;border:1px solid var(--border-default);border-radius:11px;background:var(--surface-primary);box-shadow:var(--shadow-card)}
-  .supervisor-fca-list>a>div,.fca-mini-list>a>div{min-width:0;display:grid;gap:3px}
-  .supervisor-fca-list>a strong,.fca-mini-list>a strong{overflow-wrap:anywhere}
+  .fca-compact-list{gap:9px;padding:8px 0}
+  .fca-compact-list>a{gap:10px;margin:0;padding:13px;border:1px solid var(--border-default);border-radius:11px;background:var(--surface-primary);box-shadow:var(--shadow-card)}
 }
 
 @media(max-width:480px){

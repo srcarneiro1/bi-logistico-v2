@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
+import { FcaCompactList } from '../components/FcaCompactList'
 import { PageHeader } from '../components/PageHeader'
-import { MetricStatusBadge, StatusBadge } from '../components/ui/Badge'
+import { MetricStatusBadge } from '../components/ui/Badge'
 import { Chip } from '../components/ui/Chip'
 import { DetailHero, DetailMetrics } from '../components/ui/DetailHero'
 import { EmptyState } from '../components/ui/Feedback'
@@ -9,7 +10,7 @@ import { Panel, PanelHeader } from '../components/ui/Panel'
 import { SectionHeader } from '../components/ui/SectionHeader'
 import { SummaryMetrics } from '../components/ui/SummaryMetrics'
 import { avg, indicatorMeta, metricStatus, pct, periodKey, scoped } from '../lib/dashboard'
-import { deriveFcaStatus, isFcaOverdue, listFcas } from '../lib/fca'
+import { deriveFcaDisplayStatus, listFcas } from '../lib/fca'
 import { consumeSupervisorReturn, setFcaReturnContext } from '../lib/navigationContext'
 import type { FcaWithActions } from '../types/fca'
 import type { DashboardFilters, MetricStatus } from '../types/dashboard'
@@ -60,9 +61,9 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
  const detailRows=selected?.deps.map(d=>{const op=scopedOp.find(r=>r.cnpj===d.cnpj),inv=scopedInv.find(r=>r.cnpj===d.cnpj);const statuses=[metricStatus(op?.producaoPct,metaProd),metricStatus(op?.recebimentoPct,metaRec),metricStatus(inv?.totalPct,metaInv)];const status=statuses.reduce((a,b)=>rank[b]>rank[a]?b:a,'ok' as MetricStatus);return{d,op,inv,status}}).sort((a,b)=>rank[b.status]-rank[a.status]||a.d.nome.localeCompare(b.d.nome,'pt-BR'))??[]
  const selectedFcas=useMemo(()=>selected?[...scopedFcas].filter(f=>{
    if(f.supervisor_id!==selected.s.supervisorId)return false
-   const status=deriveFcaStatus(f)
-   return status==='ABERTO'||status==='EM_ANDAMENTO'||isFcaOverdue(f)
- }).sort((a,b)=>Number(isFcaOverdue(b))-Number(isFcaOverdue(a))||b.data_reuniao.localeCompare(a.data_reuniao)||b.numero-a.numero):[],[scopedFcas,selected])
+   const status=deriveFcaDisplayStatus(f)
+   return status==='ABERTO'||status==='EM_ANDAMENTO'||status==='VENCIDO'
+ }).sort((a,b)=>Number(deriveFcaDisplayStatus(b)==='VENCIDO')-Number(deriveFcaDisplayStatus(a)==='VENCIDO')||b.data_reuniao.localeCompare(a.data_reuniao)||b.numero-a.numero):[],[scopedFcas,selected])
  const cardBadge=(critCount:number,warnCount:number,status:MetricStatus)=>critCount?`${critCount} crítico${critCount>1?'s':''}`:warnCount?`${warnCount} em atenção`:label[status]
  function openDepositante(cnpj:string){sessionStorage.setItem('bi-logistico-v2:depositante',cnpj);navigate('/depositantes')}
  return <section className="portfolio-discovery">
@@ -93,7 +94,7 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
 
      <div className="supervisor-360-grid">
        <Panel><PanelHeader eyebrow="CARTEIRA" title="Performance por depositante" trailing={<Chip>{selected.deps.length} depositante(s)</Chip>}/><div className="table-wrap embedded"><table className="responsive-data-table"><thead><tr><th scope="col">Depositante</th><th scope="col">Módulo</th><th scope="col">Produção</th><th scope="col">Recebimento</th><th scope="col">Inventário</th><th scope="col">Status</th></tr></thead><tbody>{detailRows.map(({d,op,inv,status})=><tr key={d.cnpj}><td data-label="Depositante" data-primary="true"><button type="button" className="table-link" onClick={()=>openDepositante(d.cnpj)}><strong>{d.nome}</strong></button></td><td data-label="Módulo">{d.moduloId}</td><td data-label="Produção"><span className={`metric-cell metric-cell-${metricStatus(op?.producaoPct,metaProd)}`}>{pct(op?.producaoPct)}</span></td><td data-label="Recebimento"><span className={`metric-cell metric-cell-${metricStatus(op?.recebimentoPct,metaRec)}`}>{pct(op?.recebimentoPct)}</span></td><td data-label="Inventário"><span className={`metric-cell metric-cell-${metricStatus(inv?.totalPct,metaInv)}`}>{pct(inv?.totalPct)}</span></td><td data-label="Status"><MetricStatusBadge status={status} label={label[status]}/></td></tr>)}</tbody></table></div></Panel>
-       <Panel className="supervisor-open-fcas"><PanelHeader eyebrow="PENDÊNCIAS" title="FCAs abertos no período" trailing={<Chip tone={selectedFcas.length?'danger':'neutral'}>{selectedFcas.length} pendente(s)</Chip>}/>{selectedFcas.length?<div className="supervisor-fca-list">{selectedFcas.map(f=>{const overdue=isFcaOverdue(f),status=overdue?'VENCIDO':deriveFcaStatus(f);return <Link key={f.id} to={`/fca/${f.id}`} onClick={()=>setFcaReturnContext({type:'supervisor',supervisorId:selected.s.supervisorId})}><div><strong>FCA #{String(f.numero).padStart(5,'0')} · {f.depositante_nome}</strong><span>{f.indicador_nome} · {new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</span></div><StatusBadge status={status}/></Link>})}</div>:<EmptyState icon="task_alt" title="Nenhum FCA pendente" description="Este supervisor não possui FCA aberto ou vencido no filtro atual."/>}</Panel>
+       <Panel className="supervisor-open-fcas"><PanelHeader eyebrow="PENDÊNCIAS" title="FCAs pendentes no período" trailing={<Chip tone={selectedFcas.length?'danger':'neutral'}>{selectedFcas.length} pendente(s)</Chip>}/>{selectedFcas.length?<FcaCompactList items={selectedFcas} title={f=>`FCA #${String(f.numero).padStart(5,'0')} · ${f.depositante_nome}`} meta={f=>`${f.indicador_nome} · ${new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}`} onOpen={()=>setFcaReturnContext({type:'supervisor',supervisorId:selected.s.supervisorId})}/>:<EmptyState icon="task_alt" title="Nenhum FCA pendente" description="Este supervisor não possui FCA pendente no filtro atual."/>}</Panel>
      </div>
    </article>}
 

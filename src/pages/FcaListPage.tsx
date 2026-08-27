@@ -8,7 +8,7 @@ import { PageToolbar } from '../components/ui/PageToolbar'
 import { Panel, PanelHeader } from '../components/ui/Panel'
 import { SearchField } from '../components/ui/SearchField'
 import { SummaryMetrics, type SummaryMetricItem } from '../components/ui/SummaryMetrics'
-import { deriveFcaStatus, isFcaOverdue, listFcas } from '../lib/fca'
+import { deriveFcaDisplayStatus, listFcas } from '../lib/fca'
 import { clearFcaReturnContext } from '../lib/navigationContext'
 import type { DashboardFilters } from '../types/dashboard'
 import type { FcaWithActions } from '../types/fca'
@@ -41,17 +41,12 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
   }),[rows,filters.fcaPeriodo,filters.supervisorId,filters.moduloId,search])
 
   const counts=useMemo(()=>scopedRows.reduce((acc,row)=>{
-    const key=isFcaOverdue(row)?'VENCIDO':deriveFcaStatus(row)
+    const key=deriveFcaDisplayStatus(row)
     acc[key]=(acc[key]??0)+1
     return acc
   },{} as Record<string,number>),[scopedRows])
 
-  const filtered=useMemo(()=>scopedRows.filter(row=>{
-    const derived=deriveFcaStatus(row),overdue=isFcaOverdue(row)
-    if(status==='VENCIDO')return overdue
-    if(status)return derived===status
-    return true
-  }),[scopedRows,status])
+  const filtered=useMemo(()=>scopedRows.filter(row=>!status||deriveFcaDisplayStatus(row)===status),[scopedRows,status])
 
   const summary:SummaryMetricItem[]=[
     {key:'all',label:'Todos',value:scopedRows.length,detail:'registros no escopo',icon:'dataset',tone:'neutral',active:status==='',onClick:()=>setStatus('')},
@@ -78,7 +73,7 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
       <div className="fca-results">
         {loading&&<Skeleton lines={7}/>} 
         {!loading&&error&&<EmptyState tone="error" icon="error" title="Não foi possível carregar os FCAs" description={error}/>} 
-        {!loading&&!error&&(filtered.length===0?<EmptyState title="Nenhum FCA encontrado" description="Ajuste os filtros ou a busca para consultar outros registros."/>:<div className="table-wrap embedded fca-table-wrap"><table className="fca-table responsive-data-table"><thead><tr><th scope="col">Registro</th><th scope="col">Depositante / KPI</th><th scope="col">Responsável</th><th scope="col">Módulo</th><th scope="col">Status</th><th scope="col"><span className="sr-only">Ação</span></th></tr></thead><tbody>{filtered.map(row=>{const derived=deriveFcaStatus(row),overdue=isFcaOverdue(row),display=overdue?'VENCIDO':derived;return <tr key={row.id}><td data-label="FCA" data-primary="true"><div className="fca-record-cell"><Link className="fca-number-link" to={`/fca/${row.id}`}>#{String(row.numero).padStart(5,'0')}</Link><small>{new Date(`${row.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</small></div></td><td data-label="Depositante"><div className="fca-entity-cell"><strong>{row.depositante_nome}</strong><span>{row.indicador_nome}</span></div></td><td data-label="Responsável"><div className="fca-owner-cell"><strong>{row.supervisor_nome}</strong><span>Supervisor</span></div></td><td data-label="Módulo"><span className="module-badge">{row.modulo_id}</span></td><td data-label="Status"><StatusBadge status={display}/></td><td className="fca-open-cell"><Link className="fca-open-link" to={`/fca/${row.id}`}>Abrir<span className="material-symbols-rounded" aria-hidden="true">chevron_right</span></Link></td></tr>})}</tbody></table></div>)}
+        {!loading&&!error&&(filtered.length===0?<EmptyState title="Nenhum FCA encontrado" description="Ajuste os filtros ou a busca para consultar outros registros."/>:<div className="table-wrap embedded fca-table-wrap"><table className="fca-table responsive-data-table"><thead><tr><th scope="col">Registro</th><th scope="col">Depositante / KPI</th><th scope="col">Responsável</th><th scope="col">Módulo</th><th scope="col">Status</th><th scope="col"><span className="sr-only">Ação</span></th></tr></thead><tbody>{filtered.map(row=>{const display=deriveFcaDisplayStatus(row);return <tr key={row.id}><td data-label="FCA" data-primary="true"><div className="fca-record-cell"><Link className="fca-number-link" to={`/fca/${row.id}`}>#{String(row.numero).padStart(5,'0')}</Link><small>{new Date(`${row.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</small></div></td><td data-label="Depositante"><div className="fca-entity-cell"><strong>{row.depositante_nome}</strong><span>{row.indicador_nome}</span></div></td><td data-label="Responsável"><div className="fca-owner-cell"><strong>{row.supervisor_nome}</strong><span>Supervisor</span></div></td><td data-label="Módulo"><span className="module-badge">{row.modulo_id}</span></td><td data-label="Status"><StatusBadge status={display}/></td><td className="fca-open-cell"><Link className="fca-open-link" to={`/fca/${row.id}`}>Abrir<span className="material-symbols-rounded" aria-hidden="true">chevron_right</span></Link></td></tr>})}</tbody></table></div>)}
       </div>
     </Panel>
   </section>

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { FcaCompactList } from '../components/FcaCompactList'
 import { PageHeader } from '../components/PageHeader'
 import { SimpleLineChart } from '../components/SimpleLineChart'
-import { MetricStatusBadge, StatusBadge } from '../components/ui/Badge'
+import { MetricStatusBadge } from '../components/ui/Badge'
 import { Chip } from '../components/ui/Chip'
 import { DetailHero, DetailMetrics } from '../components/ui/DetailHero'
 import { EmptyState, Skeleton } from '../components/ui/Feedback'
@@ -11,7 +11,7 @@ import { Panel, PanelHeader } from '../components/ui/Panel'
 import { SearchField } from '../components/ui/SearchField'
 import { SectionHeader } from '../components/ui/SectionHeader'
 import { SummaryMetrics } from '../components/ui/SummaryMetrics'
-import { deriveFcaStatus, isFcaOverdue, listFcas } from '../lib/fca'
+import { deriveFcaDisplayStatus, listFcas } from '../lib/fca'
 import { indicatorMeta, metricStatus, money, pct, periodKey } from '../lib/dashboard'
 import { setFcaReturnContext } from '../lib/navigationContext'
 import type { DashboardFilters, MetricStatus } from '../types/dashboard'
@@ -51,7 +51,7 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
  const historySeries=[{label:'Produção',tone:'red' as const,values:history.map(r=>({periodo:r.periodo,value:r.producaoPct}))},{label:'Recebimento',tone:'gray' as const,values:history.map(r=>({periodo:r.periodo,value:r.recebimentoPct}))},{label:'Inventário',tone:'blue' as const,values:periodKeys.map(key=>({periodo:labelByKey.get(key)??key,value:invMap.get(key)??null}))}]
  const finance=selected?hub.facts.receita.find(r=>r.cnpj===selected.cnpj&&(!selectedPeriodKey||periodKey(r.periodo)===selectedPeriodKey)):undefined
  const attainment=finance?.receitaPlanejada?((finance.receitaRealizada??0)/finance.receitaPlanejada):null
- const relatedFcas=selected?fcas.filter(f=>f.depositante_cnpj===selected.cnpj&&(!selectedPeriodKey||f.data_reuniao.slice(0,7)===selectedPeriodKey)).sort((a,b)=>Number(isFcaOverdue(b))-Number(isFcaOverdue(a))||b.data_reuniao.localeCompare(a.data_reuniao)||b.numero-a.numero):[]
+ const relatedFcas=selected?fcas.filter(f=>f.depositante_cnpj===selected.cnpj&&(!selectedPeriodKey||f.data_reuniao.slice(0,7)===selectedPeriodKey)).sort((a,b)=>Number(deriveFcaDisplayStatus(b)==='VENCIDO')-Number(deriveFcaDisplayStatus(a)==='VENCIDO')||b.data_reuniao.localeCompare(a.data_reuniao)||b.numero-a.numero):[]
  const criticalCount=rows.filter(r=>r.status==='crit').length,warningCount=rows.filter(r=>r.status==='warn').length,stableCount=rows.filter(r=>r.status==='ok').length
  return <section className="depositors-discovery">
  <PageHeader eyebrow="CARTEIRA" title="Depositantes" description="Selecione um cliente para abrir a visão 360º do período, com operação, resultado e FCAs relacionados."/>
@@ -77,7 +77,7 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
      {key:'rev',label:'Receita realizada',value:money(finance?.receitaRealizada),detail:attainment==null?'Sem planejamento':`${pct(attainment)} do planejado`,tone:attainment==null?'neutral':attainment>=1?'success':attainment<.95?'danger':'warning'},
    ]}/>
    <div className="depositor-grid"><Panel as="article"><PanelHeader eyebrow="HISTÓRICO ATÉ O PERÍODO" title="Evolução operacional"/><div className="panel-body"><SimpleLineChart series={historySeries}/></div></Panel><Panel as="article"><PanelHeader eyebrow="FINANCEIRO" title="Resultado do período"/><div className="finance-summary"><div><span>Planejado</span><strong>{money(finance?.receitaPlanejada)}</strong></div><div><span>Realizado</span><strong>{money(finance?.receitaRealizada)}</strong></div><div><span>Atingimento</span><strong className={attainment!=null&&attainment>=1?'text-ok':attainment!=null&&attainment<.95?'text-crit':''}>{pct(attainment)}</strong></div></div></Panel></div>
-   <Panel as="article" className="depositor-fcas"><PanelHeader eyebrow="FCA DO PERÍODO" title="Fatos, causas e ações do cliente" trailing={<Chip>{relatedFcas.length} registro(s)</Chip>}/>{fcaLoading?<Skeleton lines={4}/>:relatedFcas.length?<div className="fca-mini-list">{relatedFcas.slice(0,8).map(f=>{const display=isFcaOverdue(f)?'VENCIDO':deriveFcaStatus(f);return <Link to={`/fca/${f.id}`} key={f.id} onClick={()=>setFcaReturnContext({type:'depositante',cnpj:selected.cnpj})}><div><strong>FCA #{String(f.numero).padStart(5,'0')}</strong><span>{new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')} · {f.indicador_nome}</span></div><StatusBadge status={display}/></Link>})}</div>:<EmptyState icon="fact_check" title="Nenhum FCA no período" description="Este depositante não possui FCA no período selecionado."/>}</Panel>
+   <Panel as="article" className="depositor-fcas"><PanelHeader eyebrow="FCA DO PERÍODO" title="Fatos, causas e ações do cliente" trailing={<Chip>{relatedFcas.length} registro(s)</Chip>}/>{fcaLoading?<Skeleton lines={4}/>:relatedFcas.length?<FcaCompactList items={relatedFcas.slice(0,8)} title={f=>`FCA #${String(f.numero).padStart(5,'0')}`} meta={f=>`${new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')} · ${f.indicador_nome}`} onOpen={()=>setFcaReturnContext({type:'depositante',cnpj:selected.cnpj})}/>:<EmptyState icon="fact_check" title="Nenhum FCA no período" description="Este depositante não possui FCA no período selecionado."/>}</Panel>
  </article>}
  <SummaryMetrics ariaLabel="Resumo dos depositantes no escopo" items={[
    {key:'depositors',label:'Depositantes',value:rows.length,detail:'visíveis no filtro',icon:'inventory_2'},
