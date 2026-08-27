@@ -1,3 +1,4 @@
+import { createClient } from '@supabase/supabase-js'
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL, type Env } from './env'
 
 interface SupabaseAuthUser { id: string; email?: string }
@@ -10,6 +11,10 @@ export interface SupabaseCoverage {
   substituto_email_snapshot: string | null; substituto_foto_url_snapshot: string | null; modulo_id: string; data_inicio: string; data_fim: string;
   motivo: string | null; status: 'ATIVA' | 'ENCERRADA' | 'CANCELADA'
 }
+export interface SupervisorPhotoOverride { supervisorId:string; fotoPath:string; fotoUrl:string; updatedAt:string }
+
+const SUPERVISOR_PHOTO_BUCKET='supervisor-fotos'
+const PHOTO_EXTENSIONS:Record<string,string>={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}
 
 export async function getAuthenticatedUser(_env: Env, accessToken: string): Promise<SupabaseAuthUser> {
   const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
@@ -55,6 +60,66 @@ export async function getSupervisorCoverageData(accessToken: string) {
 
 function secretHeaders(env: Env, extra?: Record<string,string>): Record<string,string> {
   return { apikey: env.SUPABASE_SECRET_KEY, Accept: 'application/json', ...extra }
+}
+
+function adminClient(env:Env){
+  return createClient(SUPABASE_URL,env.SUPABASE_SECRET_KEY,{auth:{persistSession:false,autoRefreshToken:false}})
+}
+
+export async function getSupervisorPhotoOverrides(env:Env):Promise<SupervisorPhotoOverride[]>{
+  const admin=adminClient(env)
+  const{data,error}=await admin.from('supervisor_fotos').select('supervisor_id,foto_path,updated_at').order('supervisor_id')
+  if(error)throw new Error(`SUPERVISOR_PHOTO_LIST_FAILED:${error.message}`)
+  return(data??[]).map(row=>({
+    supervisorId:String(row.supervisor_id),
+    fotoPath:String(row.foto_path),
+    fotoUrl:admin.storage.from(SUPERVISOR_PHOTO_BUCKET).getPublicUrl(String(row.foto_path)).data.publicUrl,
+    updatedAt:String(row.updated_at),
+  }))
+}
+
+export async function saveSupervisorPhoto(env:Env,supervisorId:string,file:File,actorId:string):Promise<SupervisorPhotoOverride>{
+  const extension=PHOTO_EXTENSIONS[file.type]
+  if(!extension)throw new Error('SUPERVISOR_PHOTO_TYPE_INVALID')
+  if(file.size<=0||file.size>2*1024*1024)throw new Error('SUPERVISOR_PHOTO_SIZE_INVALID')
+
+  const admin=adminClient(env)
+  const{data:previous,error:previousError}=await admin.from('supervisor_fotos').select('foto_path').eq('supervisor_id',supervisorId).maybeSingle()
+  if(previousError)throw new Error(`SUPERVISOR_PHOTO_LOOKUP_FAILED:${previousError.message}`)
+
+  const fotoPath=`${supervisorId}/${crypto.randomUUID()}.${extension}`
+  const{error:uploadError}=await admin.storage.from(SUPERVISOR_PHOTO_BUCKET).upload(fotoPath,file,{contentType:file.type,cacheControl:'31536000',upsert:false})
+  if(uploadError)throw new Error(`SUPERVISOR_PHOTO_UPLOAD_FAILED:${uploadError.message}`)
+
+  const{data:row,error:saveError}=await admin.from('supervisor_fotos').upsert({supervisor_id:supervisorId,foto_path:fotoPath,content_type:file.type,updated_at:new Date().toISOString(),updated_by:actorId},{onConflict:'supervisor_id'}).select('supervisor_id,foto_path,updated_at').single()
+  if(saveError){
+    await admin.storage.from(SUPERVISOR_PHOTO_BUCKET).remove([fotoPath])
+    throw new Error(`SUPERVISOR_PHOTO_SAVE_FAILED:${saveError.message}`)
+  }
+
+  if(previous?.foto_path&&previous.foto_path!==fotoPath){
+    const{error:removeError}=await admin.storage.from(SUPERVISOR_PHOTO_BUCKET).remove([previous.foto_path])
+    if(removeError)console.error('supervisor photo old object cleanup',removeError.message)
+  }
+
+  return{
+    supervisorId:String(row.supervisor_id),
+    fotoPath:String(row.foto_path),
+    fotoUrl:admin.storage.from(SUPERVISOR_PHOTO_BUCKET).getPublicUrl(String(row.foto_path)).data.publicUrl,
+    updatedAt:String(row.updated_at),
+  }
+}
+
+export async function removeSupervisorPhoto(env:Env,supervisorId:string):Promise<void>{
+  const admin=adminClient(env)
+  const{data:row,error:lookupError}=await admin.from('supervisor_fotos').select('foto_path').eq('supervisor_id',supervisorId).maybeSingle()
+  if(lookupError)throw new Error(`SUPERVISOR_PHOTO_LOOKUP_FAILED:${lookupError.message}`)
+  const{error:deleteError}=await admin.from('supervisor_fotos').delete().eq('supervisor_id',supervisorId)
+  if(deleteError)throw new Error(`SUPERVISOR_PHOTO_DELETE_FAILED:${deleteError.message}`)
+  if(row?.foto_path){
+    const{error:storageError}=await admin.storage.from(SUPERVISOR_PHOTO_BUCKET).remove([row.foto_path])
+    if(storageError)console.error('supervisor photo object cleanup',storageError.message)
+  }
 }
 
 export async function upsertProfile(env: Env, profile: { id:string; email:string; nome:string; perfil:'ADMIN'|'USUARIO'; supervisor_id:string|null; ativo:boolean }) {
