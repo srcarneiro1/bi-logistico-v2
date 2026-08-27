@@ -1,7 +1,7 @@
 import type { PagesFunction } from '@cloudflare/workers-types'
 import { assertEnv, type Env } from '../../_lib/env'
 import { bearerToken, json } from '../../_lib/http'
-import { getAuthenticatedUser, getGovernanceRole, getSupervisorCoverageData, upsertProfile } from '../../_lib/supabase'
+import { getAuthenticatedUser, getGovernanceRole, getSupervisorCoverageData, getSupervisorPhotoOverrides, upsertProfile } from '../../_lib/supabase'
 import { readHub } from '../../_lib/google'
 import { buildHubBootstrap } from '../../_lib/hub'
 
@@ -35,8 +35,25 @@ export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
       }
     }
 
+    let photoOverrides = new Map<string,string>()
+    try {
+      const photos = await getSupervisorPhotoOverrides(env)
+      photoOverrides = new Map(photos.map(photo => [photo.supervisorId, photo.fotoUrl]))
+    } catch (photoError) {
+      // Compatibilidade: se a migration ainda não tiver sido aplicada, a HUB continua sendo a fonte de foto.
+      console.error('hub/bootstrap photo enrichment', photoError instanceof Error ? photoError.message : photoError)
+    }
+
     const { profileRow: _internal, ...response } = bootstrap
-    return json({ ...response, profile: { ...response.profile, governanceRole } })
+    const supervisors = response.supervisors.map(supervisor => {
+      const override = photoOverrides.get(supervisor.supervisorId)
+      return {
+        ...supervisor,
+        fotoUrl: override ?? supervisor.fotoUrl,
+        fotoSource: override ? 'SUPABASE' as const : supervisor.fotoUrl ? 'HUB' as const : null,
+      }
+    })
+    return json({ ...response, supervisors, profile: { ...response.profile, governanceRole } })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'UNKNOWN_ERROR'
 

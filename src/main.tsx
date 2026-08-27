@@ -22,6 +22,7 @@ import './transversal-refinement.css'
 import './record-lists.css'
 import './sections-feedback.css'
 import './accessibility-interactions.css'
+import './admin-supervisors.css'
 import './mfa.css'
 
 createRoot(document.getElementById('root')!).render(

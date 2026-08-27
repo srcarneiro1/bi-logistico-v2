@@ -3,6 +3,12 @@ import type { HubBootstrap } from '../types/hub'
 
 export type AccessEmailAction = 'first-access' | 'recover'
 
+async function accessToken(){
+  const { data: { session }, error } = await supabase.auth.getSession()
+  if(error||!session?.access_token)throw new Error('Sessão inválida. Entre novamente.')
+  return session.access_token
+}
+
 export async function requestAccessEmail(email: string, action: AccessEmailAction): Promise<string> {
   const response = await fetch('/api/auth/access', {
     method: 'POST',
@@ -22,14 +28,10 @@ export async function requestAccessEmail(email: string, action: AccessEmailActio
 }
 
 export async function getHubBootstrap(): Promise<HubBootstrap> {
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-  if (sessionError || !session?.access_token) {
-    throw new Error('Sessão inválida. Entre novamente.')
-  }
-
+  const token=await accessToken()
   const response = await fetch('/api/hub/bootstrap', {
     headers: {
-      Authorization: `Bearer ${session.access_token}`,
+      Authorization: `Bearer ${token}`,
       Accept: 'application/json',
     },
   })
@@ -47,4 +49,22 @@ export async function getHubBootstrap(): Promise<HubBootstrap> {
   }
 
   return payload as HubBootstrap
+}
+
+export async function uploadSupervisorPhoto(supervisorId:string,file:File){
+  const token=await accessToken()
+  const form=new FormData()
+  form.set('supervisorId',supervisorId)
+  form.set('file',file)
+  const response=await fetch('/api/admin/supervisor-photos',{method:'POST',headers:{Authorization:`Bearer ${token}`,Accept:'application/json'},body:form})
+  const payload=await response.json().catch(()=>null) as {error?:string;photo?:{supervisorId:string;fotoUrl:string}}|null
+  if(!response.ok)throw new Error(payload?.error||'Não foi possível atualizar a foto.')
+  return payload?.photo
+}
+
+export async function deleteSupervisorPhoto(supervisorId:string){
+  const token=await accessToken()
+  const response=await fetch('/api/admin/supervisor-photos',{method:'DELETE',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify({supervisorId})})
+  const payload=await response.json().catch(()=>null) as {error?:string}|null
+  if(!response.ok)throw new Error(payload?.error||'Não foi possível remover a foto interna.')
 }
