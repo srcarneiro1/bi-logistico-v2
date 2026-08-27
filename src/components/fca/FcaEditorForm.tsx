@@ -4,12 +4,14 @@ import type { FcaActionStatus } from '../../types/fca'
 import type { HubBootstrap } from '../../types/hub'
 
 export interface FcaEditorAction {
-  id?: number
+  id?: string
   acao: string
   responsavel: string
   prazo: string
   status: FcaActionStatus
 }
+
+type FcaEditorActionField = Exclude<keyof FcaEditorAction,'id'>
 
 interface FcaEditorFormProps {
   mode: 'new' | 'edit'
@@ -35,7 +37,7 @@ interface FcaEditorFormProps {
   onDepositanteChange: (value: string) => void
   onIndicadorChange: (value: string) => void
   onCausaChange: (value: string) => void
-  onActionChange: (index: number, field: keyof FcaEditorAction, value: string) => void
+  onActionChange: (index: number, field: FcaEditorActionField, value: string) => void
   onAddAction: () => void
   onRemoveAction: (index: number) => void
 }
