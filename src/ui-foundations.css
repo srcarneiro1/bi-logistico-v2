@@ -70,6 +70,13 @@ button.ui-summary-metric:hover{border-color:var(--border-strong);box-shadow:0 4p
 .ui-summary-metric-success .ui-summary-metric-icon{background:#f5fbf7;color:var(--status-success)}
 .ui-summary-metric-info .ui-summary-metric-icon{background:#f1f4ff;color:#49629b}
 
+/* Summary que também atua como controle de filtro: superfície neutra e sem rails decorativos. */
+.ui-summary-metrics-filters .ui-summary-metric{background:var(--surface-primary);border-color:var(--border-default);box-shadow:0 1px 2px rgba(29,31,35,.025)}
+.ui-summary-metrics-filters .ui-summary-metric-copy>strong{color:var(--text-primary)}
+.ui-summary-metrics-filters button.ui-summary-metric:hover{background:var(--surface-secondary);border-color:var(--border-strong);box-shadow:0 2px 8px rgba(29,31,35,.045)}
+.ui-summary-metrics-filters .ui-summary-metric.is-active{background:var(--surface-secondary);border-color:#bfc3ca;box-shadow:0 0 0 1px rgba(73,74,86,.06)}
+.ui-summary-metrics-filters .ui-summary-metric.is-active .ui-summary-metric-copy>span{color:var(--text-primary)}
+
 @media(max-width:760px){
   .ui-panel-header{display:grid;gap:var(--space-3)}
   .ui-panel-header-trailing{justify-content:flex-start;flex-wrap:wrap}
@@ -89,6 +96,8 @@ button.ui-summary-metric:hover{border-color:var(--border-strong);box-shadow:0 4p
   .ui-summary-metric{min-height:68px;padding:10px 11px;gap:9px}
   .ui-summary-metric-icon{width:30px;height:30px;font-size:16px}
   .ui-summary-metric-copy>strong{font-size:19px}
+  .ui-summary-metrics-filters .ui-summary-metric{min-height:62px;padding:9px 10px}
+  .ui-summary-metrics-filters .ui-summary-metric-copy>small{display:none}
 
   .table-wrap:has(.responsive-data-table){overflow:visible;border:0;background:transparent;box-shadow:none}
   .responsive-data-table{min-width:0!important;border-collapse:separate!important;border-spacing:0 10px!important}
@@ -118,6 +127,8 @@ button.ui-summary-metric:hover{border-color:var(--border-strong);box-shadow:0 4p
 
 @media(max-width:480px){
   .ui-summary-metrics{grid-template-columns:1fr}
+  .ui-summary-metrics-filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ui-summary-metrics-filters>.ui-summary-metric:last-child:nth-child(odd){grid-column:1/-1}
   .responsive-data-table tr{grid-template-columns:1fr}
   .responsive-data-table td[data-primary="true"],.responsive-data-table td[data-full="true"]{grid-column:auto}
   .attention-row>.attention-metrics{grid-template-columns:1fr}
