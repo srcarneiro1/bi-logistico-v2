@@ -14,6 +14,7 @@ export interface SupabaseCoverage {
 export interface SupervisorPhotoOverride { supervisorId:string; fotoPath:string; fotoUrl:string; updatedAt:string }
 
 const SUPERVISOR_PHOTO_BUCKET='supervisor-fotos'
+const SUPERVISOR_PHOTO_URL_TTL=60*60*24
 const PHOTO_EXTENSIONS:Record<string,string>={'image/jpeg':'jpg','image/png':'png','image/webp':'webp'}
 
 export async function getAuthenticatedUser(_env: Env, accessToken: string): Promise<SupabaseAuthUser> {
@@ -66,16 +67,22 @@ function adminClient(env:Env){
   return createClient(SUPABASE_URL,env.SUPABASE_SECRET_KEY,{auth:{persistSession:false,autoRefreshToken:false}})
 }
 
+async function signedPhotoUrl(admin:ReturnType<typeof adminClient>,fotoPath:string){
+  const{data,error}=await admin.storage.from(SUPERVISOR_PHOTO_BUCKET).createSignedUrl(fotoPath,SUPERVISOR_PHOTO_URL_TTL)
+  if(error||!data?.signedUrl)throw new Error(`SUPERVISOR_PHOTO_SIGN_FAILED:${error?.message??'URL_NOT_RETURNED'}`)
+  return data.signedUrl
+}
+
 export async function getSupervisorPhotoOverrides(env:Env):Promise<SupervisorPhotoOverride[]>{
   const admin=adminClient(env)
   const{data,error}=await admin.from('supervisor_fotos').select('supervisor_id,foto_path,updated_at').order('supervisor_id')
   if(error)throw new Error(`SUPERVISOR_PHOTO_LIST_FAILED:${error.message}`)
-  return(data??[]).map(row=>({
+  return Promise.all((data??[]).map(async row=>({
     supervisorId:String(row.supervisor_id),
     fotoPath:String(row.foto_path),
-    fotoUrl:admin.storage.from(SUPERVISOR_PHOTO_BUCKET).getPublicUrl(String(row.foto_path)).data.publicUrl,
+    fotoUrl:await signedPhotoUrl(admin,String(row.foto_path)),
     updatedAt:String(row.updated_at),
-  }))
+  })))
 }
 
 export async function saveSupervisorPhoto(env:Env,supervisorId:string,file:File,actorId:string):Promise<SupervisorPhotoOverride>{
@@ -88,7 +95,7 @@ export async function saveSupervisorPhoto(env:Env,supervisorId:string,file:File,
   if(previousError)throw new Error(`SUPERVISOR_PHOTO_LOOKUP_FAILED:${previousError.message}`)
 
   const fotoPath=`${supervisorId}/${crypto.randomUUID()}.${extension}`
-  const{error:uploadError}=await admin.storage.from(SUPERVISOR_PHOTO_BUCKET).upload(fotoPath,file,{contentType:file.type,cacheControl:'31536000',upsert:false})
+  const{error:uploadError}=await admin.storage.from(SUPERVISOR_PHOTO_BUCKET).upload(fotoPath,file,{contentType:file.type,cacheControl:'86400',upsert:false})
   if(uploadError)throw new Error(`SUPERVISOR_PHOTO_UPLOAD_FAILED:${uploadError.message}`)
 
   const{data:row,error:saveError}=await admin.from('supervisor_fotos').upsert({supervisor_id:supervisorId,foto_path:fotoPath,content_type:file.type,updated_at:new Date().toISOString(),updated_by:actorId},{onConflict:'supervisor_id'}).select('supervisor_id,foto_path,updated_at').single()
@@ -105,7 +112,7 @@ export async function saveSupervisorPhoto(env:Env,supervisorId:string,file:File,
   return{
     supervisorId:String(row.supervisor_id),
     fotoPath:String(row.foto_path),
-    fotoUrl:admin.storage.from(SUPERVISOR_PHOTO_BUCKET).getPublicUrl(String(row.foto_path)).data.publicUrl,
+    fotoUrl:await signedPhotoUrl(admin,String(row.foto_path)),
     updatedAt:String(row.updated_at),
   }
 }
