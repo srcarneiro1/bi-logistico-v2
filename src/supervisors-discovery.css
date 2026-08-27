@@ -3,7 +3,6 @@
 
 .supervisor-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3)}
 .supervisor-card{position:relative;display:grid;gap:12px;min-width:0;min-height:196px;padding:17px 18px;align-content:start;text-align:left;color:inherit;border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card);overflow:hidden;transition:border-color .15s ease,box-shadow .15s ease,transform .15s ease}
-.supervisor-card::before{content:none}
 .supervisor-card:hover{border-color:var(--border-strong);box-shadow:0 4px 14px rgba(29,31,35,.055);transform:translateY(-1px)}
 .supervisor-card.selected{border-color:#bfc3ca;background:var(--surface-secondary);box-shadow:0 0 0 1px rgba(73,74,86,.06)}
 .supervisor-head{display:flex;align-items:center;gap:11px;min-width:0}
@@ -20,7 +19,6 @@
 .supervisor-card-priority{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 11px;border:1px solid #edf0f2;border-radius:9px;background:var(--surface-secondary)}
 .supervisor-card-priority span{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-muted)}
 .supervisor-card-priority strong{font-size:11px;text-align:right}
-.supervisor-card-priority-crit,.supervisor-card-priority-warn,.supervisor-card-priority-ok,.supervisor-card-priority-neutral{border-color:#edf0f2;background:var(--surface-secondary)}
 .supervisor-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;padding-top:0;border-top:0}
 .supervisor-metrics>div{display:grid;gap:3px}
 .supervisor-metrics span{font-size:9px;color:var(--text-muted)}
@@ -33,7 +31,7 @@
 .supervisor-360-avatar-image{display:block}
 .supervisor-360-avatar{display:grid;place-items:center;color:var(--text-primary);font-size:13px;font-weight:800}
 .supervisor-360-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.75fr);gap:var(--space-3);align-items:stretch}
-.supervisor-360-grid>.ui-panel,.supervisor-360-grid>.dashboard-panel{min-width:0}
+.supervisor-360-grid>.ui-panel{min-width:0}
 .supervisor-open-fcas{min-height:100%}
 .supervisor-fca-list>a{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:12px 15px;color:inherit;text-decoration:none}
 .supervisor-fca-list>a>div{display:grid;gap:3px;min-width:0}
