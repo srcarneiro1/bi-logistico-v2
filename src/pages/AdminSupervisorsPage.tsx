@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { PageHeader } from '../components/PageHeader'
 import { Badge } from '../components/ui/Badge'
+import { Chip } from '../components/ui/Chip'
 import { EmptyState } from '../components/ui/Feedback'
 import { PageToolbar } from '../components/ui/PageToolbar'
 import { SearchField } from '../components/ui/SearchField'
@@ -84,7 +85,7 @@ export function AdminSupervisorsPage({hub,onRefresh}:{hub:HubBootstrap;onRefresh
     {error&&<div className="notice notice-error" role="alert">{error}</div>}
     {message&&<div className="notice notice-success" role="status">{message}</div>}
 
-    <SectionHeader eyebrow="CADASTRO VISUAL" title="Supervisores da HUB" description="A origem da foto é exibida em cada registro; o restante do cadastro permanece somente leitura nesta área." trailing={<span className="panel-chip">{supervisors.length} resultado(s)</span>}/>
+    <SectionHeader eyebrow="CADASTRO VISUAL" title="Supervisores da HUB" description="A origem da foto é exibida em cada registro; o restante do cadastro permanece somente leitura nesta área." trailing={<Chip>{supervisors.length} resultado(s)</Chip>}/>
     {supervisors.length===0?<EmptyState icon="group_off" title="Nenhum supervisor encontrado" description="Ajuste a busca para consultar outros supervisores."/>:<div className="admin-supervisor-grid">{supervisors.map(supervisor=>{
       const working=workingId===supervisor.supervisorId
       return <article className="admin-supervisor-card" key={supervisor.supervisorId}>
