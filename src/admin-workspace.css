@@ -12,7 +12,6 @@
 .admin-confirmation p{margin:3px 0 0;max-width:760px;font-size:10px;line-height:1.45;color:var(--text-secondary)}
 .admin-confirmation-actions{display:flex;gap:8px;flex:0 0 auto}
 .admin-user-email{font-size:9px;color:var(--text-muted);font-weight:400}
-.admin-guidance{border-radius:var(--radius-card);border-color:#dde2ea;background:#f8fafc;box-shadow:none}
 
 .button-compact{padding:7px 10px;font-size:11px}
 .icon-button{width:30px;height:30px;display:grid;place-items:center;border:1px solid var(--border-default);border-radius:var(--radius-control);background:var(--surface-primary);color:var(--text-secondary)}
@@ -22,7 +21,6 @@
 .coverage-head-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .coverage-card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:14px;background:var(--surface-secondary)}
 .coverage-card{position:relative;display:grid;min-width:0;padding:14px;border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:0 1px 2px rgba(29,31,35,.03);transition:border-color .15s ease,box-shadow .15s ease}
-.coverage-card.is-active{border-color:#cfe2d5;box-shadow:0 1px 2px rgba(29,31,35,.03)}
 .coverage-card:hover{border-color:#cfd3da;box-shadow:0 4px 14px rgba(29,31,35,.06)}
 .coverage-card-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
 .coverage-people{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
