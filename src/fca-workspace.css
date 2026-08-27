@@ -6,7 +6,7 @@
 .fca-results{min-width:0}
 .fca-workspace-card .fca-table{min-width:880px}
 .fca-record-cell>a{font-size:12px;font-weight:800;letter-spacing:.015em}
-.fca-record-cell small{font-size:8.5px;color:var(--text-muted)}
+.fca-record-cell>small{font-size:8.5px;color:var(--text-muted)}
 .fca-entity-cell{min-width:170px}
 
 /* Detalhe: hero, métricas e headers são primitives compartilhados. */
@@ -21,9 +21,9 @@
 .fca-plan-marker{position:relative;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#f3f4f6;border:1px solid #e4e6ea;color:#626974;font-size:9px;font-weight:800}
 .fca-plan-item:not(:last-child) .fca-plan-marker:after{content:'';position:absolute;top:30px;bottom:-29px;left:50%;width:1px;background:#e2e5e9}
 .fca-plan-copy{display:grid;gap:5px;min-width:0}
-.fca-plan-copy p{margin:0;font-size:10.5px;line-height:1.5;color:#353b44;overflow-wrap:anywhere}
+.fca-plan-copy>p{margin:0;font-size:10.5px;line-height:1.5;color:#353b44;overflow-wrap:anywhere}
 .fca-plan-meta{display:flex;gap:10px;flex-wrap:wrap;font-size:8.5px;color:var(--text-muted)}
-.fca-plan-meta span{display:inline-flex;align-items:center;gap:4px}
+.fca-plan-meta>span{display:inline-flex;align-items:center;gap:4px}
 .fca-plan-meta .material-symbols-rounded{font-size:13px}
 .fca-plan-status{align-self:start}
 .fca-plan-item.action-cancelled{opacity:.55}
@@ -32,8 +32,8 @@
 .fca-audit-event{position:relative;display:grid;gap:3px;padding:5px 0 14px 22px}
 .fca-audit-event:before{content:'';position:absolute;left:2px;top:9px;width:8px;height:8px;border-radius:50%;background:#fff;border:2px solid #a5aab2}
 .fca-audit-event:not(:last-child):after{content:'';position:absolute;left:5px;top:19px;bottom:-1px;width:1px;background:#e1e4e8}
-.fca-audit-event strong{font-size:9.5px;color:var(--text-primary);text-transform:capitalize}
-.fca-audit-event span{font-size:8.5px;color:var(--text-muted);overflow-wrap:anywhere}
+.fca-audit-event>strong{font-size:9.5px;color:var(--text-primary);text-transform:capitalize}
+.fca-audit-event>span{font-size:8.5px;color:var(--text-muted);overflow-wrap:anywhere}
 
 /* Formulário FCA mantém seu fluxo por etapas, mas é integralmente proprietário de sua geometria. */
 .fca-editor-page{display:grid;gap:14px}
@@ -41,9 +41,9 @@
 .fca-form-stepper{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card);overflow:hidden}
 .fca-form-stepper>div{display:grid;grid-template-columns:30px minmax(0,1fr);column-gap:9px;align-items:center;padding:12px 14px;border-right:1px solid var(--border-default)}
 .fca-form-stepper>div:last-child{border-right:0}
-.fca-form-stepper i{grid-row:1/3;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--surface-tertiary);color:#565d68;font-size:9px;font-style:normal;font-weight:800}
-.fca-form-stepper strong{font-size:9.5px;color:var(--text-primary)}
-.fca-form-stepper span{font-size:8px;color:var(--text-muted)}
+.fca-form-stepper>div>i{grid-row:1/3;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--surface-tertiary);color:#565d68;font-size:9px;font-style:normal;font-weight:800}
+.fca-form-stepper>div>strong{font-size:9.5px;color:var(--text-primary)}
+.fca-form-stepper>div>span{font-size:8px;color:var(--text-muted)}
 
 .fca-editor-page .fca-form{counter-reset:fca-step;display:grid;gap:13px;padding:0;margin:0;background:transparent;border:0;box-shadow:none}
 .fca-editor-page .fca-form .form-section{counter-increment:fca-step;position:relative;min-width:0;padding:18px;border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card);scroll-margin-top:90px}
@@ -100,9 +100,9 @@
   /* Stepper permanece integralmente visível; não vira carrossel. */
   .fca-form-stepper{grid-template-columns:repeat(3,minmax(0,1fr));overflow:visible}
   .fca-form-stepper>div{min-width:0;padding:9px 7px;grid-template-columns:24px minmax(0,1fr);column-gap:6px}
-  .fca-form-stepper i{width:24px;height:24px;font-size:8px}
-  .fca-form-stepper strong{font-size:8px;line-height:1.15;white-space:normal;overflow-wrap:anywhere}
-  .fca-form-stepper span{display:none}
+  .fca-form-stepper>div>i{width:24px;height:24px;font-size:8px}
+  .fca-form-stepper>div>strong{font-size:8px;line-height:1.15;white-space:normal;overflow-wrap:anywhere}
+  .fca-form-stepper>div>span{display:none}
   .fca-editor-page .fca-form .form-section{padding:14px}
   .fca-editor-page .fca-form .form-section-heading{padding-left:38px}
   .fca-editor-page .form-grid-3,.fca-editor-page .form-grid-action{grid-template-columns:1fr}
@@ -125,5 +125,5 @@
   .fca-form-stepper{grid-template-columns:1fr}
   .fca-form-stepper>div{grid-template-columns:24px minmax(0,1fr);border-right:0;border-bottom:1px solid var(--border-default)}
   .fca-form-stepper>div:last-child{border-bottom:0}
-  .fca-form-stepper span{display:block;font-size:7.5px}
+  .fca-form-stepper>div>span{display:block;font-size:7.5px}
 }
