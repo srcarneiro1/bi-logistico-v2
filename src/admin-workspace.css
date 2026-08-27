@@ -73,4 +73,6 @@
   .coverage-card-grid{grid-template-columns:1fr}
   .coverage-head-actions{align-items:flex-end;flex-direction:column}
   .date-pair{grid-template-columns:1fr}
+  .icon-button{width:44px;height:44px;min-width:44px;min-height:44px}
+  .substitute-chips button{min-height:44px;padding:8px 11px;font-size:10px}
 }

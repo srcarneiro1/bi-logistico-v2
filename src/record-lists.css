@@ -29,6 +29,7 @@
 .table-primary,.fca-record-cell,.fca-entity-cell,.fca-owner-cell{display:grid;gap:2px;min-width:0}
 .table-primary>strong,.fca-entity-cell>strong,.fca-owner-cell>strong{overflow-wrap:anywhere}
 .table-link,.depositor-open-button,.fca-number-link{display:inline-flex;align-items:center;min-width:0;color:var(--text-primary);text-decoration:none}
+.table-link{appearance:none;-webkit-appearance:none;border:0;background:transparent;padding:0;font:inherit;text-align:left;cursor:pointer}
 .depositor-open-button{width:100%;justify-content:flex-start;border:0;background:transparent;padding:2px 0;text-align:left}
 .table-link:hover,.depositor-open-button:hover,.fca-number-link:hover{color:var(--brand-primary)}
 .fca-number-link{font-weight:800}
