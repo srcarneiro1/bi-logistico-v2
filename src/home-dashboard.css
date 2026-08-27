@@ -7,9 +7,10 @@
 .home-trend-panel .panel-body{padding:20px 22px 18px}
 .home-side-stack{display:grid;gap:var(--space-3)}
 .home-side-stack>.dashboard-panel,.home-side-stack>.ui-panel{min-width:0}
-.home-scope-grid{padding:12px;gap:8px}
-.home-scope-grid>div{padding:12px 13px;background:var(--surface-secondary)}
-.home-scope-grid strong{font-size:20px}
+.home-scope-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:12px;gap:8px}
+.home-scope-grid>div{display:grid;gap:6px;min-height:76px;padding:12px 13px;border:1px solid var(--border-default);border-radius:var(--radius-control);background:var(--surface-secondary)}
+.home-scope-grid span{font-size:10px;color:var(--text-secondary)}
+.home-scope-grid strong{font-size:20px;color:var(--text-primary)}
 
 .home-attention-panel{margin-top:0}
 .home-attention-panel .attention-list{padding:8px 14px 12px}
@@ -45,5 +46,6 @@
 }
 
 @media(max-width:480px){
+  .home-scope-grid{grid-template-columns:1fr}
   .home-attention-panel .attention-metrics{grid-template-columns:1fr}
 }
