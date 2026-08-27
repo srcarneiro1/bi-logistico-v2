@@ -1,24 +1,27 @@
 .home-dashboard{display:grid;gap:var(--space-4)}
 .home-dashboard .page-header{margin-bottom:0}
-.home-kpi-section{background:transparent}
-.home-section-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--space-4);margin-bottom:var(--space-3)}
-.home-section-heading>div{display:grid;gap:3px}
-.home-section-heading h2{margin:0;font-size:17px;line-height:1.3;color:var(--text-primary)}
-.home-section-heading p{margin:0;max-width:760px;font-size:11px;line-height:1.5;color:var(--text-muted)}
+.home-kpi-section{display:grid;gap:var(--space-3);background:transparent}
 .home-kpi-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--space-2)}
-.home-kpi-grid .metric-card-supporting{min-height:132px!important}
+.home-kpi-grid .metric-card-supporting{min-height:132px}
 .home-main-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,.82fr);gap:var(--space-3);align-items:start}
 .home-trend-panel .panel-body{padding:20px 22px 18px}
 .home-side-stack{display:grid;gap:var(--space-3)}
-.home-side-stack>.dashboard-panel{min-width:0}
-.home-scope-panel .panel-head{min-height:54px}
+.home-side-stack>.dashboard-panel,.home-side-stack>.ui-panel{min-width:0}
 .home-scope-grid{padding:12px;gap:8px}
 .home-scope-grid>div{padding:12px 13px;background:var(--surface-secondary)}
 .home-scope-grid strong{font-size:20px}
+
 .home-attention-panel{margin-top:0}
-.home-attention-panel .attention-list{padding:4px 18px 8px}
-.home-attention-panel .attention-row{grid-template-columns:38px minmax(180px,1fr) minmax(340px,1.7fr) 12px;padding:12px 0}
-.home-attention-panel .attention-metrics span{grid-template-columns:auto 1fr;align-items:baseline;column-gap:5px}
+.home-attention-panel .attention-list{padding:8px 14px 12px}
+.home-attention-panel .attention-row{display:grid;grid-template-columns:38px minmax(180px,1fr) minmax(340px,1.7fr) auto;gap:10px;align-items:center;padding:11px 10px;border:1px solid transparent;border-radius:9px;margin:2px 0;transition:background .15s ease,border-color .15s ease}
+.home-attention-panel .attention-row:hover{background:var(--surface-secondary);border-color:#e8eaed}
+.home-attention-panel .rank{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--surface-tertiary);font-size:9px;font-weight:800;color:var(--text-secondary)}
+.home-attention-panel .attention-row>div:nth-child(2){align-self:center;display:grid;gap:2px;min-width:0}
+.home-attention-panel .attention-row>div:nth-child(2) strong{font-size:11px}
+.home-attention-panel .attention-row>div:nth-child(2) small{font-size:9px;color:var(--text-muted)}
+.home-attention-panel .attention-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.home-attention-panel .attention-metrics span{display:grid;grid-template-columns:auto 1fr;align-items:baseline;column-gap:5px;padding:7px 9px;border:1px solid #edf0f2;border-radius:8px;background:#fff}
+.home-attention-panel .attention-status{align-self:center;justify-self:end}
 
 @media(max-width:1280px){
   .home-kpi-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -32,12 +35,15 @@
 }
 
 @media(max-width:760px){
-  .home-section-heading{display:grid;align-items:start}
-  .home-section-heading>.panel-chip{justify-self:start}
   .home-kpi-grid{grid-template-columns:1fr}
-  .home-kpi-grid .metric-card-supporting{min-height:0!important}
+  .home-kpi-grid .metric-card-supporting{min-height:0}
   .home-side-stack{grid-template-columns:1fr}
-  .home-attention-panel .attention-row{grid-template-columns:30px minmax(0,1fr) 10px}
-  .home-attention-panel .attention-metrics{grid-column:2/4;grid-row:2;grid-template-columns:repeat(3,1fr)}
-  .home-attention-panel .health-dot{grid-column:3;grid-row:1}
+  .home-attention-panel .attention-row{grid-template-columns:30px minmax(0,1fr);padding:12px 8px}
+  .home-attention-panel .attention-metrics{grid-column:2;grid-row:2;grid-template-columns:repeat(3,minmax(0,1fr))}
+  .home-attention-panel .attention-metrics span{background:var(--surface-secondary)}
+  .home-attention-panel .attention-status{grid-column:2;grid-row:3;justify-self:start;margin-top:2px}
+}
+
+@media(max-width:480px){
+  .home-attention-panel .attention-metrics{grid-template-columns:1fr}
 }

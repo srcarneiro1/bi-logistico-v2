@@ -1,26 +1,14 @@
-/* Passe transversal: hierarquia de seções, charts e feedback states. */
+/* Hierarquia complementar: chips, feedback legado, charts e ações.
+   Panel/Section headers e EmptyState vivem em ui-foundations.css. */
 
-/* Cabeçalhos de seção/painel seguem a mesma anatomia em todas as telas. */
-.panel-head{min-height:58px;display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:14px 16px;border-bottom:1px solid var(--border-default);background:var(--surface-primary)}
-.panel-head>div:first-child{display:grid;gap:3px;min-width:0}
-.panel-head .panel-eyebrow{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted)}
-.panel-head h2{margin:0;font-size:15px;line-height:1.3;color:var(--text-primary)}
-.panel-head p{margin:0;max-width:760px;font-size:10px;line-height:1.45;color:var(--text-muted)}
 .panel-chip{display:inline-flex;align-items:center;justify-content:center;min-height:26px;padding:5px 9px;border:1px solid #e1e4e7;border-radius:999px;background:#f7f8f9;color:var(--text-secondary);font-size:9px;font-weight:700;line-height:1;white-space:nowrap}
 .panel-chip-red{border-color:#f0c9cc;background:var(--status-danger-soft);color:var(--status-danger)}
 .panel-chip-ok{border-color:#d7e8dc;background:var(--status-success-soft);color:var(--status-success)}
 
-/* Estados vazios e carregamento passam a ter a mesma presença visual. */
-.ui-empty-state,.table-empty,.empty-chart,.loading-panel{min-height:150px;display:grid;place-items:center;align-content:center;text-align:center;color:var(--text-muted)}
-.table-empty,.empty-chart,.loading-panel{padding:28px 18px;font-size:10px;line-height:1.45}
+/* Estados legados simples ainda usados fora do primitive EmptyState. */
+.table-empty,.empty-chart,.loading-panel{min-height:150px;display:grid;place-items:center;align-content:center;padding:28px 18px;text-align:center;font-size:10px;line-height:1.45;color:var(--text-muted)}
 .loading-panel{position:relative;gap:10px}
 .loading-panel:before{content:'';width:20px;height:20px;border-radius:50%;border:2px solid #dfe2e6;border-top-color:var(--brand-primary);animation:bi-section-spin .75s linear infinite}
-.ui-empty-state{gap:10px;padding:28px 18px}
-.ui-empty-state>.material-symbols-rounded{width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#f2f3f5;color:#6d737c;font-size:21px}
-.ui-empty-state-error>.material-symbols-rounded{background:var(--status-danger-soft);color:var(--status-danger)}
-.ui-empty-state strong{font-size:12px}
-.ui-empty-state p{max-width:500px;font-size:10px;line-height:1.5}
-.ui-empty-state-action{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
 
 /* Notices usam a mesma densidade e hierarquia sem competir com conteúdo principal. */
 .notice,.scope-note,.analytics-warning,.substitute-context,.admin-guidance{border-radius:11px;box-shadow:none}
@@ -48,24 +36,13 @@
 @keyframes bi-section-spin{to{transform:rotate(360deg)}}
 
 @media(max-width:760px){
-  .panel-head{display:grid;gap:9px;padding:13px 14px}
-  .panel-head>.panel-chip{justify-self:start}
-  .panel-head h2{font-size:14px}
-  .panel-head p{font-size:9.5px}
-
   .chart-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding-top:8px;overflow:visible}
   .chart-legend button{width:100%;justify-content:flex-start;min-width:0;white-space:normal;text-align:left}
 
-  .ui-empty-state,.table-empty,.empty-chart,.loading-panel{min-height:130px}
-  .ui-empty-state-action{width:100%}
-  .ui-empty-state-action>.button{width:100%;justify-content:center}
-
+  .table-empty,.empty-chart,.loading-panel{min-height:130px}
   .page-header-actions,.form-actions,.admin-confirmation-actions{width:100%;display:grid;grid-template-columns:1fr}
   .page-header-actions>.button,.form-actions>.button,.admin-confirmation-actions>.button{width:100%;justify-content:center}
 }
 
-@media(max-width:420px){
-  .chart-legend{grid-template-columns:1fr}
-}
-
+@media(max-width:420px){.chart-legend{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.loading-panel:before{animation:none}}

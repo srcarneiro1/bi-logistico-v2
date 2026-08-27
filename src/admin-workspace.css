@@ -1,0 +1,29 @@
+.admin-access-page,.admin-substitutions-page{display:grid;gap:var(--space-4)}
+.admin-access-page .page-header,.admin-substitutions-page .page-header{margin-bottom:0}
+
+.admin-confirmation{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:13px 14px;border:1px solid #eadb9f;border-radius:var(--radius-card);background:var(--status-warning-soft);box-shadow:var(--shadow-card)}
+.admin-confirmation>div:first-child{display:flex;align-items:flex-start;gap:10px;min-width:0}
+.admin-confirmation .material-symbols-rounded{font-size:20px;color:var(--status-warning)}
+.admin-confirmation strong{display:block;font-size:11px;color:var(--text-primary)}
+.admin-confirmation p{margin:3px 0 0;max-width:760px;font-size:10px;line-height:1.45;color:var(--text-secondary)}
+.admin-confirmation-actions{display:flex;gap:8px;flex:0 0 auto}
+.admin-user-email{font-size:9px;color:var(--text-muted);font-weight:400}
+.admin-guidance{border-radius:var(--radius-card);border-color:#dde2ea;background:#f8fafc;box-shadow:none}
+
+.coverage-panel{overflow:hidden}
+.coverage-head-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.coverage-card-grid{gap:10px}
+.coverage-card{border-radius:var(--radius-card);box-shadow:0 1px 2px rgba(29,31,35,.03);transition:border-color .15s ease,box-shadow .15s ease}
+.coverage-card:hover{border-color:#cfd3da;box-shadow:0 4px 14px rgba(29,31,35,.06)}
+.substitution-admin{border-top:1px solid var(--border-default)}
+.substitution-form{border-radius:var(--radius-card);background:#fbfcfd}
+
+@media(max-width:900px){
+  .admin-confirmation{display:grid}
+  .admin-confirmation-actions{justify-content:flex-start}
+}
+
+@media(max-width:760px){
+  .admin-confirmation-actions{display:grid;grid-template-columns:1fr;width:100%}
+  .admin-confirmation-actions>.button{width:100%;justify-content:center}
+}

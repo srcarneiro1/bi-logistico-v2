@@ -76,10 +76,10 @@ export function AdminAccessPage({hub}:{hub:HubBootstrap}){
     <PageHeader eyebrow="ADMINISTRAÇÃO" title="Acessos" description="Governança de administradores delegados. O Owner é permanente e não pode ser alterado por esta interface."/>
 
     <SummaryMetrics ariaLabel="Resumo de governança" items={[
-      {key:'owner',label:'Owner',value:counts.owner,detail:'protegido',tone:'warning'},
-      {key:'admins',label:'Administradores',value:counts.admins,detail:'delegados',tone:counts.admins?'success':'neutral'},
-      {key:'users',label:'Usuários',value:counts.users,detail:'sem governança administrativa'},
-      {key:'inactive',label:'Inativos',value:counts.inactive,detail:'cadastro sem operação',tone:counts.inactive?'warning':'neutral'},
+      {key:'owner',label:'Owner',value:counts.owner,detail:'protegido',tone:'warning',icon:'shield_person'},
+      {key:'admins',label:'Administradores',value:counts.admins,detail:'delegados',tone:counts.admins?'success':'neutral',icon:'admin_panel_settings'},
+      {key:'users',label:'Usuários',value:counts.users,detail:'sem governança administrativa',icon:'group'},
+      {key:'inactive',label:'Inativos',value:counts.inactive,detail:'cadastro sem operação',tone:counts.inactive?'warning':'neutral',icon:'person_off'},
     ]}/>
 
     <PageToolbar
@@ -88,21 +88,21 @@ export function AdminAccessPage({hub}:{hub:HubBootstrap}){
       filters={<select aria-label="Filtrar governança" value={roleFilter} onChange={event=>setRoleFilter(event.target.value)}><option value="ALL">Todas as governanças</option><option value="OWNER">Owner</option><option value="ADMIN">Administradores</option><option value="USER">Usuários</option></select>}
     />
 
-    {pendingChange&&<div className="admin-confirmation" role="alertdialog" aria-modal="true" aria-labelledby="admin-confirm-title">
+    {pendingChange&&<section className="admin-confirmation" role="region" aria-labelledby="admin-confirm-title">
       <div><span className="material-symbols-rounded" aria-hidden="true">verified_user</span><div><strong id="admin-confirm-title">Confirmar alteração de governança</strong><p>{pendingChange.makeAdmin?`Conceder acesso administrativo a ${pendingChange.user.nome}?`:`Revogar o acesso administrativo de ${pendingChange.user.nome}?`} O perfil operacional e o escopo logístico não serão alterados.</p></div></div>
       <div className="admin-confirmation-actions"><button type="button" className="button" onClick={()=>setPendingChange(null)}>Cancelar</button><button type="button" className="button button-primary" disabled={changingId===pendingChange.user.userId} onClick={()=>void changeRole(pendingChange.user,pendingChange.makeAdmin)}>{changingId===pendingChange.user.userId?'Processando…':'Confirmar'}</button></div>
-    </div>}
+    </section>}
 
     <Panel>
       <PanelHeader
-        eyebrow="Governança"
+        eyebrow="GOVERNANÇA"
         title="Usuários provisionados"
         description="Perfil operacional e autoridade administrativa são dimensões independentes. Conceder Admin não altera o escopo logístico da HUB."
         trailing={<span className="panel-chip">{visibleUsers.length} resultado(s)</span>}
       />
 
       {message&&<div className="notice success" role="status">{message}</div>}
-      {loading?<Skeleton lines={5}/>:error?<EmptyState tone="error" icon="error" title="Falha ao carregar acessos" description={error} action={<button type="button" className="button" onClick={()=>void load()}>Tentar novamente</button>}/>:visibleUsers.length===0?<EmptyState icon="group_off" title="Nenhum usuário encontrado" description="Ajuste a busca ou o filtro de governança para consultar outros usuários."/>:<div className="table-wrap"><table className="responsive-data-table"><thead><tr><th scope="col">Usuário</th><th scope="col">Perfil operacional</th><th scope="col">Status</th><th scope="col">Governança</th><th scope="col">Ação</th></tr></thead><tbody>{visibleUsers.map(user=><tr key={user.userId}><td data-label="Usuário" data-primary="true"><strong>{user.nome}</strong><small className="admin-user-email">{user.email}</small></td><td data-label="Perfil operacional">{user.perfilOperacional}</td><td data-label="Status"><Badge tone={user.ativo?'success':'neutral'} className="ui-status-badge">{user.ativo?'Ativo':'Inativo'}</Badge></td><td data-label="Governança"><Badge tone={roleTone(user.governanceRole)}>{roleLabel(user.governanceRole)}</Badge></td><td data-label="Ação">{user.governanceRole==='OWNER'?<span className="muted-text">Protegido</span>:user.governanceRole==='ADMIN'?<button type="button" className="button" disabled={changingId===user.userId} onClick={()=>setPendingChange({user,makeAdmin:false})}>Revogar Admin</button>:<button type="button" className="button button-primary" disabled={changingId===user.userId} onClick={()=>setPendingChange({user,makeAdmin:true})}>Tornar Admin</button>}</td></tr>)}</tbody></table></div>}
+      {loading?<Skeleton lines={5}/>:error?<EmptyState tone="error" icon="error" title="Falha ao carregar acessos" description={error} action={<button type="button" className="button" onClick={()=>void load()}>Tentar novamente</button>}/>:visibleUsers.length===0?<EmptyState icon="group_off" title="Nenhum usuário encontrado" description="Ajuste a busca ou o filtro de governança para consultar outros usuários."/>:<div className="table-wrap"><table className="responsive-data-table"><thead><tr><th scope="col">Usuário</th><th scope="col">Perfil operacional</th><th scope="col">Status</th><th scope="col">Governança</th><th scope="col">Ação</th></tr></thead><tbody>{visibleUsers.map(user=><tr key={user.userId}><td data-label="Usuário" data-primary="true"><div className="table-primary"><strong>{user.nome}</strong><span className="admin-user-email">{user.email}</span></div></td><td data-label="Perfil operacional">{user.perfilOperacional}</td><td data-label="Status"><Badge tone={user.ativo?'success':'neutral'} className="ui-status-badge">{user.ativo?'Ativo':'Inativo'}</Badge></td><td data-label="Governança"><Badge tone={roleTone(user.governanceRole)}>{roleLabel(user.governanceRole)}</Badge></td><td data-label="Ação">{user.governanceRole==='OWNER'?<span className="muted-text">Protegido</span>:user.governanceRole==='ADMIN'?<button type="button" className="button" disabled={changingId===user.userId} onClick={()=>setPendingChange({user,makeAdmin:false})}>Revogar Admin</button>:<button type="button" className="button button-primary" disabled={changingId===user.userId} onClick={()=>setPendingChange({user,makeAdmin:true})}>Tornar Admin</button>}</td></tr>)}</tbody></table></div>}
     </Panel>
   </section>
 }

@@ -3,6 +3,8 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { PageHeader } from '../components/PageHeader'
 import { StatusBadge } from '../components/ui/Badge'
 import { DetailHero, DetailMetrics } from '../components/ui/DetailHero'
+import { EmptyState, Skeleton } from '../components/ui/Feedback'
+import { Panel, PanelHeader } from '../components/ui/Panel'
 import { supabase } from '../lib/supabase'
 import { deriveFcaStatus, isFcaOverdue } from '../lib/fca'
 import { getFcaReturnContext, prepareFcaReturnTarget } from '../lib/navigationContext'
@@ -32,8 +34,8 @@ export function FcaDetailPage() {
 
   function goBack(){navigate(prepareFcaReturnTarget(getFcaReturnContext()))}
 
-  if (error) return <div className="notice notice-error">{error}</div>
-  if (!row) return <div className="panel loading-panel">Carregando FCA…</div>
+  if(error)return <Panel><EmptyState tone="error" icon="error" title="Não foi possível carregar o FCA" description={error}/></Panel>
+  if(!row)return <Panel><Skeleton lines={6}/></Panel>
   const derived = deriveFcaStatus(row)
   const overdue = isFcaOverdue(row)
   const displayStatus=overdue?'VENCIDO':derived
@@ -44,8 +46,8 @@ export function FcaDetailPage() {
 
   return <section className="fca-page fca-detail-page">
     <PageHeader eyebrow="DETALHE DO REGISTRO" title={`FCA #${String(row.numero).padStart(5,'0')}`} description="Consulte o contexto, a causa, o plano de ação e a rastreabilidade do registro." actions={<><button className="button" type="button" onClick={goBack}><span className="material-symbols-rounded">arrow_back</span>Voltar</button><Link className="button button-primary" to={`/fca/${row.id}/editar`}><span className="material-symbols-rounded">edit</span>Editar FCA</Link></>}/>
-    {state?.justCreated&&<div className="notice notice-success">FCA #{String(state.justCreated).padStart(5,'0')} criado com sucesso.</div>}
-    {state?.updated&&<div className="notice notice-success">FCA atualizado com sucesso.</div>}
+    {state?.justCreated&&<div className="notice notice-success" role="status">FCA #{String(state.justCreated).padStart(5,'0')} criado com sucesso.</div>}
+    {state?.updated&&<div className="notice notice-success" role="status">FCA atualizado com sucesso.</div>}
 
     <DetailHero
       eyebrow={row.indicador_nome}
@@ -68,10 +70,10 @@ export function FcaDetailPage() {
       {key:'audit',label:'Eventos de auditoria',value:audit.length},
     ]}/>
 
-    <article className="panel fca-cause-card"><div className="fca-card-head"><span className="fca-card-icon"><span className="material-symbols-rounded">troubleshoot</span></span><div><span>Análise</span><h2>Causa / desvio identificado</h2></div></div><p className="fca-cause-copy">{row.causa}</p></article>
+    <Panel as="article" className="fca-cause-card"><PanelHeader eyebrow="ANÁLISE" title="Causa / desvio identificado"/><p className="fca-cause-copy">{row.causa}</p></Panel>
 
-    <article className="panel panel-spaced fca-plan-panel"><div className="panel-head"><div><span className="panel-eyebrow">EXECUÇÃO</span><h2>Plano de ação</h2></div><span className="panel-chip">{activeActions.length} ação(ões)</span></div>{actions.length===0?<div className="fca-plan-empty">Nenhuma ação cadastrada.</div>:<div className="fca-plan-list">{actions.map(acao=><div className={`fca-plan-item ${acao.status==='CANCELADO'?'action-cancelled':''}`} key={acao.id}><span className="fca-plan-marker">{String(acao.ordem).padStart(2,'0')}</span><div className="fca-plan-copy"><p>{acao.acao}</p><div className="fca-plan-meta"><span><span className="material-symbols-rounded">person</span>{acao.responsavel??'Sem responsável'}</span><span><span className="material-symbols-rounded">event</span>{acao.prazo?new Date(`${acao.prazo}T12:00:00`).toLocaleDateString('pt-BR'):'Sem prazo'}</span></div></div><StatusBadge status={acao.status} className="fca-plan-status"/></div>)}</div>}</article>
+    <Panel as="article" className="fca-plan-panel"><PanelHeader eyebrow="EXECUÇÃO" title="Plano de ação" trailing={<span className="panel-chip">{activeActions.length} ação(ões)</span>}/>{actions.length===0?<div className="fca-plan-empty">Nenhuma ação cadastrada.</div>:<div className="fca-plan-list">{actions.map(acao=><div className={`fca-plan-item ${acao.status==='CANCELADO'?'action-cancelled':''}`} key={acao.id}><span className="fca-plan-marker">{String(acao.ordem).padStart(2,'0')}</span><div className="fca-plan-copy"><p>{acao.acao}</p><div className="fca-plan-meta"><span><span className="material-symbols-rounded">person</span>{acao.responsavel??'Sem responsável'}</span><span><span className="material-symbols-rounded">event</span>{acao.prazo?new Date(`${acao.prazo}T12:00:00`).toLocaleDateString('pt-BR'):'Sem prazo'}</span></div></div><StatusBadge status={acao.status} className="fca-plan-status"/></div>)}</div>}</Panel>
 
-    <article className="panel panel-spaced fca-audit-panel"><div className="panel-head"><div><span className="panel-eyebrow">RASTREABILIDADE</span><h2>Histórico do registro</h2></div><span className="panel-chip">{audit.length} evento(s)</span></div>{audit.length?<div className="fca-audit-timeline">{audit.map(item=><div className="fca-audit-event" key={item.id}><strong>{item.acao.replaceAll('_',' ').toLocaleLowerCase('pt-BR')}</strong><span>{new Date(item.criado_em).toLocaleString('pt-BR')} · {item.usuario_email??'Sistema'}</span></div>)}</div>:<div className="fca-plan-empty">Sem eventos de auditoria disponíveis.</div>}</article>
+    <Panel as="article" className="fca-audit-panel"><PanelHeader eyebrow="RASTREABILIDADE" title="Histórico do registro" trailing={<span className="panel-chip">{audit.length} evento(s)</span>}/>{audit.length?<div className="fca-audit-timeline">{audit.map(item=><div className="fca-audit-event" key={item.id}><strong>{item.acao.replaceAll('_',' ').toLocaleLowerCase('pt-BR')}</strong><span>{new Date(item.criado_em).toLocaleString('pt-BR')} · {item.usuario_email??'Sistema'}</span></div>)}</div>:<div className="fca-plan-empty">Sem eventos de auditoria disponíveis.</div>}</Panel>
   </section>
 }

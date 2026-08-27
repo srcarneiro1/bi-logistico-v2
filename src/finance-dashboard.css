@@ -1,6 +1,7 @@
 .finance-page{display:grid;gap:var(--space-4)}
 .finance-page .page-header{margin-bottom:0}
 
+/* Headline financeiro é uma especialização legítima; status fica no valor, não em rail decorativo. */
 .finance-hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,.7fr);gap:0;border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card);overflow:hidden}
 .finance-hero-main,.finance-hero-attainment{display:grid;gap:5px;padding:22px 24px}
 .finance-hero-main{border-right:1px solid var(--border-default)}
@@ -8,25 +9,14 @@
 .finance-hero-main>strong{font-size:34px;line-height:1.05;letter-spacing:-.035em;color:var(--text-primary)}
 .finance-hero-attainment>strong{font-size:32px;line-height:1.05;letter-spacing:-.03em}
 .finance-hero small{font-size:10px;color:var(--text-muted)}
-.finance-hero-ok{border-left:3px solid var(--status-success)}
-.finance-hero-warn{border-left:3px solid var(--status-warning)}
-.finance-hero-crit{border-left:3px solid var(--status-danger)}
-
-.finance-support-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-2)}
-.finance-support-grid>div{display:grid;gap:4px;padding:14px 16px;border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card)}
-.finance-support-grid span{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text-secondary)}
-.finance-support-grid strong{font-size:20px;line-height:1.1;color:var(--text-primary)}
-.finance-support-grid small{font-size:9px;color:var(--text-muted)}
-.finance-support-grid .finance-negative{border-color:#f0c9cc;background:var(--status-danger-soft)}
-.finance-support-grid .finance-positive{border-color:#d7e8dc;background:var(--status-success-soft)}
 
 .finance-depositors-panel,.finance-expenses-panel{margin-top:0}
-.finance-depositors-panel .revenue-list{padding:6px 16px 10px}
-.finance-depositors-panel .revenue-row{position:relative;display:grid;grid-template-columns:minmax(180px,.9fr) minmax(320px,1.6fr) 120px;gap:18px;align-items:center;padding:14px 8px 14px 20px;border-bottom:1px solid #edf0f2}
-.finance-depositors-panel .revenue-row::before{content:'';position:absolute;left:4px;top:12px;bottom:12px;width:3px;border-radius:999px;background:transparent}
-.finance-depositors-panel .revenue-row:last-child{border-bottom:0}
+.finance-depositors-panel .revenue-list{padding:6px 12px 12px}
+.finance-depositors-panel .revenue-row{display:grid;grid-template-columns:minmax(180px,.9fr) minmax(320px,1.6fr) 120px;gap:18px;align-items:center;padding:12px 10px;border:1px solid transparent;border-bottom-color:#edf0f2;border-radius:9px;transition:background .15s ease,border-color .15s ease}
+.finance-depositors-panel .revenue-row:last-child{border-bottom-color:transparent}
+.finance-depositors-panel .revenue-row:hover{background:var(--surface-secondary);border-color:#e8eaed}
 .finance-depositors-panel .revenue-identity{display:grid;gap:3px;min-width:0}
-.finance-depositors-panel .revenue-identity strong{font-size:12px;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.finance-depositors-panel .revenue-identity strong{font-size:11px;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .finance-depositors-panel .revenue-identity span{font-size:9px;color:var(--text-muted)}
 .finance-depositors-panel .revenue-bars{display:grid;gap:7px}
 .finance-depositors-panel .revenue-bars>div{display:grid;grid-template-columns:34px minmax(120px,1fr) 90px;gap:8px;align-items:center}
@@ -38,19 +28,10 @@
 .finance-depositors-panel .revenue-bar-real-crit i b{background:var(--status-danger)}
 .finance-depositors-panel .revenue-bar-real-neutral i b{background:var(--status-neutral)}
 .finance-depositors-panel .revenue-bars em{font-size:10px;font-style:normal;text-align:right;color:var(--text-secondary)}
-.finance-depositors-panel .revenue-attainment{display:grid;justify-items:end;gap:3px}
+.finance-depositors-panel .revenue-attainment{display:grid;justify-items:end;gap:3px;min-width:88px;padding-left:12px;border-left:1px solid #eceef1}
 .finance-depositors-panel .revenue-attainment span{font-size:9px;color:var(--text-muted)}
 .finance-depositors-panel .revenue-attainment strong{font-size:14px}
-.finance-depositors-panel .revenue-row-crit::before{background:var(--status-danger)}
-.finance-depositors-panel .revenue-row-warn::before{background:var(--status-warning)}
-.finance-depositors-panel .revenue-row-ok::before{background:var(--status-success)}
-.finance-depositors-panel .revenue-row-neutral::before{background:var(--status-neutral)}
-
 .finance-expenses-panel .table-wrap{border:0;border-radius:0;box-shadow:none}
-
-@media(max-width:1180px){
-  .finance-support-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
 
 @media(max-width:900px){
   .finance-hero{grid-template-columns:1fr}
@@ -59,12 +40,10 @@
 }
 
 @media(max-width:760px){
-  .finance-support-grid{grid-template-columns:1fr}
   .finance-hero-main,.finance-hero-attainment{padding:18px}
-  .finance-hero-main>strong{font-size:29px}.finance-hero-attainment>strong{font-size:27px}
-  .finance-depositors-panel .revenue-list{padding:4px 14px 8px}
-  .finance-depositors-panel .revenue-row{grid-template-columns:1fr;gap:10px;padding:14px 6px 14px 20px}
-  .finance-depositors-panel .revenue-attainment{justify-items:start}
+  .finance-hero-main>strong{font-size:29px}
+  .finance-hero-attainment>strong{font-size:27px}
+  .finance-depositors-panel .revenue-attainment{padding-left:0;border-left:0}
 }
 
 @media(max-width:480px){
