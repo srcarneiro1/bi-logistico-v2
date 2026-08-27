@@ -3,10 +3,10 @@
 
 .kpis-overview{display:grid;gap:var(--space-3)}
 .kpis-compact-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--space-2)}
-.kpis-compact-grid .metric-card-supporting{min-height:132px!important}
+.kpis-compact-grid .metric-card-supporting{min-height:132px}
 
 .kpis-analysis-grid{display:grid;grid-template-columns:minmax(0,1.75fr) minmax(320px,.82fr);gap:var(--space-3);align-items:stretch}
-.kpis-analysis-grid>.dashboard-panel{min-width:0}
+.kpis-analysis-grid>.ui-panel{min-width:0}
 .kpis-leadtime-panel .panel-body{padding:20px 22px 18px}
 
 .kpis-inventory-panel{display:flex;flex-direction:column}
@@ -37,25 +37,24 @@
   .kpis-analysis-grid{grid-template-columns:1fr}
   .kpis-inventory-panel{display:block}
   .inventory-support-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-  .inventory-support-grid>div{border-bottom:0;border-right:1px solid #edf0f2!important}
-  .inventory-support-grid>div:last-child{border-right:0!important}
+  .inventory-support-grid>div:nth-child(n){border-bottom:0;border-right:1px solid #edf0f2}
+  .inventory-support-grid>div:last-child{border-right:0}
 }
 
 @media(max-width:760px){
   .kpis-compact-grid{grid-template-columns:1fr}
-  .kpis-compact-grid .metric-card-supporting{min-height:0!important}
+  .kpis-compact-grid .metric-card-supporting{min-height:0}
   .kpis-leadtime-panel .panel-body,.kpis-history-panel .panel-body{padding:14px}
   .inventory-score{padding:16px}
   .inventory-score>strong{font-size:27px}
   .inventory-support-grid{grid-template-columns:1fr 1fr;padding:8px 14px 12px}
-  .inventory-support-grid>div{border-bottom:1px solid #edf0f2!important}
-  .inventory-support-grid>div:nth-last-child(-n+2){border-bottom:0!important}
-  .inventory-support-grid>div:nth-child(odd){border-right:1px solid #edf0f2!important}
-  .inventory-support-grid>div:nth-child(even){border-right:0!important}
+  .inventory-support-grid>div:nth-child(n){border-bottom:1px solid #edf0f2;border-right:0}
+  .inventory-support-grid>div:nth-last-child(-n+2){border-bottom:0}
+  .inventory-support-grid>div:nth-child(odd){border-right:1px solid #edf0f2}
 }
 
 @media(max-width:480px){
   .inventory-support-grid{grid-template-columns:1fr}
-  .inventory-support-grid>div{border-right:0!important;border-bottom:1px solid #edf0f2!important}
-  .inventory-support-grid>div:last-child{border-bottom:0!important}
+  .inventory-support-grid>div:nth-child(n){border-right:0;border-bottom:1px solid #edf0f2}
+  .inventory-support-grid>div:last-child{border-bottom:0}
 }

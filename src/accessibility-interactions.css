@@ -11,7 +11,7 @@
 [aria-pressed="true"]{border-color:var(--border-strong)}
 input,select,textarea{min-height:40px}
 textarea{min-height:88px}
-input:focus-visible,select:focus-visible,textarea:focus-visible{border-color:#aeb4bd!important;box-shadow:0 0 0 3px rgba(73,74,86,.08)!important}
+:where(input,select,textarea):focus-visible{border-color:#aeb4bd;box-shadow:0 0 0 3px rgba(73,74,86,.08)}
 
 /* Alvos interativos recorrentes não ficam pequenos demais. */
 .sidebar-nav a,.sidebar-collapse,.sidebar-mobile-close,.mobile-menu-button,.topbar-filter-reset{min-width:40px;min-height:40px}
@@ -33,7 +33,7 @@ input:focus-visible,select:focus-visible,textarea:focus-visible{border-color:#ae
 
 @media(forced-colors:active){
   :where(a,button,input,select,textarea,[tabindex]):focus-visible{outline:2px solid Highlight;outline-offset:2px}
-  .ui-badge,.panel-chip,.module-badge,.metric-cell{border:1px solid CanvasText}
+  .ui-badge,.ui-chip,.module-badge,.metric-cell{border:1px solid CanvasText}
   .selected-row{outline:2px solid Highlight;outline-offset:-2px;box-shadow:none}
 }
 

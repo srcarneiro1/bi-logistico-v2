@@ -6,14 +6,14 @@
 .home-main-grid{display:grid;grid-template-columns:minmax(0,2fr) minmax(320px,.82fr);gap:var(--space-3);align-items:start}
 .home-trend-panel .panel-body{padding:20px 22px 18px}
 .home-side-stack{display:grid;gap:var(--space-3)}
-.home-side-stack>.dashboard-panel,.home-side-stack>.ui-panel{min-width:0}
+.home-side-stack>.ui-panel{min-width:0}
 .home-scope-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));padding:12px;gap:8px}
 .home-scope-grid>div{display:grid;gap:6px;min-height:76px;padding:12px 13px;border:1px solid var(--border-default);border-radius:var(--radius-control);background:var(--surface-secondary)}
 .home-scope-grid span{font-size:10px;color:var(--text-secondary)}
 .home-scope-grid strong{font-size:20px;color:var(--text-primary)}
 
 .home-attention-panel{margin-top:0}
-.home-attention-panel .attention-list{padding:8px 14px 12px}
+.home-attention-panel .attention-list{display:grid;padding:8px 14px 12px}
 .home-attention-panel .attention-row{display:grid;grid-template-columns:38px minmax(180px,1fr) minmax(340px,1.7fr) auto;gap:10px;align-items:center;padding:11px 10px;border:1px solid transparent;border-radius:9px;margin:2px 0;transition:background .15s ease,border-color .15s ease}
 .home-attention-panel .attention-row:hover{background:var(--surface-secondary);border-color:#e8eaed}
 .home-attention-panel .rank{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--surface-tertiary);font-size:9px;font-weight:800;color:var(--text-secondary)}
@@ -39,7 +39,8 @@
   .home-kpi-grid{grid-template-columns:1fr}
   .home-kpi-grid .metric-card-supporting{min-height:0}
   .home-side-stack{grid-template-columns:1fr}
-  .home-attention-panel .attention-row{grid-template-columns:30px minmax(0,1fr);padding:12px 8px}
+  .home-attention-panel .attention-list{gap:9px;padding:8px 0}
+  .home-attention-panel .attention-row{grid-template-columns:30px minmax(0,1fr);gap:9px 10px;margin:0;padding:13px;border-color:var(--border-default);border-radius:11px;background:var(--surface-primary);box-shadow:var(--shadow-card)}
   .home-attention-panel .attention-metrics{grid-column:2;grid-row:2;grid-template-columns:repeat(3,minmax(0,1fr))}
   .home-attention-panel .attention-metrics span{background:var(--surface-secondary)}
   .home-attention-panel .attention-status{grid-column:2;grid-row:3;justify-self:start;margin-top:2px}
