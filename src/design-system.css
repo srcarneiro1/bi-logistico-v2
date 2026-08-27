@@ -1,5 +1,5 @@
 /* Unilog BI Design System V2
-   Somente tokens, base global e utilitários. Componentes e páginas possuem owners próprios. */
+   Somente tokens, base global e controles compartilhados. Componentes e páginas possuem owners próprios. */
 
 :root{
   --brand-primary:#db0812;
@@ -68,9 +68,3 @@ label{font-size:12px;font-weight:600;color:var(--text-secondary)}
 .button-primary:hover{background:var(--brand-primary-hover);border-color:var(--brand-primary-hover)}
 .button-ghost{background:transparent}
 .button-ghost:hover,.button:hover:not(.button-primary){background:var(--surface-secondary);border-color:var(--border-strong)}
-
-.text-ok{color:var(--status-success)!important}
-.text-warn{color:var(--status-warning)!important}
-.text-crit{color:var(--status-danger)!important}
-.text-neutral{color:var(--status-neutral)!important}
-.muted-text{color:var(--text-muted)}
