@@ -9,6 +9,8 @@
 .ui-panel-header h2{margin:0;font-size:15px;line-height:1.3;color:var(--text-primary)}
 .ui-panel-header p{margin:0;max-width:720px;font-size:11px;line-height:1.45;color:var(--text-muted)}
 .ui-panel-header-trailing{display:flex;align-items:center;gap:var(--space-2);flex:0 0 auto}
+.panel-body{padding:var(--space-4)}
+.panel-note{margin:11px var(--space-4) var(--space-4);font-size:11px;line-height:1.45;color:var(--text-muted)}
 
 .ui-section-header{display:flex;align-items:flex-end;justify-content:space-between;gap:var(--space-4);min-width:0}
 .ui-section-header-copy{display:grid;gap:3px;min-width:0}
@@ -65,7 +67,6 @@ button.ui-summary-metric:hover{border-color:var(--border-strong);box-shadow:0 4p
 .ui-summary-metric-copy>strong{font-size:22px;line-height:1.05;letter-spacing:-.02em;color:var(--text-primary);overflow-wrap:anywhere}
 .ui-summary-metric-copy>small{font-size:9px;line-height:1.25;color:var(--text-muted)}
 
-/* Tons semânticos ficam localizados no conteúdo; a superfície permanece neutra. */
 .ui-summary-metric-danger,.ui-summary-metric-warning,.ui-summary-metric-success,.ui-summary-metric-info{border-color:var(--border-default);background:var(--surface-primary)}
 .ui-summary-metric-danger .ui-summary-metric-icon{background:var(--status-danger-soft);color:var(--status-danger)}
 .ui-summary-metric-danger .ui-summary-metric-copy>strong{color:var(--status-danger)}
@@ -75,14 +76,12 @@ button.ui-summary-metric:hover{border-color:var(--border-strong);box-shadow:0 4p
 .ui-summary-metric-success .ui-summary-metric-copy>strong{color:var(--status-success)}
 .ui-summary-metric-info .ui-summary-metric-icon{background:#f1f4ff;color:#49629b}
 
-/* Summary que também atua como controle de filtro: neutro, compacto e sem rails. */
 .ui-summary-metrics-filters .ui-summary-metric{background:var(--surface-primary);border-color:var(--border-default);box-shadow:0 1px 2px rgba(29,31,35,.025)}
 .ui-summary-metrics-filters .ui-summary-metric-copy>strong{color:var(--text-primary)}
 .ui-summary-metrics-filters button.ui-summary-metric:hover{background:var(--surface-secondary);border-color:var(--border-strong);box-shadow:0 2px 8px rgba(29,31,35,.045)}
 .ui-summary-metrics-filters .ui-summary-metric.is-active{background:var(--surface-secondary);border-color:#bfc3ca;box-shadow:0 0 0 1px rgba(73,74,86,.06)}
 .ui-summary-metrics-filters .ui-summary-metric.is-active .ui-summary-metric-copy>span{color:var(--text-primary)}
 
-/* MetricCard é um primitive analítico compartilhado por Home e KPIs. */
 .metric-card{position:relative;display:grid;align-content:start;min-width:0;min-height:164px;padding:var(--space-4);border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card);overflow:hidden}
 .metric-card::before{content:none}
 .metric-card-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -106,7 +105,6 @@ button.ui-summary-metric:hover{border-color:var(--border-strong);box-shadow:0 4p
   .ui-panel-header-trailing,.ui-section-header-trailing{justify-content:flex-start;flex-wrap:wrap}
   .ui-section-header h2{font-size:16px}
   .ui-section-header p{font-size:10px}
-
   .ui-page-toolbar,.ui-page-toolbar-main{display:grid;grid-template-columns:1fr}
   .ui-page-toolbar{padding:var(--space-3)}
   .ui-page-toolbar-embedded{padding:10px;border-radius:0}
@@ -115,14 +113,12 @@ button.ui-summary-metric:hover{border-color:var(--border-strong);box-shadow:0 4p
   .ui-page-toolbar-filters>select{width:100%;min-width:0}
   .ui-page-toolbar-actions{width:100%;display:grid;grid-template-columns:1fr}
   .ui-page-toolbar-actions>.button{width:100%;justify-content:center}
-
   .ui-summary-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
   .ui-summary-metric{min-height:68px;padding:10px 11px;gap:9px}
   .ui-summary-metric-icon{width:30px;height:30px;font-size:16px}
   .ui-summary-metric-copy>strong{font-size:19px}
   .ui-summary-metrics-filters .ui-summary-metric{min-height:62px;padding:9px 10px}
   .ui-summary-metrics-filters .ui-summary-metric-copy>small{display:none}
-
   .ui-empty-state{min-height:130px}
   .ui-empty-state-action{width:100%}
   .ui-empty-state-action>.button{width:100%;justify-content:center}
