@@ -11,7 +11,9 @@
 .responsive-data-table tbody tr:last-child td{border-bottom:0}
 .responsive-data-table tbody tr{transition:background .14s ease,box-shadow .14s ease}
 .responsive-data-table tbody tr:hover{background:#fafbfc}
-.responsive-data-table tbody tr:focus-within{background:#f8f9fb;box-shadow:inset 0 0 0 1px #c8ccd3}
+/* A linha inteira só acompanha foco quando o controle interno está em focus-visible.
+   Clique de ponteiro mantém o foco no controle sem desenhar uma caixa estrutural na linha. */
+.responsive-data-table tbody tr:has(:focus-visible){background:#f8f9fb;box-shadow:inset 0 0 0 1px #c8ccd3}
 .responsive-data-table strong{font-size:10.5px;line-height:1.25;color:var(--text-primary)}
 .responsive-data-table small{font-size:8.5px;line-height:1.35;color:var(--text-muted)}
 .responsive-data-table .mono{font-size:9.5px;color:var(--text-secondary)}
