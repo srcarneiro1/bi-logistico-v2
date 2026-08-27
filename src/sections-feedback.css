@@ -2,9 +2,8 @@
    Panel/Section headers, Chip e EmptyState vivem em ui-foundations.css.
    Gráficos pertencem exclusivamente a SimpleLineChart.css. */
 
-.table-empty,.empty-chart,.loading-panel{min-height:150px;display:grid;place-items:center;align-content:center;padding:28px 18px;text-align:center;font-size:10px;line-height:1.45;color:var(--text-muted)}
-.loading-panel{position:relative;gap:10px}
-.loading-panel:before{content:'';width:20px;height:20px;border-radius:50%;border:2px solid #dfe2e6;border-top-color:var(--brand-primary);animation:bi-section-spin .75s linear infinite}
+/* Restrito a células/linhas de tabela; superfícies comuns usam EmptyState. */
+.table-empty{min-height:150px;display:grid;place-items:center;align-content:center;padding:28px 18px;text-align:center;font-size:10px;line-height:1.45;color:var(--text-muted)}
 
 .notice,.analytics-warning,.ui-context-notice{border-radius:var(--radius-card);box-shadow:none}
 .notice{padding:11px 13px;font-size:10px;line-height:1.45}
@@ -26,13 +25,9 @@
 .page-header-actions,.form-actions,.admin-confirmation-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .button .material-symbols-rounded{font-size:17px}
 
-@keyframes bi-section-spin{to{transform:rotate(360deg)}}
-
 @media(max-width:760px){
-  .table-empty,.empty-chart,.loading-panel{min-height:130px}
+  .table-empty{min-height:130px}
   .ui-context-notice{padding:11px}
   .page-header-actions,.form-actions,.admin-confirmation-actions{width:100%;display:grid;grid-template-columns:1fr}
   .page-header-actions>.button,.form-actions>.button,.admin-confirmation-actions>.button{width:100%;justify-content:center}
 }
-
-@media(prefers-reduced-motion:reduce){.loading-panel:before{animation:none}}
