@@ -1,17 +1,17 @@
-.simple-chart{min-width:0}
-.simple-chart-plot{position:relative;min-width:0}
+.simple-chart{display:grid;gap:10px;min-width:0}
+.simple-chart-plot{position:relative;min-width:0;padding:2px 0 0}
 .simple-chart svg{width:100%;height:auto;display:block;overflow:visible}
 
-.chart-grid{stroke:#eceef1;stroke-width:1}
-.chart-axis{fill:var(--text-muted,#858a93);font-size:10px;font-family:'Roboto',Arial,sans-serif}
-.chart-x{font-size:9px}
-.chart-year-start{font-weight:700;fill:var(--text-secondary,#5f636b)}
+.chart-grid{stroke:#e9ebee;stroke-width:1}
+.chart-axis{fill:#8b919a;font-size:9px;font-family:'Roboto',Arial,sans-serif}
+.chart-x{font-size:8.5px}
+.chart-year-start{font-weight:700;fill:#5f6670}
 
 .chart-point-hit{cursor:crosshair;outline:none}
 .chart-point-hit:focus-visible{stroke:rgba(219,8,18,.28);stroke-width:2}
 
-.chart-legend{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;padding-top:12px}
-.chart-legend button{display:inline-flex;align-items:center;gap:6px;min-height:30px;padding:5px 9px;border:1px solid var(--border-default,#e2e4e8);border-radius:999px;background:var(--surface-primary,#fff);color:var(--text-secondary,#5f636b);font:inherit;font-size:10px;font-weight:600;cursor:pointer;box-shadow:0 1px 2px rgba(29,31,35,.025);transition:background .15s ease,border-color .15s ease,opacity .15s ease,color .15s ease,box-shadow .15s ease}
+.chart-legend{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;padding:8px 0 0}
+.chart-legend button{display:inline-flex;align-items:center;gap:6px;min-height:28px;padding:4px 8px;border:1px solid var(--border-default,#e2e4e8);border-radius:999px;background:var(--surface-primary,#fff);color:var(--text-secondary,#5f636b);font:inherit;font-size:9px;font-weight:600;cursor:pointer;box-shadow:none;transition:background .15s ease,border-color .15s ease,opacity .15s ease,color .15s ease,box-shadow .15s ease}
 .chart-legend button:hover{background:var(--surface-secondary,#f8f9fa);border-color:var(--border-strong,#cdd0d5);color:var(--text-primary,#2f3136)}
 .chart-legend button:focus-visible{outline:2px solid rgba(219,8,18,.24);outline-offset:2px}
 .chart-legend button:disabled{cursor:default;opacity:.72}
@@ -19,7 +19,7 @@
 .chart-legend button.is-hidden{opacity:.48;background:var(--surface-secondary,#f8f9fa);text-decoration:line-through}
 .chart-legend button.is-hidden i{filter:grayscale(1)}
 
-.chart-tooltip{position:absolute;z-index:12;min-width:138px;padding:10px 12px;border:1px solid var(--border-default,#e2e4e8);border-radius:10px;background:rgba(255,255,255,.98);color:var(--text-primary,#2f3136);box-shadow:0 10px 28px rgba(29,31,35,.14);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none;animation:chart-tooltip-in .12s ease-out}
+.chart-tooltip{position:absolute;z-index:12;min-width:138px;padding:10px 12px;border:1px solid var(--border-default,#e2e4e8);border-radius:9px;background:rgba(255,255,255,.98);color:var(--text-primary,#2f3136);box-shadow:0 10px 26px rgba(29,31,35,.12);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);pointer-events:none;animation:chart-tooltip-in .12s ease-out}
 .chart-tooltip-center{transform:translate(-50%,calc(-100% - 12px))}
 .chart-tooltip-left{transform:translate(-12%,calc(-100% - 12px))}
 .chart-tooltip-right{transform:translate(-88%,calc(-100% - 12px))}
@@ -35,11 +35,12 @@
 @keyframes chart-tooltip-in{from{opacity:0}to{opacity:1}}
 
 @media(max-width:760px){
-  .chart-legend{justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding:10px 2px 2px;scrollbar-width:none}
-  .chart-legend::-webkit-scrollbar{display:none}
-  .chart-legend button{flex:0 0 auto}
+  .chart-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;padding-top:8px;overflow:visible}
+  .chart-legend button{width:100%;justify-content:flex-start;min-width:0;white-space:normal;text-align:left}
   .chart-tooltip{min-width:124px;padding:9px 10px}
 }
+
+@media(max-width:420px){.chart-legend{grid-template-columns:1fr}}
 
 @media(prefers-reduced-motion:reduce){
   .chart-tooltip{animation:none}
