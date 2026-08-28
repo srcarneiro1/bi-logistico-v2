@@ -3,7 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import type { Session } from '@supabase/supabase-js'
 import { supabase } from './lib/supabase'
 import { getHubBootstrap } from './lib/api'
-import { defaultPeriod } from './lib/dashboard'
+import { defaultPeriod, getAvailablePeriods, periodKey } from './lib/dashboard'
 import type { DashboardFilters } from './types/dashboard'
 import type { HubBootstrap } from './types/hub'
 import { AppShell } from './components/AppShell'
@@ -32,12 +32,19 @@ function isPasswordRecoveryUrl() {
   return query.get('type') === 'recovery' || hash.get('type') === 'recovery'
 }
 
+function resolvePeriodForHub(hub:HubBootstrap,currentPeriod:string) {
+  const periods=getAvailablePeriods(hub)
+  if(!periods.length)return ''
+  const currentKey=periodKey(currentPeriod)
+  const current=periods.find(period=>period.key===currentKey)
+  return current?.value??defaultPeriod(hub)
+}
+
 export default function App(){
  const[session,setSession]=useState<Session|null>(null),[authReady,setAuthReady]=useState(false),[passwordRecovery,setPasswordRecovery]=useState(isPasswordRecoveryUrl),[hub,setHub]=useState<HubBootstrap|null>(null),[filters,setFilters]=useState<DashboardFilters>(emptyFilters),[loading,setLoading]=useState(true),[error,setError]=useState<string|null>(null)
  useEffect(()=>{let active=true;const{data:l}=supabase.auth.onAuthStateChange((event,s)=>{if(!active)return;if(event==='PASSWORD_RECOVERY'){setPasswordRecovery(true);setHub(null);setError(null)}setSession(s);setAuthReady(true);if(!s){setHub(null);setFilters(emptyFilters)}});void supabase.auth.getSession().then(({data})=>{if(!active)return;setSession(data.session);setAuthReady(true)});return()=>{active=false;l.subscription.unsubscribe()}},[])
- async function refreshHub(showLoading=true){if(!session||passwordRecovery)return;if(showLoading)setLoading(true);setError(null);try{setHub(await getHubBootstrap())}catch(e:unknown){setError(e instanceof Error?e.message:'Falha ao carregar a HUB.')}finally{if(showLoading)setLoading(false)}}
+ async function refreshHub(showLoading=true){if(!session||passwordRecovery)return;if(showLoading)setLoading(true);setError(null);try{const nextHub=await getHubBootstrap();setFilters(current=>({...current,periodo:resolvePeriodForHub(nextHub,current.periodo)}));setHub(nextHub)}catch(e:unknown){setError(e instanceof Error?e.message:'Falha ao carregar a HUB.')}finally{if(showLoading)setLoading(false)}}
  useEffect(()=>{if(!authReady)return;if(!session||passwordRecovery){setLoading(false);return}void refreshHub(!hub)},[authReady,session?.user?.id,passwordRecovery])
- useEffect(()=>{if(!hub||filters.periodo)return;const period=defaultPeriod(hub);if(period)setFilters(c=>({...c,periodo:period}))},[hub,filters.periodo])
  async function signOut(){await supabase.auth.signOut();setHub(null);setFilters(emptyFilters)}
  function abandonRecovery(){window.history.replaceState(null,'','/');setPasswordRecovery(false);setError(null)}
  function finishRecovery(){setPasswordRecovery(false);setHub(null);setLoading(true);setError(null)}
