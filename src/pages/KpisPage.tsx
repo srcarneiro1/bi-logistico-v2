@@ -5,7 +5,7 @@ import { MetricStatusBadge } from '../components/ui/Badge'
 import { Chip } from '../components/ui/Chip'
 import { Panel, PanelHeader } from '../components/ui/Panel'
 import { SectionHeader } from '../components/ui/SectionHeader'
-import { indicatorMeta, inventoryAggregate, kpiComparison, mainKpis, metricStatus, operationalRows, pct, periodKey, periodLabel, trendGlobal, trendInventory, trendScopedOperational } from '../lib/dashboard'
+import { indicatorMeta, inventoryAggregate, kpiComparison, mainKpis, metricStatus, operationalRows, pct, periodKey, periodLabel, trendGlobal, trendInventory, trendScopedInventory, trendScopedOperational } from '../lib/dashboard'
 import type { DashboardFilters, MetricStatus } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
 
@@ -18,7 +18,15 @@ export function KpisPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
  const isGlobal=hub.profile.perfil==='ADMIN'&&!filters.supervisorId&&!filters.moduloId
  const prod=historyWindow(isGlobal?trendGlobal(hub.facts.kpiGeral,'Lead Time Produção'):trendScopedOperational(hub.facts.kpiOperacional,'producaoPct',filters),filters.periodo)
  const rec=historyWindow(isGlobal?trendGlobal(hub.facts.kpiGeral,'Lead Time Recebimento'):trendScopedOperational(hub.facts.kpiOperacional,'recebimentoPct',filters),filters.periodo)
- const invSeries=['Prazo','Endereço','Unidade','SKU'].map((name,i)=>({label:name,values:historyWindow(isGlobal?trendInventory(hub.facts.kpiInventario,name):[],filters.periodo),tone:(['red','gray','blue','yellow'][i] as 'red'|'gray'|'blue'|'yellow')}))
+ const inventorySeriesConfig=[
+  {label:'Pontuação Total',official:'Pontuação Total',field:'totalPct' as const,tone:'green' as const},
+  {label:'Prazo',official:'Prazo',field:'prazoPct' as const,tone:'red' as const},
+  {label:'Endereço',official:'Endereço',field:'enderecoPct' as const,tone:'gray' as const},
+  {label:'Unidade',official:'Unidade',field:'unidadePct' as const,tone:'blue' as const},
+  {label:'SKU',official:'SKU',field:'skuPct' as const,tone:'yellow' as const},
+ ]
+ const invSeries=inventorySeriesConfig.map(item=>({label:item.label,values:historyWindow(isGlobal?trendInventory(hub.facts.kpiInventario,item.official):trendScopedInventory(hub.facts.kpiInventarioDepositante,filters,item.field),filters.periodo),tone:item.tone}))
+ const hasInventoryHistory=invSeries.some(series=>series.values.some(point=>point.value!=null))
  const metaProd=indicatorMeta(hub,'Lead Time Produção'),metaRec=indicatorMeta(hub,'Lead Time Recebimento'),metaInv=indicatorMeta(hub,'Inventário')
  const rows=ops.map(r=>{const statuses=[metricStatus(r.producaoPct,metaProd),metricStatus(r.recebimentoPct,metaRec),metricStatus(r.inventario?.totalPct,metaInv)];const worst=statuses.reduce((a,b)=>rank[b]>rank[a]?b:a,'ok' as MetricStatus);return {...r,statusProd:statuses[0],statusRec:statuses[1],statusInv:statuses[2],status:worst}}).sort((a,b)=>rank[b.status]-rank[a.status])
  const inventoryScoreMeta=indicatorMeta(hub,'Pontuação Total')??metaInv
@@ -36,7 +44,7 @@ export function KpisPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
    <Panel as="article" className="kpis-inventory-panel"><PanelHeader eyebrow="INVENTÁRIO" title="Composição do indicador" trailing={<Chip>{inv.source==='official'?'Consolidado oficial':'Média do escopo'}</Chip>}/><div className="inventory-score"><span>Pontuação do período</span><strong className={`text-${metricStatus(inv.total,inventoryScoreMeta)}`}>{pct(inv.total)}</strong><small>{inventoryScoreMeta?.metaPct!=null?`Meta ${pct(inventoryScoreMeta.metaPct)}`:'Média consolidada'}</small></div><div className="inventory-support-grid">{[['Prazo',inv.prazo],['Endereço',inv.endereco],['Unidade',inv.unidade],['SKU',inv.sku]].map(([label,value])=>{const v=value as number|null,labelText=String(label),meta=indicatorMeta(hub,labelText);return <div key={labelText}><span>{labelText}</span><strong className={`text-${metricStatus(v,meta)}`}>{pct(v)}</strong><small>{meta?.metaPct!=null?`Meta ${pct(meta.metaPct)}`:'Média do período'}</small></div>})}</div></Panel>
   </div>
 
-  {isGlobal&&hub.facts.kpiInventario.length>0&&<Panel as="article" className="kpis-history-panel"><PanelHeader eyebrow="HISTÓRICO ATÉ O PERÍODO" title="Evolução dos sub-KPIs de inventário" trailing={<Chip>4 dimensões</Chip>}/><div className="panel-body"><SimpleLineChart series={invSeries}/></div></Panel>}
+  {hasInventoryHistory&&<Panel as="article" className="kpis-history-panel"><PanelHeader eyebrow="HISTÓRICO ATÉ O PERÍODO" title="Evolução do inventário" trailing={<Chip>{isGlobal?'Consolidado oficial':'Média do escopo'}</Chip>}/><div className="panel-body"><SimpleLineChart series={invSeries}/></div></Panel>}
 
   <Panel as="article" className="kpis-table-panel"><PanelHeader eyebrow="BASE OPERACIONAL" title="Performance por depositante" trailing={<Chip>{rows.length} depositantes</Chip>}/><div className="table-wrap embedded"><table className="status-table responsive-data-table"><thead><tr><th scope="col">Depositante</th><th scope="col">Módulo</th><th scope="col">Produção</th><th scope="col">Recebimento</th><th scope="col">Inventário</th><th scope="col">Status</th></tr></thead><tbody>{rows.map(r=><tr key={r.cnpj}><td data-label="Depositante" data-primary="true"><strong>{r.nomeDepositante}</strong></td><td data-label="Módulo">{r.moduloId}</td><td data-label="Produção"><span className={`metric-cell metric-cell-${r.statusProd}`}>{pct(r.producaoPct)}</span></td><td data-label="Recebimento"><span className={`metric-cell metric-cell-${r.statusRec}`}>{pct(r.recebimentoPct)}</span></td><td data-label="Inventário"><span className={`metric-cell metric-cell-${r.statusInv}`}>{pct(r.inventario?.totalPct)}</span></td><td data-label="Status"><MetricStatusBadge status={r.status} label={statusLabel[r.status]}/></td></tr>)}{!rows.length&&<tr><td colSpan={6} className="table-empty">Sem dados para o escopo atual.</td></tr>}</tbody></table></div></Panel>
  </section>
