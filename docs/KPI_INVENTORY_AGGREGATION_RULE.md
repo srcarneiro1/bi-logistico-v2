@@ -79,6 +79,28 @@ Resultado:
 - mantém temporariamente a média granular de `fKPI_InventarioDepositante`;
 - a interface identifica explicitamente esse modo como `Média do escopo`.
 
+## Evolução histórica — decisão de 2026-08-28
+
+A evolução de Inventário deve seguir a mesma distinção metodológica da composição do período.
+
+### Sem filtro de Supervisor/Módulo
+
+- o KPI executivo `Inventário` continua vindo de `fKPI_Geral`;
+- o gráfico específico de Inventário usa `fKPI_Inventario`;
+- `Pontuação Total` deve aparecer como série principal junto de `Prazo`, `Endereço`, `Unidade` e `SKU`;
+- a interface identifica o gráfico como `Consolidado oficial`.
+
+### Com filtro de Supervisor/Módulo
+
+- a evolução pode usar `fKPI_InventarioDepositante`, pois a base possui `SupervisorID`, `ModuloID` e histórico por período;
+- `Total_Pct`, `Prazo_Pct`, `Endereco_Pct`, `Unidade_Pct` e `SKU_Pct` são agregados por média simples dos depositantes pertencentes ao escopo em cada mês;
+- a interface deve identificar explicitamente esse resultado como `Média do escopo`;
+- a média filtrada não pode ser apresentada como consolidado oficial.
+
+A `Visão geral > Evolução dos KPIs` também deve manter a série de Inventário quando Supervisor/Módulo estiver filtrado, usando `Total_Pct` médio do escopo em vez de ocultar a série.
+
+Essa decisão é funcional e não autoriza alterações nos owners/primitives globais de UI, CSS compartilhado, layout consolidado ou fluxos FCA.
+
 ## Limitação conhecida
 
 A média granular por Supervisor/Módulo **não deve ser tratada como equivalente metodológico ao consolidado oficial**.

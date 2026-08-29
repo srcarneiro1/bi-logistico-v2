@@ -82,10 +82,10 @@ export function trendScopedOperational(rows:HubKpiOperacional[], field:'producao
   filtered.forEach(r=>{const v=r[field]; if(v!=null){const key=periodKey(r.periodo);const g=grouped.get(key)??{periodo:r.periodo,values:[]};g.values.push(v);grouped.set(key,g)}})
   return Array.from(grouped.values(),g=>({periodo:g.periodo,value:avg(g.values)})).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo)))
 }
-export function trendScopedInventory(rows:HubKpiInventarioDepositante[],filters:DashboardFilters){
+export function trendScopedInventory(rows:HubKpiInventarioDepositante[],filters:DashboardFilters,field:'totalPct'|'prazoPct'|'enderecoPct'|'unidadePct'|'skuPct'='totalPct'){
   const filtered=rows.filter(r=>(!filters.supervisorId||r.supervisorId===filters.supervisorId)&&(!filters.moduloId||r.moduloId===filters.moduloId))
   const grouped=new Map<string,{periodo:string;values:number[]}>()
-  filtered.forEach(r=>{if(r.totalPct!=null){const key=periodKey(r.periodo);const g=grouped.get(key)??{periodo:r.periodo,values:[]};g.values.push(r.totalPct);grouped.set(key,g)}})
+  filtered.forEach(r=>{const v=r[field];if(v!=null){const key=periodKey(r.periodo);const g=grouped.get(key)??{periodo:r.periodo,values:[]};g.values.push(v);grouped.set(key,g)}})
   return Array.from(grouped.values(),g=>({periodo:g.periodo,value:avg(g.values)})).sort((a,b)=>periodKey(a.periodo).localeCompare(periodKey(b.periodo)))
 }
 export function inventoryAggregate(hub:HubBootstrap,filters:DashboardFilters){
