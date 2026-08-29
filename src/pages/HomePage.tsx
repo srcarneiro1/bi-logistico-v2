@@ -6,7 +6,7 @@ import { Chip } from '../components/ui/Chip'
 import { EmptyState } from '../components/ui/Feedback'
 import { Panel, PanelHeader } from '../components/ui/Panel'
 import { SectionHeader } from '../components/ui/SectionHeader'
-import { avg, indicatorMeta, kpiComparison, mainKpis, metricStatus, money, operationalRows, pct, periodKey, periodLabel, revenueRows, sum, trendGlobal, trendScopedOperational } from '../lib/dashboard'
+import { avg, indicatorMeta, kpiComparison, mainKpis, metricStatus, money, operationalRows, pct, periodKey, periodLabel, revenueRows, sum, trendGlobal, trendScopedInventory, trendScopedOperational } from '../lib/dashboard'
 import type { DashboardFilters } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
 
@@ -18,7 +18,7 @@ export function HomePage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
   const useGlobal=hub.profile.perfil==='ADMIN'&&!filters.supervisorId&&!filters.moduloId&&hub.facts.kpiGeral.length>0
   const prodTrend=historyWindow(useGlobal?trendGlobal(hub.facts.kpiGeral,'Lead Time Produção'):trendScopedOperational(hub.facts.kpiOperacional,'producaoPct',filters),filters.periodo)
   const recTrend=historyWindow(useGlobal?trendGlobal(hub.facts.kpiGeral,'Lead Time Recebimento'):trendScopedOperational(hub.facts.kpiOperacional,'recebimentoPct',filters),filters.periodo)
-  const invTrend=historyWindow(useGlobal?trendGlobal(hub.facts.kpiGeral,'Inventário'):[],filters.periodo)
+  const invTrend=historyWindow(useGlobal?trendGlobal(hub.facts.kpiGeral,'Inventário'):trendScopedInventory(hub.facts.kpiInventarioDepositante,filters),filters.periodo)
   const prodMeta=indicatorMeta(hub,'Lead Time Produção'),recMeta=indicatorMeta(hub,'Lead Time Recebimento'),invMeta=indicatorMeta(hub,'Inventário')
   const attentionRows=ops.map(row=>{const statuses=[metricStatus(row.producaoPct,prodMeta),metricStatus(row.recebimentoPct,recMeta),metricStatus(row.inventario?.totalPct,invMeta)];const score=statuses.includes('crit')?2:statuses.includes('warn')?1:0;return {...row,attentionScore:score}}).filter(row=>row.attentionScore>0).sort((a,b)=>b.attentionScore-a.attentionScore)
   const attention=attentionRows.slice(0,6)
