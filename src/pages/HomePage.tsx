@@ -11,10 +11,11 @@ import type { DashboardFilters } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
 
 function historyWindow<T extends {periodo:string}>(series:T[],periodo:string,max=18){const key=periodKey(periodo);return series.filter(x=>!key||periodKey(x.periodo)<=key).slice(-max)}
-function isOtherOperationalRevenue(name:string){return name.toLocaleUpperCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim()==='OUTRAS RECEITAS OPERACIONAIS'}
+function normalizeScope(value:string){return value.toLocaleUpperCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim()}
+function hasOperationalRevenueScope(supervisorId:string,moduloId:string){return Boolean(supervisorId&&supervisorId!=='000000'&&normalizeScope(moduloId)!=='NAO APLICAVEL')}
 
 export function HomePage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilters}){
-  const kpis=mainKpis(hub,filters),ops=operationalRows(hub,filters),revenues=revenueRows(hub,filters).filter(r=>!isOtherOperationalRevenue(r.nomeDepositante))
+  const kpis=mainKpis(hub,filters),ops=operationalRows(hub,filters),revenues=revenueRows(hub,filters).filter(r=>hasOperationalRevenueScope(r.supervisorId,r.moduloId))
   const plan=sum(revenues.map(r=>r.receitaPlanejada)),real=sum(revenues.map(r=>r.receitaRealizada)),attainment=plan?real/plan:null
   const useGlobal=hub.profile.perfil==='ADMIN'&&!filters.supervisorId&&!filters.moduloId&&hub.facts.kpiGeral.length>0
   const prodTrend=historyWindow(useGlobal?trendGlobal(hub.facts.kpiGeral,'Lead Time Produção'):trendScopedOperational(hub.facts.kpiOperacional,'producaoPct',filters),filters.periodo)
