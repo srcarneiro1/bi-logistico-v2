@@ -8,6 +8,10 @@
 .responsive-data-table thead{background:#fafbfc}
 .responsive-data-table th{height:38px;padding:0 14px;border-bottom:1px solid var(--border-default);font-size:8.5px;font-weight:750;letter-spacing:.065em;text-transform:uppercase;color:#737b86;text-align:left;vertical-align:middle;white-space:nowrap}
 .responsive-data-table td{min-height:48px;padding:11px 14px;border-bottom:1px solid #edf0f2;font-size:10.5px;line-height:1.35;color:var(--text-primary);vertical-align:middle}
+.responsive-data-table td.text-ok{color:var(--status-success)}
+.responsive-data-table td.text-warn{color:var(--status-warning)}
+.responsive-data-table td.text-crit{color:var(--status-danger)}
+.responsive-data-table td.text-neutral{color:var(--status-neutral)}
 .responsive-data-table tbody tr:last-child td{border-bottom:0}
 .responsive-data-table tbody tr{transition:background .14s ease,box-shadow .14s ease}
 .responsive-data-table tbody tr:hover{background:#fafbfc}
