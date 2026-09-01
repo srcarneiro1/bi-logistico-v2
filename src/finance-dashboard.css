@@ -4,6 +4,10 @@
 .finance-summary>div:last-child{border-bottom:0}
 .finance-summary span{font-size:11px;color:var(--text-secondary)}
 .finance-summary strong{font-size:17px;color:var(--text-primary)}
+.finance-summary strong.text-ok{color:var(--status-success)}
+.finance-summary strong.text-warn{color:var(--status-warning)}
+.finance-summary strong.text-crit{color:var(--status-danger)}
+.finance-summary strong.text-neutral{color:var(--status-neutral)}
 .finance-summary .finance-alert strong{color:var(--status-danger)}
 .progress-track{height:5px;margin:4px 17px 0;border-radius:var(--radius-pill);background:#eceef1;overflow:hidden}
 .progress-track i{display:block;height:100%;border-radius:inherit;background:var(--brand-primary)}
