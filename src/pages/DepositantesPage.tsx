@@ -21,6 +21,7 @@ import type { HubBootstrap } from '../types/hub'
 const rank:Record<MetricStatus,number>={crit:3,warn:2,neutral:1,ok:0}
 const statusLabel:Record<MetricStatus,string>={crit:'Crítico',warn:'Atenção',neutral:'Sem dados',ok:'Dentro da meta'}
 const DEPOSITOR_DETAIL_ID='depositor-360-detail'
+const INVALID_CNPJ='00000000000000'
 
 export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilters}){
  const incoming=useMemo(()=>{const cnpj=sessionStorage.getItem('bi-logistico-v2:depositante')||'';if(cnpj)sessionStorage.removeItem('bi-logistico-v2:depositante');return cnpj},[])
@@ -50,7 +51,7 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
  const periodKeys=Array.from(new Set([...history.map(r=>periodKey(r.periodo)),...invHistory.map(r=>periodKey(r.periodo))])).sort()
  const labelByKey=new Map([...history,...invHistory].map(r=>[periodKey(r.periodo),r.periodo]))
  const historySeries=[{label:'Produção',tone:'red' as const,values:history.map(r=>({periodo:r.periodo,value:r.producaoPct}))},{label:'Recebimento',tone:'gray' as const,values:history.map(r=>({periodo:r.periodo,value:r.recebimentoPct}))},{label:'Inventário',tone:'blue' as const,values:periodKeys.map(key=>({periodo:labelByKey.get(key)??key,value:invMap.get(key)??null}))}]
- const finance=selected?hub.facts.receita.find(r=>r.cnpj===selected.cnpj&&(!selectedPeriodKey||periodKey(r.periodo)===selectedPeriodKey)):undefined
+ const finance=selected?hub.facts.receita.find(r=>(!selectedPeriodKey||periodKey(r.periodo)===selectedPeriodKey)&&((selected.codAllStrategy&&r.codAllStrategy===selected.codAllStrategy)||(selected.cnpj!==INVALID_CNPJ&&r.cnpj===selected.cnpj))):undefined
  const attainment=finance?.receitaPlanejada?((finance.receitaRealizada??0)/finance.receitaPlanejada):null
  const relatedFcas=selected?fcas.filter(f=>f.depositante_cnpj===selected.cnpj&&(!selectedPeriodKey||f.data_reuniao.slice(0,7)===selectedPeriodKey)).sort((a,b)=>Number(deriveFcaDisplayStatus(b)==='VENCIDO')-Number(deriveFcaDisplayStatus(a)==='VENCIDO')||b.data_reuniao.localeCompare(a.data_reuniao)||b.numero-a.numero):[]
  const criticalCount=rows.filter(r=>r.status==='crit').length,warningCount=rows.filter(r=>r.status==='warn').length,stableCount=rows.filter(r=>r.status==='ok').length
