@@ -22,6 +22,8 @@ const rank:Record<MetricStatus,number>={crit:3,warn:2,neutral:1,ok:0}
 const statusLabel:Record<MetricStatus,string>={crit:'Crítico',warn:'Atenção',neutral:'Sem dados',ok:'Dentro da meta'}
 const DEPOSITOR_DETAIL_ID='depositor-360-detail'
 const INVALID_CNPJ='00000000000000'
+const normalizeDepositorName=(value:string)=>value.toLocaleUpperCase('pt-BR').normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim()
+const isFinancialOnlyRevenue=(name:string)=>normalizeDepositorName(name)==='OUTRAS RECEITAS OPERACIONAIS'
 
 export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilters}){
  const incoming=useMemo(()=>{const cnpj=sessionStorage.getItem('bi-logistico-v2:depositante')||'';if(cnpj)sessionStorage.removeItem('bi-logistico-v2:depositante');return cnpj},[])
@@ -29,7 +31,7 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
  useEffect(()=>{setFcaLoading(true);void listFcas().then(setFcas).catch(()=>setFcas([])).finally(()=>setFcaLoading(false))},[])
  const selectedPeriodKey=periodKey(filters.periodo)
  const metaProd=indicatorMeta(hub,'Lead Time Produção'),metaRec=indicatorMeta(hub,'Lead Time Recebimento'),metaInv=indicatorMeta(hub,'Inventário')
- const baseRows=useMemo(()=>hub.depositantes.filter(d=>(!filters.supervisorId||d.supervisorId===filters.supervisorId)&&(!filters.moduloId||d.moduloId===filters.moduloId)&&(!search||`${d.nome} ${d.cnpj} ${d.codAllStrategy??''}`.toLocaleLowerCase('pt-BR').includes(search.toLocaleLowerCase('pt-BR')))),[hub.depositantes,filters.supervisorId,filters.moduloId,search])
+ const baseRows=useMemo(()=>hub.depositantes.filter(d=>!isFinancialOnlyRevenue(d.nome)&&(!filters.supervisorId||d.supervisorId===filters.supervisorId)&&(!filters.moduloId||d.moduloId===filters.moduloId)&&(!search||`${d.nome} ${d.cnpj} ${d.codAllStrategy??''}`.toLocaleLowerCase('pt-BR').includes(search.toLocaleLowerCase('pt-BR')))),[hub.depositantes,filters.supervisorId,filters.moduloId,search])
  const rows=useMemo(()=>baseRows.map(d=>{
    const op=hub.facts.kpiOperacional.find(r=>r.cnpj===d.cnpj&&(!selectedPeriodKey||periodKey(r.periodo)===selectedPeriodKey))
    const inv=hub.facts.kpiInventarioDepositante.find(r=>r.cnpj===d.cnpj&&(!selectedPeriodKey||periodKey(r.periodo)===selectedPeriodKey))
@@ -39,7 +41,7 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
    return{d,op,inv,status,sup}
  }).sort((a,b)=>rank[b.status]-rank[a.status]||a.d.nome.localeCompare(b.d.nome,'pt-BR')),[baseRows,hub.facts.kpiOperacional,hub.facts.kpiInventarioDepositante,hub.supervisors,metaProd,metaRec,metaInv,selectedPeriodKey])
  useEffect(()=>{if(selectedCnpj&&!rows.some(r=>r.d.cnpj===selectedCnpj))setSelectedCnpj('')},[filters.supervisorId,filters.moduloId,rows,selectedCnpj])
- const selected=hub.depositantes.find(d=>d.cnpj===selectedCnpj)??null
+ const selected=hub.depositantes.find(d=>d.cnpj===selectedCnpj&&!isFinancialOnlyRevenue(d.nome))??null
  const supervisor=selected?hub.supervisors.find(s=>s.supervisorId===selected.supervisorId):null
  const opCurrent=selected?hub.facts.kpiOperacional.find(r=>r.cnpj===selected.cnpj&&(!selectedPeriodKey||periodKey(r.periodo)===selectedPeriodKey)):undefined
  const invCurrent=selected?hub.facts.kpiInventarioDepositante.find(r=>r.cnpj===selected.cnpj&&(!selectedPeriodKey||periodKey(r.periodo)===selectedPeriodKey)):undefined
