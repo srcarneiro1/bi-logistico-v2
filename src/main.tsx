@@ -1,5 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { PrimeReactProvider } from 'primereact/api'
+import 'primeicons/primeicons.css'
 import App from './App'
 import './styles.css'
 import './design-system.css'
@@ -20,9 +22,17 @@ import './admin-supervisors.css'
 import './mfa.css'
 import './ui-utilities.css'
 import './accessibility-interactions.css'
+import './primereact.css'
+
+const primeReactConfig = {
+  unstyled: true,
+  ripple: true,
+}
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <PrimeReactProvider value={primeReactConfig}>
+      <App />
+    </PrimeReactProvider>
   </StrictMode>,
 )
