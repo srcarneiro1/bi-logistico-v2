@@ -1,7 +1,10 @@
 import { FormEvent, useState } from 'react'
+import { Button } from 'primereact/button'
+import { Message } from 'primereact/message'
+import { Password } from 'primereact/password'
 import { supabase } from '../lib/supabase'
 
-const BRAND_LOGO='/brand/unilog-logo-white-transparent.svg'
+const BRAND_LOGO = '/brand/unilog-logo-white-transparent.svg'
 
 interface SetPasswordPageProps {
   onComplete: () => void
@@ -49,5 +52,81 @@ export function SetPasswordPage({ onComplete }: SetPasswordPageProps) {
     window.location.replace('/')
   }
 
-  return <div className="login-page"><div className="login-shell"><section className="login-brand-panel"><img src={BRAND_LOGO} alt="Unilog Express"/><div><span>PERFORMANCE OPERACIONAL</span><h1>BI Logístico</h1><p>Defina sua senha pessoal para concluir o acesso ao ambiente.</p></div><small>Unilog Express · V2</small></section><section className="login-card"><div className="login-heading"><span>SEGURANÇA DA CONTA</span><h2>Definir nova senha</h2><p>Crie uma senha com pelo menos 8 caracteres. Ela será usada nos próximos acessos.</p></div><form onSubmit={submit}><label htmlFor="new-password">Nova senha</label><input id="new-password" type="password" value={password} onChange={event=>setPassword(event.target.value)} placeholder="Nova senha" required minLength={8} autoComplete="new-password"/><label htmlFor="confirm-password">Confirmar senha</label><input id="confirm-password" type="password" value={confirmPassword} onChange={event=>setConfirmPassword(event.target.value)} placeholder="Repita a nova senha" required minLength={8} autoComplete="new-password"/><button className="button button-primary login-submit" type="submit" disabled={loading}>{loading?'Salvando…':'Definir senha e entrar'}</button><button className="button button-ghost" type="button" onClick={()=>void cancel()} disabled={loading}>Cancelar e voltar ao login</button></form>{error&&<div className="notice notice-error">{error}</div>}<div className="login-security-note">O link recebido por e-mail é temporário e serve apenas para validar a identidade antes da troca de senha.</div></section></div></div>
+  return (
+    <main className="login-page">
+      <div className="login-shell">
+        <section className="login-brand-panel" aria-label="BI Logístico Unilog">
+          <img src={BRAND_LOGO} alt="Unilog Express" />
+          <div>
+            <span>PERFORMANCE OPERACIONAL</span>
+            <h1>BI Logístico</h1>
+            <p>Defina sua senha pessoal para concluir o acesso ao ambiente.</p>
+          </div>
+          <small>Unilog Express · V2</small>
+        </section>
+
+        <section className="login-card" aria-labelledby="set-password-heading">
+          <div className="login-heading">
+            <span>SEGURANÇA DA CONTA</span>
+            <h2 id="set-password-heading">Definir nova senha</h2>
+            <p>Crie uma senha com pelo menos 8 caracteres. Ela será usada nos próximos acessos.</p>
+          </div>
+
+          <form onSubmit={submit}>
+            <label htmlFor="new-password">Nova senha</label>
+            <Password
+              inputId="new-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder="Nova senha"
+              required
+              minLength={8}
+              autoComplete="new-password"
+              feedback={false}
+              toggleMask
+              disabled={loading}
+              className="login-password"
+              inputClassName="login-password-input"
+            />
+
+            <label htmlFor="confirm-password">Confirmar senha</label>
+            <Password
+              inputId="confirm-password"
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              placeholder="Repita a nova senha"
+              required
+              minLength={8}
+              autoComplete="new-password"
+              feedback={false}
+              toggleMask
+              disabled={loading}
+              className="login-password"
+              inputClassName="login-password-input"
+            />
+
+            <Button
+              label="Definir senha e entrar"
+              loading={loading}
+              type="submit"
+              className="button-primary login-submit"
+            />
+            <Button
+              label="Cancelar e voltar ao login"
+              type="button"
+              className="button-ghost"
+              onClick={() => void cancel()}
+              disabled={loading}
+            />
+          </form>
+
+          {error && <Message severity="error" text={error} className="login-message" />}
+
+          <div className="login-security-note">
+            O link recebido por e-mail é temporário e serve apenas para validar a identidade antes da troca de senha.
+          </div>
+        </section>
+      </div>
+    </main>
+  )
 }
