@@ -1,0 +1,35 @@
+/* Último passe de paridade visual com o Extra Cost Control.
+   Carregado após extra-cost-alignment.css para resolver somente a composição final. */
+
+/* O filtro agora pertence à página, imediatamente após o heading. */
+.page-header{margin-bottom:16px}
+.home-dashboard .page-header{margin-bottom:16px}
+.global-filter-stage{max-width:none;margin:0 0 18px;padding:0}
+.global-filter-stage+.content{padding-top:initial}
+
+/* Mesmo ritmo vertical do dashboard do Extra Cost. */
+.home-dashboard,.kpis-page{gap:16px}
+.home-kpi-section,.kpis-overview{gap:10px}
+
+/* Garantia final contra offsets herdados do Lara no ícone do login. */
+.login-form .login-field-icon>i.pi{
+  left:14px!important;
+  top:50%!important;
+  margin:0!important;
+  transform:translateY(-50%)!important;
+  line-height:1!important;
+}
+.login-form .login-field-icon>.p-inputtext{padding-left:40px!important}
+
+/* Dropdowns de filtro seguem a mesma altura e densidade do Extra Cost. */
+.nx-dashboard-filter-grid>.nx-field{font-size:9px!important;font-weight:700!important;line-height:1.3!important;color:#646a74!important}
+.nx-dashboard-filter-grid .p-dropdown{height:42px!important;min-height:42px!important}
+.nx-dashboard-filter-grid .p-dropdown-label{height:40px!important;min-height:40px!important;padding:0 10px!important}
+.nx-dashboard-filter-grid .p-dropdown-trigger{width:36px!important}
+
+@media(max-width:720px){
+  .page-header,.home-dashboard .page-header{margin-bottom:14px}
+  .global-filter-stage{margin-bottom:16px}
+  .nx-dashboard-filter-grid .p-dropdown{height:46px!important;min-height:46px!important}
+  .nx-dashboard-filter-grid .p-dropdown-label{height:44px!important;min-height:44px!important;font-size:12px!important}
+}
