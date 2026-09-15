@@ -1,3 +1,4 @@
+import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { PageHeader } from '../components/PageHeader'
@@ -42,10 +43,10 @@ export function FinanceiroPage({hub,filters}:{hub:HubBootstrap;filters:Dashboard
  const expenseVariance=(row:ExpenseRow)=>(row.despesaRealizada??0)-(row.despesaPlanejada??0)
  const expenseVarianceBody=(row:ExpenseRow)=><span className={expenseVariance(row)<0?'text-crit':'text-ok'}>{money(expenseVariance(row))}</span>
  return <section className="finance-page"><PageHeader eyebrow="RESULTADO" title="Financeiro" description="Receita planejada versus realizada no escopo selecionado. Receitas sem dimensão operacional permanecem no financeiro pelo período, sem serem atribuídas artificialmente ao Supervisor/Módulo selecionado. Outras receitas operacionais entram apenas no consolidado; depositantes sem Supervisor/Módulo permanecem na análise por depositante. Despesas são consolidadas porque a base atual não possui dimensão de supervisor ou módulo."/>
- <div className="finance-hero">
+ <Card className="finance-hero nx-entity-card">
    <div className="finance-hero-main"><span>Receita realizada</span><strong>{money(realized)}</strong><small>{depositanteRows.length} depositante(s) no financeiro{otherOperationalRows.length?' + outras receitas operacionais':''}</small></div>
    <div className="finance-hero-attainment"><span>Atingimento</span><strong className={`text-${attainmentStatus}`}>{pct(attainment)}</strong><small>{balance>=0?`${money(balance)} acima do planejado`:`${money(Math.abs(balance))} abaixo do planejado`}</small></div>
- </div>
+ </Card>
  <SummaryMetrics ariaLabel="Resumo financeiro do período" items={support}/>
  {!canShowConsolidatedExpense&&hub.profile.perfil==='ADMIN'&&<ContextNotice title="Despesas não aplicadas ao filtro de Supervisor/Módulo" description="A fDespesa atual possui período e conta, mas não possui Supervisor ou Módulo. Para evitar um resultado incorreto, os cards de despesa e resultado direto ficam ocultos enquanto esses filtros estiverem ativos."/>}
  <Panel as="article" className="finance-depositors-panel"><PanelHeader eyebrow="POR DEPOSITANTE" title="Planejado x realizado" trailing={<Chip>{depositanteRows.length} depositante(s)</Chip>}/><div className="revenue-list">{depositanteRows.map(r=>{const p=r.receitaPlanejada??0,real=r.receitaRealizada??0,at=p?real/p:0;const status=p?(at>=1?'ok':at>=.9?'warn':'crit'):'neutral';const scale=Math.max(p,real,1),plannedWidth=(p/scale)*100,realWidth=(real/scale)*100;return <div className="revenue-row" key={revenueKey(r)}><div className="revenue-identity"><strong>{r.nomeDepositante}</strong><span>{hasOperationalScope(r)?r.moduloId:'Sem escopo operacional'}</span></div><div className="revenue-bars"><div><span>Plan.</span><i><b style={{width:`${plannedWidth}%`}}/></i><em>{money(p)}</em></div><div className={`revenue-bar-real revenue-bar-real-${status}`}><span>Real.</span><i><b style={{width:`${realWidth}%`}}/></i><em>{money(real)}</em></div></div><div className="revenue-attainment"><span>Atingimento</span><strong className={`text-${status}`}>{p?pct(at):'s/ plano'}</strong></div></div>})}{!depositanteRows.length&&<EmptyState icon="payments" title="Sem receita por depositante no escopo selecionado" description="Ajuste os filtros globais para consultar outro período, supervisor ou módulo."/>}</div></Panel>
