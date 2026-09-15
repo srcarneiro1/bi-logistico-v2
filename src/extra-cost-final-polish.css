@@ -28,6 +28,13 @@
 .home-dashboard,.kpis-page{gap:16px}
 .home-kpi-section,.kpis-overview{gap:10px}
 
+/* PrimeReact Card deve ser o único owner do padding interno das métricas. */
+.nx-dashboard-metric-card.p-card,
+.ui-summary-metric.nx-prime-metric.p-card{
+  display:block!important;
+  padding:0!important;
+}
+
 /* Garantia final contra offsets herdados do Lara no ícone do login. */
 .login-form .login-field-icon>i.pi{
   left:14px!important;
