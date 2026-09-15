@@ -1,0 +1,91 @@
+/* Alinhamento visual do BI Logístico V2 com a família Extra Cost Control.
+   Carregado por último: consolida PrimeReact estilizado + identidade Unilog. */
+
+/* PrimeReact: o tema fornece estrutura; a marca Unilog fornece a identidade. */
+.p-component{font-family:Inter,Roboto,Arial,Helvetica,sans-serif}
+.p-inputtext,.p-dropdown,.p-password-input{border-radius:10px}
+.p-inputtext:enabled:focus,.p-dropdown:not(.p-disabled).p-focus,.p-password-input:enabled:focus{border-color:var(--brand-primary);box-shadow:0 0 0 3px rgba(219,8,18,.09)}
+.p-dropdown-panel .p-dropdown-item.p-highlight{background:var(--brand-primary-soft);color:var(--brand-primary-hover)}
+.p-dropdown-panel .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover{background:var(--surface-soft);color:var(--ink)}
+
+/* Filtros globais: superfície de página, não barra técnica sticky. */
+.global-filter-stage{max-width:1600px;margin:0 auto;padding:22px 34px 0}
+.global-filter-card.p-card{border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);box-shadow:0 2px 10px rgba(18,24,34,.025);overflow:visible}
+.global-filter-card.p-card>.p-card-body{padding:0}
+.global-filter-card.p-card>.p-card-body>.p-card-content{padding:16px 18px;display:grid;grid-template-columns:minmax(190px,.42fr) minmax(0,1.58fr);gap:18px;align-items:end}
+.global-filter-card.filter-toolbar{position:static;top:auto;z-index:auto;min-height:0;margin:0;padding:0;border-bottom:0;background:var(--surface);box-shadow:0 2px 10px rgba(18,24,34,.025)}
+.global-filter-card .filter-toolbar-title{min-width:0;align-self:center}
+.global-filter-icon{width:38px;height:38px;display:grid;place-items:center;flex:0 0 38px;border-radius:11px;background:linear-gradient(145deg,#171b24,#343c4c);color:#fff;box-shadow:0 7px 18px rgba(20,25,35,.13)}
+.global-filter-icon .pi{font-size:14px;color:#fff}
+.global-filter-card .filter-toolbar-title strong{font-size:11px;letter-spacing:-.01em}
+.global-filter-card .filter-toolbar-title small{font-size:9px;line-height:1.4}
+.global-filter-card .topbar-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;align-items:end;justify-content:stretch;width:100%}
+.global-filter-card .topbar-filters label{width:auto!important;display:grid;gap:6px}
+.global-filter-card .topbar-filters label>span{display:block;font-size:9px;font-weight:700;letter-spacing:.035em;text-transform:none;color:#646a74}
+.global-filter-card .topbar-filters .p-dropdown{width:100%;height:42px;min-height:42px;border-color:#d9dde3;background:#fff;font-size:11px}
+.global-filter-card .topbar-filters .p-dropdown-label{min-height:40px;padding:0 10px;display:flex;align-items:center;font-size:11px;font-weight:600;color:var(--graphite)}
+.global-filter-card .topbar-filters .p-dropdown-trigger{width:36px}
+.global-filter-card .topbar-filter-reset.p-button{width:auto;height:42px;min-height:42px;align-self:end;padding:0 13px;border-radius:10px;background:#fff;color:var(--graphite);white-space:nowrap}
+
+/* O conteúdo começa mais perto do card de filtro, como no dashboard do Extra Cost. */
+.global-filter-stage+.content{padding-top:22px}
+
+/* Home executiva: mesma cadência e densidade visual do Extra Cost. */
+.home-dashboard{gap:16px}
+.home-dashboard .page-header{margin-bottom:2px}
+.home-dashboard .page-header h1{font-size:28px;letter-spacing:-.035em}
+.home-dashboard .page-header p{font-size:12px;color:#6e747e}
+.home-kpi-section{gap:10px}
+.home-kpi-grid{gap:10px}
+.home-kpi-grid .metric-card-supporting{min-height:112px}
+.home-main-grid{gap:16px;grid-template-columns:minmax(0,1.7fr) minmax(310px,.8fr)}
+.home-side-stack{gap:16px}
+.home-dashboard .ui-panel{border-color:var(--border);box-shadow:0 2px 10px rgba(18,24,34,.025)}
+.home-dashboard .ui-panel-header{min-height:62px;padding:16px 18px}
+.home-dashboard .ui-panel-header h2{font-size:15px;letter-spacing:-.015em}
+.home-dashboard .ui-panel-header p{font-size:10px}
+.home-trend-panel .panel-body{padding:16px 18px 18px}
+.home-scope-grid{padding:14px;gap:9px}
+.home-scope-grid>div{min-height:72px;padding:12px 13px;background:#fafbfc;border-color:#edf0f2}
+.home-scope-grid span{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.home-scope-grid strong{font-size:21px;letter-spacing:-.025em}
+.home-attention-panel .attention-list{padding:8px 14px 14px}
+.home-attention-panel .attention-row{padding:12px 10px}
+
+/* PrimeReact MetricCard: compactação e hierarquia próximas ao Extra Cost. */
+.metric-card.p-card{min-height:112px;border-color:var(--border);box-shadow:0 2px 9px rgba(18,24,34,.025)}
+.metric-card.p-card>.p-card-body{padding:14px 15px}
+.metric-card.p-card>.p-card-body>.p-card-content{height:100%;display:grid;align-content:start}
+.metric-card .metric-card-head>span{font-size:9px;font-weight:800;color:#777e88}
+.metric-card .p-card-content>strong{margin-top:10px;font-size:24px;letter-spacing:-.03em}
+.metric-card .metric-comparisons{margin-top:10px;padding-top:10px}
+.metric-card .metric-meta{margin-top:7px}
+
+@media(max-width:1180px){
+  .global-filter-stage{padding:18px 24px 0}
+  .global-filter-card.p-card>.p-card-body>.p-card-content{grid-template-columns:1fr;gap:12px}
+  .global-filter-card .filter-toolbar-title{display:flex}
+  .home-main-grid{grid-template-columns:1fr}
+  .home-side-stack{grid-template-columns:1fr 1fr}
+}
+
+@media(max-width:760px){
+  .global-filter-stage{padding:14px 14px 0}
+  .global-filter-card.p-card>.p-card-body>.p-card-content{padding:15px;gap:14px}
+  .global-filter-card .topbar-filters{grid-template-columns:1fr}
+  .global-filter-card .topbar-filters label>span{display:block}
+  .global-filter-card .topbar-filters .p-dropdown{height:46px;min-height:46px}
+  .global-filter-card .topbar-filters .p-dropdown-label{min-height:44px;font-size:12px}
+  .global-filter-card .topbar-filter-reset.p-button{width:100%;height:44px;min-height:44px;justify-content:center}
+  .global-filter-stage+.content{padding-top:18px}
+  .home-dashboard .page-header h1{font-size:24px}
+  .home-side-stack{grid-template-columns:1fr}
+  .home-dashboard .ui-panel-header{padding:14px}
+}
+
+@media(max-width:480px){
+  .global-filter-stage{padding-left:12px;padding-right:12px}
+  .global-filter-card .filter-toolbar-title{align-items:flex-start}
+  .global-filter-icon{width:36px;height:36px;flex-basis:36px}
+  .home-kpi-grid{grid-template-columns:1fr}
+}
