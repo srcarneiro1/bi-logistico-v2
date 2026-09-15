@@ -25,6 +25,7 @@ import './mfa.css'
 import './ui-utilities.css'
 import './accessibility-interactions.css'
 import './primereact.css'
+import './extra-cost-alignment.css'
 
 const primeReactConfig = {
   ripple: true,
