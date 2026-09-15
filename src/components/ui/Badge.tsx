@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Tag } from 'primereact/tag'
 
 type BadgeTone='neutral'|'success'|'warning'|'danger'
 type MetricBadgeStatus='ok'|'warn'|'crit'|'neutral'
@@ -18,7 +19,8 @@ const workflowLabels:Record<string,string>={
 }
 
 export function Badge({children,tone='neutral',className=''}:BadgeProps){
-  return <span className={`ui-badge ui-badge-${tone} ${className}`.trim()}>{children}</span>
+  const severity=tone==='neutral'?'secondary':tone
+  return <Tag value={children} severity={severity} rounded className={`ui-badge ui-badge-${tone} nx-prime-tag ${className}`.trim()}/>
 }
 
 export function StatusBadge({status,className=''}:{status:string;className?:string}){
