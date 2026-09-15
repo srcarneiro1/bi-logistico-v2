@@ -18,7 +18,7 @@ export interface SummaryMetricItem {
 }
 
 const metricPrimeIcon:Record<string,string>={
-  dataset:'pi pi-database',pending_actions:'pi pi-clock',groups:'pi pi-users',error:'pi pi-exclamation-triangle',manage_accounts:'pi pi-users',verified_user:'pi pi-shield',admin_panel_settings:'pi pi-lock',badge:'pi pi-id-card',inventory_2:'pi pi-box',payments:'pi pi-wallet',local_shipping:'pi pi-truck',receipt_long:'pi pi-receipt',category:'pi pi-tags',calendar_month:'pi pi-calendar',account_balance_wallet:'pi pi-wallet',check_circle:'pi pi-check-circle',warning:'pi pi-exclamation-triangle',trending_up:'pi pi-chart-line'
+  dataset:'pi pi-database',pending_actions:'pi pi-clock',groups:'pi pi-users',error:'pi pi-exclamation-triangle',manage_accounts:'pi pi-users',verified_user:'pi pi-shield',admin_panel_settings:'pi pi-lock',badge:'pi pi-id-card',inventory_2:'pi pi-box',payments:'pi pi-wallet',local_shipping:'pi pi-truck',receipt_long:'pi pi-receipt',category:'pi pi-tags',calendar_month:'pi pi-calendar',account_balance_wallet:'pi pi-wallet',check_circle:'pi pi-check-circle',warning:'pi pi-exclamation-triangle',trending_up:'pi pi-chart-line',target:'pi pi-bullseye',difference:'pi pi-arrows-h',add_card:'pi pi-plus-circle',radio_button_unchecked:'pi pi-circle',autorenew:'pi pi-sync'
 }
 
 export function SummaryMetrics({items,ariaLabel='Resumo da página',className='',variant='default'}:{items:SummaryMetricItem[];ariaLabel?:string;className?:string;variant?:SummaryMetricsVariant}){
