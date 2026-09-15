@@ -1,6 +1,9 @@
 /* Último passe de paridade visual com o Extra Cost Control.
    Carregado após extra-cost-alignment.css para resolver somente a composição final. */
 
+/* Tipografia canônica do Extra Cost também prevalece nos componentes PrimeReact. */
+.p-component{font-family:Roboto,Arial,Helvetica,sans-serif!important}
+
 /* PageHeader PrimeReact: mesma estrutura do Extra Cost. */
 .page-header.nx-prime-page-header.p-toolbar{
   min-width:0;
