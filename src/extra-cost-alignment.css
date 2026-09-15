@@ -1,118 +1,397 @@
-/* Alinhamento visual do BI Logístico V2 com a família Extra Cost Control.
-   Carregado por último: consolida PrimeReact estilizado + identidade Unilog. */
+/* BI Logístico V2 — alinhamento final com a linguagem visual consolidada do Extra Cost Control.
+   Esta folha é carregada por último e funciona como fonte de verdade visual durante a migração. */
 
-/* PrimeReact: o tema fornece estrutura; a marca Unilog fornece a identidade. */
+:root{
+  /* Aliases canônicos usados nas camadas finais do Extra Cost. */
+  --unilog-red:var(--brand-primary);
+  --unilog-red-dark:var(--brand-primary-hover);
+  --unilog-red-soft:var(--brand-primary-soft);
+  --unilog-ink:var(--ink);
+  --unilog-ink-2:var(--ink-2);
+  --unilog-graphite:var(--graphite);
+  --unilog-graphite-2:var(--graphite-2);
+  --unilog-muted:var(--muted);
+  --unilog-border:var(--border);
+  --unilog-border-soft:var(--border-soft);
+  --unilog-canvas:var(--canvas);
+  --unilog-surface:var(--surface);
+  --unilog-surface-soft:var(--surface-soft);
+  --unilog-success:var(--success);
+  --unilog-warning:var(--warning);
+  --unilog-danger:var(--danger);
+  --unilog-radius:var(--radius-card);
+  --unilog-control-radius:var(--radius-control);
+  --unilog-shadow:var(--shadow-card);
+  --unilog-shadow-raised:var(--shadow-overlay);
+
+  /* Lara continua sendo a estrutura PrimeReact; a marca Unilog substitui o índigo. */
+  --primary-color:var(--unilog-red);
+  --primary-color-text:#fff;
+  --highlight-bg:var(--unilog-red-soft);
+  --highlight-text-color:var(--unilog-ink-2);
+  --focus-ring:0 0 0 .2rem rgba(219,8,18,.11);
+}
+
+body{background:var(--unilog-canvas)!important;color:var(--unilog-ink-2)}
 .p-component{font-family:Inter,Roboto,Arial,Helvetica,sans-serif}
-.p-inputtext,.p-dropdown,.p-password-input{border-radius:10px}
-.p-inputtext:enabled:focus,.p-dropdown:not(.p-disabled).p-focus,.p-password-input:enabled:focus{border-color:var(--brand-primary);box-shadow:0 0 0 3px rgba(219,8,18,.09)}
-.p-dropdown-panel .p-dropdown-item.p-highlight{background:var(--brand-primary-soft);color:var(--brand-primary-hover)}
-.p-dropdown-panel .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover{background:var(--surface-soft);color:var(--ink)}
 
-/* Filtros globais: superfície de página, não barra técnica sticky. */
+/* --------------------------------------------------------------------------
+   PRIME COMPONENTS — NORMALIZAÇÃO IGUAL À BASE FINAL DO EXTRA COST
+   -------------------------------------------------------------------------- */
+.p-button{border-radius:var(--unilog-control-radius)!important;box-shadow:none!important}
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-danger):not(.p-button-success):not(.p-button-warning){background:var(--unilog-red);border-color:var(--unilog-red);color:#fff}
+.p-button:not(.p-button-text):not(.p-button-outlined):not(.p-button-secondary):not(.p-button-danger):not(.p-button-success):not(.p-button-warning):enabled:hover{background:var(--unilog-red-dark);border-color:var(--unilog-red-dark)}
+.p-button.p-button-outlined{background:#fff;color:var(--unilog-graphite);border-color:#d7dbe0}
+.p-button.p-button-outlined:enabled:hover{background:#f7f8f9;color:var(--unilog-ink);border-color:#c9cdd2}
+.p-button.p-button-text{color:var(--unilog-graphite)}
+.p-button.p-button-text:enabled:hover{background:#f2f3f5;color:var(--unilog-ink)}
+.p-inputtext,.p-dropdown,.p-password-input,.p-inputtextarea{border-radius:var(--unilog-control-radius)!important;border-color:#d9dde3!important;box-shadow:none!important}
+.p-inputtext:enabled:focus,.p-inputtextarea:enabled:focus,.p-password-input:enabled:focus,.p-dropdown:not(.p-disabled).p-focus{border-color:var(--unilog-red)!important;box-shadow:0 0 0 3px rgba(219,8,18,.08)!important}
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight,.p-dropdown-panel .p-dropdown-items .p-dropdown-item.p-highlight.p-focus{background:var(--unilog-red-soft)!important;color:var(--unilog-ink-2)!important}
+.p-dropdown-panel .p-dropdown-items .p-dropdown-item:not(.p-highlight):not(.p-disabled):hover{background:var(--unilog-surface-soft)!important;color:var(--unilog-ink)!important}
+.p-tag.p-tag-success{background:#edf6f0!important;color:#35694a!important}
+.p-tag.p-tag-warning{background:#fff6d8!important;color:#8c6800!important}
+.p-tag.p-tag-danger{background:#fff0f1!important;color:#a81920!important}
+.p-tag.p-tag-secondary{background:#f1f2f4!important;color:#59616c!important}
+
+/* --------------------------------------------------------------------------
+   LOGIN / SEARCH — GEOMETRIA FINAL DOS ÍCONES DO EXTRA COST
+   -------------------------------------------------------------------------- */
+.login-form .login-field-icon>i{
+  top:50%!important;
+  margin-top:0!important;
+  margin-right:0!important;
+  margin-bottom:0!important;
+  margin-left:0!important;
+  transform:translateY(-50%)!important;
+  line-height:1!important;
+  height:1em!important;
+  width:1em!important;
+  display:block!important;
+  z-index:2;
+  pointer-events:none;
+}
+.login-form .login-field-icon>.p-inputtext{padding-left:40px!important}
+
+.ui-search-field.nx-prime-search{
+  position:relative!important;
+  display:block!important;
+  width:100%;
+  min-width:0;
+  min-height:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.ui-search-field.nx-prime-search:focus-within{border:0!important;box-shadow:none!important}
+.ui-search-field.nx-prime-search>i.pi{
+  position:absolute!important;
+  left:.9rem!important;
+  top:50%!important;
+  margin:0!important;
+  transform:translateY(-50%)!important;
+  line-height:1!important;
+  height:1em!important;
+  width:1em!important;
+  display:block!important;
+  z-index:2;
+  color:var(--unilog-muted)!important;
+  pointer-events:none;
+}
+.ui-search-field.nx-prime-search>.p-inputtext{
+  width:100%!important;
+  min-height:42px!important;
+  padding-left:2.55rem!important;
+  line-height:1.2!important;
+}
+
+/* --------------------------------------------------------------------------
+   CARDS / PANELS PRIME — UMA ÚNICA GEOMETRIA
+   -------------------------------------------------------------------------- */
+.p-card,.nx-prime-panel.p-card,.nx-dashboard-filter-card.p-card,.nx-dashboard-section-card.p-card,.nx-dashboard-metric-card.p-card,.home-executive-summary.p-card{
+  border:1px solid var(--unilog-border)!important;
+  border-radius:var(--unilog-radius)!important;
+  background:var(--unilog-surface)!important;
+  box-shadow:var(--unilog-shadow)!important;
+}
+
+/* Panel é PrimeReact Card, mas cabeçalho/corpo continuam sendo os owners do espaçamento. */
+.nx-prime-panel.p-card{overflow:hidden!important}
+.nx-prime-panel.p-card>.p-card-body{height:100%;padding:0!important}
+.nx-prime-panel.p-card>.p-card-body>.p-card-content{height:100%;padding:0!important}
+.nx-prime-panel .ui-panel-header{
+  padding:16px 18px!important;
+  border-bottom:1px solid var(--unilog-border-soft)!important;
+  background:linear-gradient(180deg,#fff 0%,#fcfcfd 100%)!important;
+}
+.nx-prime-panel .ui-panel-header h2{color:var(--unilog-ink-2)!important}
+.nx-prime-panel .ui-panel-header p{color:var(--unilog-graphite-2)!important}
+.nx-prime-panel .ui-eyebrow{color:var(--unilog-muted)!important}
+
+/* --------------------------------------------------------------------------
+   FILTROS — MESMO CARD/GRID DO DASHBOARD EXTRA COST
+   -------------------------------------------------------------------------- */
 .global-filter-stage{max-width:1600px;margin:0 auto;padding:22px 34px 0}
-.global-filter-card.p-card{border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);box-shadow:0 2px 10px rgba(18,24,34,.025);overflow:visible}
-.global-filter-card.p-card>.p-card-body{padding:0}
-.global-filter-card.p-card>.p-card-body>.p-card-content{padding:16px 18px;display:grid;grid-template-columns:minmax(190px,.42fr) minmax(0,1.58fr);gap:18px;align-items:end}
-.global-filter-card.filter-toolbar{position:static;top:auto;z-index:auto;min-height:0;margin:0;padding:0;border-bottom:0;background:var(--surface);box-shadow:0 2px 10px rgba(18,24,34,.025)}
-.global-filter-card .filter-toolbar-title{min-width:0;align-self:center}
-.global-filter-icon{width:38px;height:38px;display:grid;place-items:center;flex:0 0 38px;border-radius:11px;background:linear-gradient(145deg,#171b24,#343c4c);color:#fff;box-shadow:0 7px 18px rgba(20,25,35,.13)}
-.global-filter-icon .pi{font-size:14px;color:#fff}
-.global-filter-card .filter-toolbar-title strong{font-size:11px;letter-spacing:-.01em}
-.global-filter-card .filter-toolbar-title small{font-size:9px;line-height:1.4}
-.global-filter-card .topbar-filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;align-items:end;justify-content:stretch;width:100%}
-.global-filter-card .topbar-filters label{width:auto!important;display:grid;gap:6px}
-.global-filter-card .topbar-filters label>span{display:block;font-size:9px;font-weight:700;letter-spacing:.035em;text-transform:none;color:#646a74}
-.global-filter-card .topbar-filters .p-dropdown{width:100%;height:42px;min-height:42px;border-color:#d9dde3;background:#fff;font-size:11px}
-.global-filter-card .topbar-filters .p-dropdown-label{min-height:40px;padding:0 10px;display:flex;align-items:center;font-size:11px;font-weight:600;color:var(--graphite)}
-.global-filter-card .topbar-filters .p-dropdown-trigger{width:36px}
-.global-filter-card .topbar-filter-reset.p-button{width:auto;height:42px;min-height:42px;align-self:end;padding:0 13px;border-radius:10px;background:#fff;color:var(--graphite);white-space:nowrap}
-
-/* O conteúdo começa mais perto do card de filtro, como no dashboard do Extra Cost. */
+.nx-dashboard-filter-card.global-filter-card.p-card{overflow:visible!important}
+.nx-dashboard-filter-card.global-filter-card.p-card>.p-card-body{padding:0!important}
+.nx-dashboard-filter-card.global-filter-card.p-card>.p-card-body>.p-card-content{padding:18px!important}
+.nx-dashboard-filter-grid{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important;
+  gap:12px!important;
+  align-items:end!important;
+}
+.nx-dashboard-filter-grid>.nx-field{display:grid;gap:7px;min-width:0;font-size:9px;font-weight:700;color:#646a74}
+.nx-dashboard-filter-grid .p-dropdown{width:100%;min-width:0;min-height:42px}
+.nx-dashboard-filter-grid .p-dropdown .p-dropdown-label{min-width:0;display:flex;align-items:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.nx-dashboard-filter-actions{display:flex;justify-content:flex-end!important;gap:8px;flex-wrap:wrap;margin-top:12px}
+.nx-dashboard-filter-actions>.p-button{min-height:42px}
 .global-filter-stage+.content{padding-top:22px}
 
-/* Home executiva: mesma cadência e densidade visual do Extra Cost. */
+/* --------------------------------------------------------------------------
+   MÉTRICAS — PRIME-UNIFIED-SURFACES DO EXTRA COST
+   -------------------------------------------------------------------------- */
+.ui-summary-metric.nx-prime-metric,
+.nx-dashboard-metric-card.p-card{
+  --metric-bg:#fff;
+  --metric-border:var(--unilog-border);
+  --metric-accent:transparent;
+  --metric-label:var(--unilog-muted);
+  --metric-value:var(--unilog-ink-2);
+  --metric-detail:var(--unilog-graphite-2);
+  position:relative!important;
+  min-height:108px!important;
+  overflow:hidden!important;
+  border:1px solid var(--metric-border)!important;
+  border-left-width:1px!important;
+  border-radius:var(--unilog-radius)!important;
+  background:var(--metric-bg)!important;
+  box-shadow:var(--unilog-shadow)!important;
+  transform:none!important;
+  transition:none!important;
+}
+.nx-dashboard-metric-card.p-card:hover{transform:none!important;box-shadow:var(--unilog-shadow)!important}
+
+.nx-dashboard-metric-card.p-card>.p-card-body,
+.ui-summary-metric.nx-prime-metric.p-card>.p-card-body{height:100%!important;padding:0!important}
+.nx-dashboard-metric-card.p-card>.p-card-body>.p-card-content{
+  min-height:108px!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  align-content:center!important;
+  gap:6px!important;
+  padding:16px 18px!important;
+}
+.ui-summary-metric.nx-prime-metric.p-card>.p-card-body>.p-card-content{
+  min-height:108px!important;
+  display:grid!important;
+  grid-template-columns:auto minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:12px!important;
+  padding:16px 18px!important;
+}
+button.ui-summary-metric.nx-prime-metric{
+  min-height:108px!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:12px!important;
+  padding:16px 18px!important;
+  text-align:left!important;
+}
+button.ui-summary-metric.nx-prime-metric>.p-button-label{display:contents!important;overflow:visible!important;text-overflow:clip!important}
+
+.ui-summary-metric.nx-prime-metric .ui-summary-metric-copy>span,
+.nx-dashboard-metric-card .p-card-content>span{
+  color:var(--metric-label)!important;
+  font-size:9px!important;
+  line-height:1.25!important;
+  font-weight:800!important;
+  letter-spacing:.065em!important;
+  text-transform:uppercase!important;
+}
+.ui-summary-metric.nx-prime-metric .ui-summary-metric-copy>strong,
+.nx-dashboard-metric-card .p-card-content>strong{
+  color:var(--metric-value)!important;
+  font-size:22px!important;
+  line-height:1.08!important;
+  font-weight:800!important;
+  letter-spacing:-.025em!important;
+  font-variant-numeric:tabular-nums;
+}
+.ui-summary-metric.nx-prime-metric .ui-summary-metric-copy>small,
+.nx-dashboard-metric-card .p-card-content>small{
+  color:var(--metric-detail)!important;
+  font-size:10px!important;
+  line-height:1.35!important;
+}
+.nx-dashboard-metric-card .metric-card-comparison{font-size:9px!important;color:var(--unilog-muted)!important}
+.ui-summary-metric.nx-prime-metric .ui-summary-metric-copy{gap:3px!important}
+.ui-summary-metric.nx-prime-metric .ui-summary-metric-icon{
+  width:38px!important;
+  height:38px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid color-mix(in srgb,var(--metric-border) 75%,#fff)!important;
+  border-radius:11px!important;
+  background:rgba(255,255,255,.64)!important;
+  color:var(--metric-value)!important;
+  font-size:16px!important;
+}
+
+/* Dashboard info/neutral é descritivo, não feedback: permanece branco. */
+.nx-dashboard-metric-card.dashboard-metric-info,
+.nx-dashboard-metric-card.dashboard-metric-neutral,
+.ui-summary-metric-neutral.nx-prime-metric{
+  --metric-bg:#fff;
+  --metric-border:var(--unilog-border);
+  --metric-label:var(--unilog-muted);
+  --metric-value:var(--unilog-ink-2);
+  --metric-detail:var(--unilog-graphite-2);
+}
+.ui-summary-metric-success.nx-prime-metric,
+.nx-dashboard-metric-card.dashboard-metric-success{
+  --metric-bg:#edf8f2;
+  --metric-border:#cce6d6;
+  --metric-accent:#63a77f;
+  --metric-label:#317552;
+  --metric-value:#2f7650;
+  --metric-detail:#5d7f6c;
+  border-left:5px solid var(--metric-accent)!important;
+}
+.ui-summary-metric-warning.nx-prime-metric,
+.nx-dashboard-metric-card.dashboard-metric-warning{
+  --metric-bg:#fff7e8;
+  --metric-border:#f1ddae;
+  --metric-accent:#d09a19;
+  --metric-label:#9b6500;
+  --metric-value:#a46a00;
+  --metric-detail:#8d7447;
+  border-left:5px solid var(--metric-accent)!important;
+}
+.ui-summary-metric-danger.nx-prime-metric,
+.nx-dashboard-metric-card.dashboard-metric-danger{
+  --metric-bg:#fff0f1;
+  --metric-border:#efc9cc;
+  --metric-accent:#cf3e47;
+  --metric-label:#ad1b23;
+  --metric-value:#b51b24;
+  --metric-detail:#956166;
+  border-left:5px solid var(--metric-accent)!important;
+}
+.ui-summary-metric-info.nx-prime-metric{
+  --metric-bg:#eef5ff;
+  --metric-border:#cfe0f7;
+  --metric-accent:#4d82c4;
+  --metric-label:#2f67b1;
+  --metric-value:#2f67b1;
+  --metric-detail:#5a7599;
+  border-left:5px solid var(--metric-accent)!important;
+}
+button.ui-summary-metric.nx-prime-metric:hover:not(:disabled){filter:brightness(.987)!important;box-shadow:0 8px 22px rgba(18,24,34,.07)!important}
+button.ui-summary-metric.nx-prime-metric.is-active{box-shadow:inset 0 0 0 2px rgba(23,27,36,.2),var(--unilog-shadow)!important;border-color:rgba(23,27,36,.32)!important}
+
+/* O BI tem 5 KPIs: usa a mesma malha de 4 colunas do Extra Cost e quebra a quinta com naturalidade. */
+.home-kpi-grid,.kpis-compact-grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:10px!important;align-items:stretch!important}
+.home-kpi-grid>*,.kpis-compact-grid>*{min-width:0;height:100%}
+
+/* --------------------------------------------------------------------------
+   HOME EXECUTIVA
+   -------------------------------------------------------------------------- */
 .home-dashboard{gap:16px}
 .home-dashboard .page-header{margin-bottom:2px}
 .home-dashboard .page-header h1{font-size:28px;letter-spacing:-.035em}
 .home-dashboard .page-header p{font-size:12px;color:#6e747e}
-
-.home-executive-summary.p-card{overflow:hidden;border:1px solid var(--border);border-left:4px solid var(--status-neutral);border-radius:var(--radius-card);background:var(--surface);box-shadow:0 2px 10px rgba(18,24,34,.025)}
-.home-executive-summary.p-card>.p-card-body{padding:0}
-.home-executive-summary.p-card>.p-card-body>.p-card-content{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:14px;align-items:center;padding:16px 18px}
-.home-executive-summary.is-success{border-left-color:var(--success)}
-.home-executive-summary.is-warning{border-left-color:var(--warning)}
-.home-executive-summary.is-danger{border-left-color:var(--danger)}
-.home-executive-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:var(--status-neutral-soft);color:var(--graphite)}
-.home-executive-summary.is-success .home-executive-icon{background:var(--success-soft);color:var(--success)}
-.home-executive-summary.is-warning .home-executive-icon{background:var(--warning-soft);color:var(--warning)}
-.home-executive-summary.is-danger .home-executive-icon{background:var(--danger-soft);color:var(--danger)}
+.home-executive-summary.p-card{overflow:hidden!important;border-left:5px solid var(--status-neutral)!important}
+.home-executive-summary.p-card>.p-card-body{padding:0!important}
+.home-executive-summary.p-card>.p-card-body>.p-card-content{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:14px;align-items:center;padding:16px 18px!important}
+.home-executive-summary.is-success{background:#edf8f2!important;border-color:#cce6d6!important;border-left-color:#63a77f!important}
+.home-executive-summary.is-warning{background:#fff7e8!important;border-color:#f1ddae!important;border-left-color:#d09a19!important}
+.home-executive-summary.is-danger{background:#fff0f1!important;border-color:#efc9cc!important;border-left-color:#cf3e47!important}
+.home-executive-icon{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:rgba(255,255,255,.7);color:var(--unilog-graphite)}
 .home-executive-icon .pi{font-size:16px}
 .home-executive-copy{display:grid;gap:4px;min-width:0}
-.home-executive-copy>strong{font-size:15px;line-height:1.25;color:var(--ink)}
-.home-executive-copy>p{margin:0;max-width:760px;font-size:10px;line-height:1.5;color:var(--graphite-2)}
+.home-executive-copy>strong{font-size:15px;line-height:1.25;color:var(--unilog-ink)}
+.home-executive-copy>p{margin:0;max-width:760px;font-size:10px;line-height:1.5;color:var(--unilog-graphite-2)}
 .home-executive-values{display:grid;grid-template-columns:repeat(3,minmax(105px,1fr));gap:8px;min-width:360px}
-.home-executive-values>div{display:grid;gap:2px;padding:9px 11px;border:1px solid var(--border-soft);border-radius:10px;background:var(--surface-soft)}
-.home-executive-values span{font-size:8px;font-weight:750;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
-.home-executive-values strong{font-size:12px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-.home-kpi-section{gap:10px}
-.home-kpi-grid{gap:10px}
-.home-kpi-grid .metric-card-supporting{min-height:112px}
+.home-executive-values>div{display:grid;gap:2px;padding:9px 11px;border:1px solid rgba(255,255,255,.75);border-radius:10px;background:rgba(255,255,255,.58)}
+.home-executive-values span{font-size:8px;font-weight:750;letter-spacing:.04em;text-transform:uppercase;color:var(--unilog-muted)}
+.home-executive-values strong{font-size:12px;color:var(--unilog-ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .home-main-grid{gap:16px;grid-template-columns:minmax(0,1.7fr) minmax(310px,.8fr)}
 .home-side-stack{gap:16px}
-.home-dashboard .ui-panel{border-color:var(--border);box-shadow:0 2px 10px rgba(18,24,34,.025)}
-.home-dashboard .ui-panel-header{min-height:62px;padding:16px 18px}
-.home-dashboard .ui-panel-header h2{font-size:15px;letter-spacing:-.015em}
-.home-dashboard .ui-panel-header p{font-size:10px}
-.home-trend-panel .panel-body{padding:16px 18px 18px}
 .home-scope-grid{padding:14px;gap:9px}
 .home-scope-grid>div{min-height:72px;padding:12px 13px;background:#fafbfc;border-color:#edf0f2}
-.home-scope-grid span{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.home-scope-grid span{font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--unilog-muted)}
 .home-scope-grid strong{font-size:21px;letter-spacing:-.025em}
 .home-attention-panel .attention-list{padding:8px 14px 14px}
 .home-attention-panel .attention-row{padding:12px 10px}
 
-/* PrimeReact MetricCard: compactação e hierarquia próximas ao Extra Cost. */
-.metric-card.p-card{min-height:112px;border-color:var(--border);box-shadow:0 2px 9px rgba(18,24,34,.025)}
-.metric-card.p-card>.p-card-body{padding:14px 15px}
-.metric-card.p-card>.p-card-body>.p-card-content{height:100%;display:grid;align-content:start}
-.metric-card .metric-card-head>span{font-size:9px;font-weight:800;color:#777e88}
-.metric-card .p-card-content>strong{margin-top:10px;font-size:24px;letter-spacing:-.03em}
-.metric-card .metric-comparisons{margin-top:10px;padding-top:10px}
-.metric-card .metric-meta{margin-top:7px}
+/* --------------------------------------------------------------------------
+   DATATABLE — MESMA DENSIDADE CANÔNICA
+   -------------------------------------------------------------------------- */
+.p-datatable .p-datatable-thead>tr>th{
+  padding:12px 14px!important;
+  border-color:var(--unilog-border-soft)!important;
+  background:#f8f9fb!important;
+  color:#59616c!important;
+  font-size:9px!important;
+  line-height:1.25!important;
+  font-weight:800!important;
+  letter-spacing:.055em!important;
+  text-transform:uppercase!important;
+}
+.p-datatable .p-datatable-tbody>tr>td{
+  padding:12px 14px!important;
+  border-color:var(--unilog-border-soft)!important;
+  color:#444b55!important;
+  font-size:11px!important;
+  line-height:1.4!important;
+}
+.p-datatable .p-datatable-tbody>tr:hover>td{background:#fbfcfd!important}
 
 @media(max-width:1180px){
   .global-filter-stage{padding:18px 24px 0}
-  .global-filter-card.p-card>.p-card-body>.p-card-content{grid-template-columns:1fr;gap:12px}
-  .global-filter-card .filter-toolbar-title{display:flex}
   .home-main-grid{grid-template-columns:1fr}
   .home-side-stack{grid-template-columns:1fr 1fr}
   .home-executive-summary.p-card>.p-card-body>.p-card-content{grid-template-columns:42px minmax(0,1fr)}
   .home-executive-values{grid-column:2;min-width:0}
 }
 
-@media(max-width:760px){
+@media(max-width:900px){
+  .home-kpi-grid,.kpis-compact-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .ui-summary-metric.nx-prime-metric,.nx-dashboard-metric-card.p-card{min-height:96px!important}
+  .nx-dashboard-metric-card.p-card>.p-card-body>.p-card-content,
+  .ui-summary-metric.nx-prime-metric.p-card>.p-card-body>.p-card-content,
+  button.ui-summary-metric.nx-prime-metric{min-height:96px!important;padding:14px 15px!important}
+  .ui-summary-metric.nx-prime-metric .ui-summary-metric-copy>strong,.nx-dashboard-metric-card .p-card-content>strong{font-size:20px!important}
+}
+
+@media(max-width:720px){
   .global-filter-stage{padding:14px 14px 0}
-  .global-filter-card.p-card>.p-card-body>.p-card-content{padding:15px;gap:14px}
-  .global-filter-card .topbar-filters{grid-template-columns:1fr}
-  .global-filter-card .topbar-filters label>span{display:block}
-  .global-filter-card .topbar-filters .p-dropdown{height:46px;min-height:46px}
-  .global-filter-card .topbar-filters .p-dropdown-label{min-height:44px;font-size:12px}
-  .global-filter-card .topbar-filter-reset.p-button{width:100%;height:44px;min-height:44px;justify-content:center}
+  .nx-dashboard-filter-card.global-filter-card.p-card>.p-card-body>.p-card-content{padding:14px!important}
+  .nx-dashboard-filter-grid{grid-template-columns:1fr!important}
+  .nx-dashboard-filter-actions{justify-content:stretch!important}
+  .nx-dashboard-filter-actions>.p-button{width:100%}
   .global-filter-stage+.content{padding-top:18px}
   .home-dashboard .page-header h1{font-size:24px}
   .home-side-stack{grid-template-columns:1fr}
-  .home-dashboard .ui-panel-header{padding:14px}
-  .home-executive-summary.p-card>.p-card-body>.p-card-content{grid-template-columns:38px minmax(0,1fr);gap:10px 12px;padding:15px}
+  .nx-prime-panel .ui-panel-header{padding:14px!important}
+  .home-executive-summary.p-card>.p-card-body>.p-card-content{grid-template-columns:38px minmax(0,1fr);gap:10px 12px;padding:15px!important}
   .home-executive-icon{width:36px;height:36px;border-radius:10px}
   .home-executive-copy>strong{font-size:14px}
-  .home-executive-values{grid-column:1/-1;grid-template-columns:1fr 1fr 1fr;min-width:0}
+  .home-executive-values{grid-column:1/-1;grid-template-columns:repeat(3,minmax(0,1fr));min-width:0}
+}
+
+@media(max-width:600px){
+  .home-kpi-grid,.kpis-compact-grid{grid-template-columns:1fr!important}
+  .ui-summary-metric.nx-prime-metric,.nx-dashboard-metric-card.p-card{min-height:88px!important}
+  .nx-dashboard-metric-card.p-card>.p-card-body>.p-card-content,
+  .ui-summary-metric.nx-prime-metric.p-card>.p-card-body>.p-card-content,
+  button.ui-summary-metric.nx-prime-metric{min-height:88px!important;padding:12px!important}
 }
 
 @media(max-width:480px){
   .global-filter-stage{padding-left:12px;padding-right:12px}
-  .global-filter-card .filter-toolbar-title{align-items:flex-start}
-  .global-filter-icon{width:36px;height:36px;flex-basis:36px}
-  .home-kpi-grid{grid-template-columns:1fr}
   .home-executive-values{grid-template-columns:1fr}
 }
