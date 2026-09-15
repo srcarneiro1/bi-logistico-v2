@@ -4,54 +4,56 @@
 
 ## 1. Objetivo desta memória
 
-Este arquivo é a fonte de verdade da modernização do frontend do BI Logístico V2. Ele deve ser atualizado ao longo da migração e usado para evitar decisões contraditórias entre etapas, chats e pull requests.
+Este arquivo é a fonte de verdade da modernização do frontend do BI Logístico V2. Deve ser atualizado ao longo da migração e usado para evitar decisões contraditórias entre etapas, chats e pull requests.
 
-Documentos complementares obrigatórios:
-- `docs/PRIMEREACT_DESIGN_SYSTEM.md` — fonte de verdade visual;
+Documentos complementares:
+- `docs/PRIMEREACT_DESIGN_SYSTEM.md` — referência visual;
 - `docs/EXTRA_COST_CONTROL_C4.puml` — C4 da referência Extra Cost e arquitetura alvo;
 - `docs/EXTRA_COST_REFERENCE_AND_BI_MIGRATION_PLAN.md` — comparação, esforço, riscos, benefícios e gates.
 
-## 2. Baseline confirmado
+## 2. Baseline e Git
 
 Repositório: `srcarneiro1/bi-logistico-v2`
 
 Baseline da migração:
-- branch base: `main`
-- commit base: `b004e9c4e400dd289f713ca1464d90ce8b821410`
-- mensagem do commit base: `Exclui outras receitas da carteira de depositantes (#68)`
+- branch base: `main`;
+- commit base: `b004e9c4e400dd289f713ca1464d90ce8b821410`;
+- mensagem: `Exclui outras receitas da carteira de depositantes (#68)`.
 
 Branch da modernização:
-- `feature/frontend-modernization-primereact`
+- `feature/frontend-modernization-primereact`.
 
 Pull request:
-- PR #69 — `Modernização frontend: PrimeReact, design system e responsividade`
-- deve permanecer Draft até a conclusão integral da modernização;
-- não pode ser mergeado parcialmente ou automaticamente.
+- PR #69 — `Modernização frontend: PrimeReact, design system e responsividade`;
+- permanece Draft;
+- não pode ser mergeado parcialmente ou automaticamente;
+- só pode sair de Draft após auditoria/homologação completa;
+- merge somente após autorização explícita do usuário.
 
 ## 3. Decisão arquitetural aprovada
 
-A modernização NÃO migrará o BI para Next.js neste PR.
+A modernização NÃO migra o BI para Next.js neste PR.
 
-Arquitetura alvo deste ciclo:
-- React
-- TypeScript
-- Vite
-- React Router
-- PrimeReact 10.9.9
-- PrimeIcons 7
-- Chart.js 4.5.1, preferencialmente via PrimeReact Chart
-- Design System próprio Unilog, alinhado ao Extra Cost Control
-- Cloudflare Pages + Pages Functions mantidos
-- Supabase mantido
-- Apps Script / HUB mantidos
+Arquitetura deste ciclo:
+- React 19;
+- TypeScript;
+- Vite;
+- React Router;
+- PrimeReact 10.9.9;
+- PrimeIcons 7;
+- Chart.js 4.5.1 via PrimeReact Chart quando aplicável;
+- Design System Unilog alinhado ao Extra Cost Control;
+- Cloudflare Pages + Pages Functions preservados;
+- Supabase preservado;
+- Apps Script / HUB preservados.
 
-O Extra Cost Control é a referência visual e estrutural para componentes, charts, densidade, shell e responsividade, mas não deve ser copiado mecanicamente. O ganho principal vem de PrimeReact + Chart.js + wrappers + design system. O Next.js no Extra Cost é uma decisão de framework independente e não justifica ampliar o raio de risco do BI, que possui malha de rotas reais e rotas dinâmicas de FCA.
+O Extra Cost Control é a referência de família visual e de componentes. Isso significa usar PrimeReact como base real da interface, PrimeIcons como biblioteca de ícones e Chart.js/PrimeReact Chart para gráficos, aplicando depois a identidade Unilog. Não significa copiar Next.js ou reproduzir mecanicamente toda a dívida histórica de CSS do Extra Cost.
 
-Uma eventual migração Vite → Next.js fica deferida para iniciativa independente, após a camada de apresentação estar consolidada.
+Uma eventual migração Vite → Next.js fica deferida para iniciativa independente.
 
 ## 4. Regra principal de preservação
 
-Esta modernização é prioritariamente de frontend, UX, responsividade, componentes e visual.
+Esta modernização é de frontend, UX, responsividade, componentes e visual.
 
 Não alterar silenciosamente:
 - regras de negócio;
@@ -72,22 +74,22 @@ Não alterar silenciosamente:
 - semântica dos filtros globais;
 - política de secrets.
 
-Qualquer alteração funcional necessária deverá ser tratada como mudança separada e explicitamente aprovada.
+Qualquer alteração funcional deverá ser tratada separadamente e explicitamente aprovada.
 
-## 5. Arquitetura funcional atual preservada
+## 5. Arquitetura funcional preservada
 
 ### Frontend
-- React + TypeScript + Vite
-- React Router
-- Supabase client com chave publicável no browser
+- React + TypeScript + Vite;
+- React Router;
+- Supabase client com chave publicável no browser.
 
 ### Backend/BFF
-- Cloudflare Pages Functions
-- validação de JWT
-- autorização e escopo server-side
-- HUB bootstrap
-- funções administrativas
-- secrets somente no servidor
+- Cloudflare Pages Functions;
+- validação de JWT;
+- autorização e escopo server-side;
+- HUB bootstrap;
+- funções administrativas;
+- secrets somente no servidor.
 
 ### Supabase
 Responsável por:
@@ -101,155 +103,219 @@ Responsável por:
 - storage de fotos quando aplicável.
 
 ### HUB / Apps Script / Google Sheets
-Responsável pela camada operacional e analítica hoje existente, incluindo supervisores, depositantes, indicadores, metas, KPIs, inventário, receita e despesa.
+Responsável pela camada operacional e analítica, incluindo supervisores, depositantes, indicadores, metas, KPIs, inventário, receita e despesa.
 
-## 6. Regras de segurança que não podem regredir
+## 6. Segurança que não pode regredir
 
 - autenticação não equivale a autorização;
-- conta existente no Supabase Auth não concede acesso ao BI por si só;
-- secrets de servidor nunca podem ser expostos ao frontend;
-- o frontend não é fronteira de segurança;
-- regras de escopo continuam sendo aplicadas pelo backend/RLS conforme o caso;
-- substituição deve respeitar titular, módulo e intervalo de vigência;
-- owner/admin não devem ganhar escopo analítico indevido por efeito colateral visual;
-- todas as tabelas públicas continuam sob RLS/grants existentes;
-- nenhuma chave `service_role`/secret deve ir para variáveis públicas.
+- conta no Supabase Auth não concede acesso ao BI por si só;
+- secrets de servidor nunca podem ir ao frontend;
+- frontend não é fronteira de segurança;
+- escopo continua aplicado por backend/RLS conforme o caso;
+- substituição respeita titular, módulo e vigência;
+- Owner/Admin não ganha escopo analítico indevido por efeito colateral visual;
+- tabelas públicas permanecem sob RLS/grants existentes;
+- nenhuma `service_role`/secret pode ir para variável pública;
+- MFA Owner/Admin mantém AAL/TOTP e foi alterado somente na apresentação.
 
-## 7. Telas e rotas protegidas atuais
+## 7. Rotas atuais
 
 ### Autenticação
-- Login
-- Primeiro acesso
-- Recuperação/redefinição de senha
-- MFA para perfis que exigem AAL2
+- Login;
+- Primeiro acesso;
+- Recuperação/redefinição de senha;
+- MFA para perfis que exigem AAL2.
 
 ### Aplicação
-- `/` — Visão Geral
-- `/kpis` — KPIs
-- `/supervisores` — Supervisores
-- `/depositantes` — Depositantes
-- `/financeiro` — Financeiro
-- `/fca` — Lista FCA
-- `/fca/novo` — Novo FCA
-- `/fca/:id/editar` — Editar FCA
-- `/fca/:id` — Detalhe FCA
+- `/` — Visão Geral;
+- `/kpis` — KPIs;
+- `/supervisores` — Supervisores;
+- `/depositantes` — Depositantes;
+- `/financeiro` — Financeiro;
+- `/fca` — Lista FCA;
+- `/fca/novo` — Novo FCA;
+- `/fca/:id/editar` — Editar FCA;
+- `/fca/:id` — Detalhe FCA.
 
 ### Administração
-- `/administracao/supervisores`
-- `/administracao/substituicoes`
-- `/administracao/acessos`
+- `/administracao/supervisores`;
+- `/administracao/substituicoes`;
+- `/administracao/acessos`.
 
-As permissões existentes por OWNER / ADMIN / usuário operacional devem ser mantidas.
+As permissões existentes por OWNER / ADMIN / usuário operacional permanecem.
 
-## 8. Lógica de domínio congelada durante a modernização visual
+## 8. Lógica de domínio congelada
 
-Os seguintes módulos devem ser reutilizados antes de qualquer hipótese de refatoração funcional:
-- `src/lib/dashboard.ts`
-- `src/lib/fca.ts`
-- `src/lib/governance.ts`
-- `src/lib/substitutions.ts`
-- `src/lib/api.ts`
-- `src/lib/supabase.ts`, salvo adaptação estritamente visual/organizacional sem alterar comportamento de sessão
+Módulos reutilizados sem refatoração funcional:
+- `src/lib/dashboard.ts`;
+- `src/lib/fca.ts`;
+- `src/lib/governance.ts`;
+- `src/lib/substitutions.ts`;
+- `src/lib/api.ts`;
+- `src/lib/supabase.ts`.
 
-Também ficam fora do escopo visual inicial:
-- `functions/`
-- `apps-script/`
-- `supabase/migrations/`
+Fora do escopo visual:
+- `functions/`;
+- `apps-script/`;
+- `supabase/migrations/`.
 
-## 9. Estratégia PrimeReact
+A revisão de changed files do PR #69 em 15/09/2026 confirmou que nenhum desses diretórios/arquivos de domínio foi alterado pela modernização.
 
-PrimeReact será usado como camada estrutural de componentes, sem impor visual genérico.
+## 9. Base PrimeReact consolidada
 
-Preferências:
-- Button
-- Card
-- DataTable / Column
-- Dialog / ConfirmDialog
-- Dropdown
-- MultiSelect
-- InputText
-- InputTextarea
-- Password
-- Calendar/DatePicker quando necessário
-- Checkbox
-- InputSwitch
-- SelectButton
-- TabMenu
-- Paginator
-- Tag
-- Message
-- Toast
-- Skeleton
-- Tooltip
-- Avatar
-- Menu
-- Sidebar/Drawer quando trouxer ganho real
-- Chart
+O BI usa PrimeReact em modo styled, seguindo a mesma base técnica do Extra Cost:
+- `lara-light-indigo/theme.css`;
+- `primereact.min.css`;
+- `primeicons.css`;
+- identidade Unilog aplicada por tokens e overrides posteriores.
 
-A identidade visual continuará sendo Unilog, controlada por tokens e wrappers do projeto.
+Não usar `unstyled: true` nesta arquitetura.
 
-Não substituir um componente customizado apenas para aumentar a contagem de PrimeReact. Componentes executivos, heatmaps, matrizes, record cards e estruturas sem equivalente melhor podem continuar customizados.
+Componentes PrimeReact utilizados conforme a necessidade:
+- Button;
+- Card;
+- DataTable / Column;
+- Dropdown;
+- InputText;
+- InputTextarea;
+- Password;
+- Checkbox;
+- Tag;
+- Message;
+- Skeleton;
+- Avatar;
+- Toolbar;
+- ProgressBar;
+- Chart.
 
-## 10. Estratégia de componentes
+Componentes de domínio podem continuar customizados quando isso for semanticamente melhor, como cards de carteira, timelines, barras financeiras específicas e record cards mobile.
 
-Não espalhar PrimeReact diretamente sem critério por todas as telas.
+## 10. Primitives compartilhados atuais
 
-Preferir wrappers semânticos do projeto para funções reutilizáveis, permitindo:
-- consistência visual;
-- preservação de comportamento;
-- menor acoplamento à biblioteca;
-- evolução futura sem reescrever telas.
+Situação consolidada:
+- `Badge` → PrimeReact Tag;
+- `Chip` → PrimeReact Tag;
+- `SearchField` → PrimeReact InputText + PrimeIcon;
+- `MetricCard` → PrimeReact Card;
+- `Panel` → PrimeReact Card mantendo wrapper semântico do BI;
+- `SummaryMetrics` → PrimeReact Card/Button;
+- `PageHeader` → PrimeReact Toolbar;
+- `EmptyState` → PrimeIcons;
+- `Skeleton` → PrimeReact Skeleton;
+- `ContextNotice` → PrimeIcons;
+- `SimpleLineChart` → PrimeReact Chart + Chart.js;
+- Login/SetPassword → InputText, Password, Button e Message;
+- MFA → InputText e Button PrimeReact, sem mudança em AAL/TOTP;
+- AppShell → Avatar, Tag, Dropdown, Button e PrimeIcons.
 
-Wrappers já em modernização:
-- `Badge` → PrimeReact Tag mantendo API do BI;
-- `Chip` → PrimeReact Tag mantendo API do BI;
-- `SearchField` → PrimeReact InputText mantendo API do BI;
-- autenticação → InputText, Password, Button e Message;
-- shell → Avatar, Tag e Dropdown;
-- `SimpleLineChart` → PrimeReact Chart + Chart.js mantendo props e consumidores.
+Material Symbols foi removido do runtime principal e a fonte externa deixou de ser carregada em `index.html`. Seletores CSS históricos remanescentes podem ser removidos gradualmente quando comprovadamente mortos, sem abrir novo risco visual.
 
-`Panel` continua customizado neste momento porque o BI usa semântica HTML (`article`, `section`, `div`) e não há ganho em eliminar essa semântica apenas para usar `Card`. A decisão pode ser revista por superfície, sem reescrita indiscriminada.
+## 11. Design System consolidado
 
-## 11. Design System alvo
-
-Tokens canônicos alinhados à referência Extra Cost:
+Tokens alinhados ao Extra Cost:
 
 ### Marca
-- `--brand-primary: #db0812`
-- `--brand-primary-hover: #b8070f`
-- `--brand-primary-soft: #fdecee`
+- `--brand-primary: #db0812`;
+- `--brand-primary-hover: #b8070f`;
+- `--brand-primary-soft: #fdecee`.
 
 ### Neutros
-- `--ink: #171b24`
-- `--ink-2: #242a36`
-- `--graphite: #494a56`
-- `--graphite-2: #676d77`
-- `--muted: #8a9099`
-- `--border: #e2e5e9`
-- `--border-soft: #edf0f2`
-- `--canvas: #f5f6f8`
-- `--surface: #ffffff`
-- `--surface-soft: #f8f9fb`
+- `--ink: #171b24`;
+- `--ink-2: #242a36`;
+- `--graphite: #494a56`;
+- `--graphite-2: #676d77`;
+- `--muted: #8a9099`;
+- `--border: #e2e5e9`;
+- `--border-soft: #edf0f2`;
+- `--canvas: #f5f6f8`;
+- `--surface: #ffffff`;
+- `--surface-soft: #f8f9fb`.
 
 ### Estados
-- `--success: #3f7c59`
-- `--warning: #a87900`
-- `--danger: #c91a23`
-- `--info`: neutro/grafite, não azul decorativo
+- `--success: #3f7c59`;
+- `--warning: #a87900`;
+- `--danger: #c91a23`;
+- info predominantemente neutro/grafite, sem azul decorativo arbitrário.
 
-Também estão padronizados:
-- radius de controle 10px;
-- radius de card 14px;
-- radius de dialog 18px;
+Geometria:
+- controle 10px;
+- card 14px;
+- dialog 18px;
 - sombras discretas;
-- focus ring vermelho suave;
-- tamanhos de controle;
-- spacing;
-- aliases legados preservados durante a transição.
+- focus ring suave;
+- controles principais ~42–46px.
 
-O vermelho Unilog é cor de marca e não deve significar erro por padrão.
+O vermelho Unilog é cor de marca e não significa erro por padrão.
 
-## 12. Responsividade obrigatória
+## 12. Cards executivos — decisão aprovada
+
+Regra homologada pelo usuário em 15/09/2026:
+- cards KPI mantêm cor semântica por status: verde, amarelo ou vermelho;
+- não usar faixa vertical grossa à esquerda nos `MetricCard` executivos;
+- variações em pontos percentuais (`p.p.`) têm cor própria e independente do card:
+  - positivo = verde;
+  - negativo = vermelho;
+  - zero = neutro/cinza;
+- cards de alerta/feedback podem manter tratamentos semânticos específicos quando sua função for explicitamente de estado/callout.
+
+## 13. Filtros
+
+Filtros globais mantêm a semântica original do BI, mas passaram a seguir a anatomia do Extra Cost:
+- Card PrimeReact;
+- heading da página antes do card de filtros;
+- Dropdowns PrimeReact;
+- grid responsivo `auto-fit`;
+- labels visíveis;
+- ação explícita para limpar dimensões;
+- uma coluna no mobile quando necessário.
+
+Regras preservadas:
+- período normal x período FCA;
+- supervisor conforme permissão;
+- mudança de supervisor limpa módulo;
+- módulo depende do escopo;
+- rotas contextuais que não exibem filtros continuam respeitadas.
+
+## 14. Tabelas
+
+Padrão canônico:
+- PrimeReact DataTable/Column;
+- classe `nx-prime-table`;
+- header claro, compacto e uppercase;
+- hover sutil;
+- Tags/Badges padronizados;
+- record cards explícitos no mobile quando superiores ao scroll horizontal.
+
+Telas já migradas:
+- KPIs — Performance por depositante;
+- Supervisores — carteira da visão 360º;
+- Depositantes — base principal;
+- Financeiro — despesas consolidadas;
+- FCA — listagem principal;
+- Administração > Acessos.
+
+Não forçar DataTable em superfícies onde o card é semanticamente melhor, como cartões de supervisores, fotos e coberturas.
+
+## 15. Gráficos
+
+PrimeReact Chart + Chart.js é o padrão para dados com semântica de gráfico.
+
+`SimpleLineChart` foi migrado do SVG artesanal e mantém interface pública/dados dos consumidores.
+
+Padrão consolidado:
+- `responsive: true`;
+- `maintainAspectRatio: false`;
+- stage próximo de 300px para gráficos comuns;
+- tooltip grafite/ink com texto branco;
+- ticks/grid discretos;
+- vermelho/grafite e cores semânticas;
+- legendas limpas;
+- labels longos tratados sem colisão;
+- mobile fluido.
+
+Heatmaps/matrizes e visualizações de domínio podem permanecer customizadas quando Chart.js não agregar valor.
+
+## 16. Responsividade
 
 Faixas de referência:
 - 1440+;
@@ -257,73 +323,92 @@ Faixas de referência:
 - 768–1024;
 - 320–767.
 
-No mobile:
-- sidebar vira drawer;
-- respeitar `100dvh` e safe areas;
-- touch targets adequados;
+Padrões implementados:
+- sidebar vira drawer no mobile;
+- `100dvh`/safe areas na autenticação;
 - filtros reorganizados;
-- tabelas extensas podem virar record cards;
-- evitar scroll horizontal essencial;
-- dialogs devem adaptar largura/altura;
-- charts devem ser fluidos;
-- labels não podem sair da viewport;
-- ações importantes devem permanecer acessíveis.
+- grids KPI 4/3/2/1 conforme superfície;
+- DataTables extensas viram record cards nas principais telas;
+- charts fluidos;
+- ações PrimeReact ocupam largura útil no mobile quando necessário;
+- FCA forms e Admin forms viram uma coluna;
+- MFA adapta largura e CTA;
+- shell mantém focus trap, Escape, bloqueio de scroll, retorno de foco e fechamento por navegação.
 
-O shell já mantém focus trap, Escape, bloqueio de scroll do body, retorno de foco e fechamento por navegação existentes.
+Ainda é obrigatória homologação visual manual em dispositivos/larguras reais antes de sair de Draft.
 
-## 13. Tabelas
+## 17. Fluxos FCA preservados
 
-PrimeReact DataTable será adotado onde fizer sentido, com padronização de:
-- cabeçalho;
-- hover;
-- ordenação;
-- paginação;
-- busca;
-- status;
-- loading;
-- empty state;
-- ações.
+Lista, detalhe, novo e edição foram migrados visualmente para PrimeReact.
 
-No mobile, preservar ou melhorar o padrão de cards verticais quando ele for superior a uma tabela horizontalmente rolável.
+Controles principais:
+- Dropdown;
+- InputText;
+- InputTextarea;
+- Button;
+- DataTable;
+- PrimeIcons.
 
-Não migrar tabelas em massa antes de definir a estratégia DataTable → record card para cada superfície.
+Preservado integralmente:
+- `deriveFcaDisplayStatus` como fonte de status visual;
+- período FCA independente;
+- cobertura/substituição;
+- snapshot histórico de supervisor/módulo/depositante/indicador;
+- criação/edição via funções existentes;
+- validações de contexto;
+- ações 1:N;
+- auditoria;
+- rotas e retorno contextual.
 
-## 14. Gráficos
+Campos que eram `required` em selects nativos foram mantidos obrigatórios nos Dropdowns PrimeReact e continuam protegidos por validações do submit.
 
-Preferir PrimeReact Chart + Chart.js quando o dado tiver semântica de gráfico.
+## 18. Administração preservada
 
-`SimpleLineChart` já foi migrado de SVG artesanal para PrimeReact Chart + Chart.js sem alterar sua interface pública nem os dados fornecidos por Home, KPIs e Depositantes.
+### Acessos
+- filtro → Dropdown;
+- tabela → DataTable;
+- ações/confirmação → Button + PrimeIcons;
+- Owner protegido e regra de governança inalterada;
+- mobile → record cards.
 
-Regras:
-- nenhuma sobreposição de labels;
-- nomes longos podem exigir gráfico horizontal;
-- tooltip deve carregar texto completo quando houver truncamento;
-- usar `autoSkip`, rotação, padding e altura dinâmica quando necessário;
-- mobile prioriza legibilidade;
-- não usar cores aleatórias sem semântica;
-- heatmaps e matrizes podem continuar customizados;
-- a antiga tonalidade `blue` da API legada do chart é renderizada como cinza intermediário para eliminar azul decorativo sem quebrar consumidores.
+### Fotos de supervisores
+- cards com avatar preservados;
+- upload/remover → Button + PrimeIcons;
+- input de arquivo permanece oculto porque é o controle nativo apropriado;
+- lógica de Supabase/HUB intacta.
 
-## 15. CSS legado
+### Substituições
+- forms → InputText, Dropdown, Checkbox, Button;
+- cards de cobertura preservados;
+- `saveSubstitute` / `saveCoverage` inalterados;
+- titular, substituto, módulo e período continuam obrigatórios;
+- regras de vigência/escopo inalteradas.
+
+## 19. CSS legado
 
 Não remover CSS em massa.
 
-Fluxo obrigatório:
-1. identificar proprietário e consumidores;
+Fluxo:
+1. identificar owner/consumidores;
 2. migrar componente;
-3. fazer design system assumir o controle;
-4. confirmar que não há consumidores restantes;
-5. remover CSS legado.
+3. design system assume o controle;
+4. confirmar consumidores restantes;
+5. remover regra morta.
 
-`src/primereact.css` permanece como bridge carregada por último durante a transição. Ela não deve se transformar em coleção indefinida de exceções; regras devem ser consolidadas e removidas quando o owner final estiver estabelecido.
+Arquivos de consolidação criados no PR incluem:
+- `extra-cost-alignment.css`;
+- `extra-cost-final-polish.css`;
+- `fca-prime-list.css`;
+- `fca-prime-controls.css`;
+- `admin-prime.css`.
 
-## 16. Build e deploy — Gate 0
+`src/primereact.css` continua como bridge de compatibilidade. A limpeza final deve ser conservadora e não é motivo para reabrir componentes já homologados visualmente.
 
-O projeto não possuía `package-lock.json` e o Cloudflare passou a falhar antes do build em `npm install`, com erro do Arborist `Cannot read properties of null (reading 'edgesOut')`.
+## 20. Build/deploy e checkpoints
 
-Foi comprovado que o problema não nasceu da modernização: o baseline `b004e9c` falhou com a mesma árvore que já havia sido implantada com sucesso anteriormente.
+O projeto não possui `package-lock.json` oficial. O Cloudflare chegou a falhar no `npm install` por erro do Arborist (`Cannot read properties of null (reading 'edgesOut')`) inclusive no baseline.
 
-Mitigação versionada aplicada em `.npmrc`:
+Mitigação versionada em `.npmrc`:
 
 ```ini
 legacy-peer-deps=true
@@ -331,91 +416,89 @@ fund=false
 audit=false
 ```
 
-Após essa mitigação, o Cloudflare voltou a instalar dependências, executar o build e publicar previews.
+Não criar lockfile manualmente. Somente aceitar lockfile gerado por npm real em ambiente confiável.
 
-Heads já comprovadamente verdes após o Gate 0:
+Checkpoints relevantes comprovadamente verdes no Cloudflare durante o PR #69:
 - `9227adf` — estabilização da instalação;
-- `e382a76` — shell/tokens modernizados;
-- `5ff96d7` — Badge em PrimeReact Tag;
-- `8154324` — `SimpleLineChart` em PrimeReact Chart + Chart.js.
+- `e382a76` — shell/tokens;
+- `8154324` — Chart.js/PrimeReact Chart;
+- `6f0ea13594870716c775652e056b858117c832fb` — Home/KPIs com tabela e gráficos padronizados;
+- `6209d2bee1b39a170521750a70ea5a1bf0078b49` — Supervisores/Depositantes;
+- `94c20411d1665b1bec569fa252802d78b59ed169` — Financeiro/listagem FCA;
+- `d7f867517e1b2bc3f940f777e7b6d5c3bc658b0b` — FCA/Admin/MFA;
+- `fd9dbd4588c887e55eb50ec92e5108cbf6bc64ee` — auditoria de resíduos, validação obrigatória e feedback global.
 
-Ainda não existe lockfile oficial. Isso permanece como dívida de reprodutibilidade e deve ser resolvido somente com lockfile gerado por npm real, nunca manualmente inventado.
+Preview verde do checkpoint `fd9dbd4`:
+- `https://63267c4e.bi-logistico-v2.pages.dev`
+- branch preview: `https://feature-frontend-modernizati.bi-logistico-v2.pages.dev`
 
-## 17. Sequência de execução atualizada
+O build do Cloudflare executa `npm run build` (`tsc -b && vite build`), portanto é o compile gate atual. O script `npm test` existe, mas não há workflow de GitHub Actions comprovadamente executando Vitest neste PR; não afirmar que testes unitários passaram sem execução explícita.
 
-1. diagnóstico, C4 e memória — concluído;
-2. Gate 0 do Cloudflare/npm — mitigado e validado;
-3. PrimeReact / PrimeIcons / Chart.js — dependências e provider concluídos;
-4. tokens e bridge PrimeReact — fundação concluída, continuará refinamento;
-5. login / recuperação — primeira migração concluída;
-6. shell/sidebar/topbar — primeira migração concluída;
-7. filtros globais — migração para Dropdown em validação;
-8. componentes compartilhados — Badge, Chip e SearchField em andamento;
-9. charts comuns — `SimpleLineChart` concluído tecnicamente;
-10. Visão Geral e KPIs — próxima onda visual;
-11. Supervisores e Depositantes;
-12. Financeiro;
-13. FCA;
-14. Administração;
-15. DataTable / formulários / dialogs por superfície;
-16. auditoria mobile/desktop completa;
-17. limpeza gradual do legado;
-18. homologação final e smoke test.
+## 21. Estado atual da modernização
 
-## 18. Matriz de auditoria obrigatória
+Concluído tecnicamente no branch:
+1. diagnóstico/C4/plano;
+2. Gate 0 npm/Cloudflare;
+3. PrimeReact styled + PrimeIcons + Chart.js;
+4. design tokens e shell;
+5. Login / primeiro acesso / redefinição;
+6. filtros globais;
+7. Home;
+8. KPIs;
+9. Supervisores;
+10. Depositantes;
+11. Financeiro;
+12. FCA lista/detalhe/novo/edição;
+13. Administração (Acessos, Fotos, Substituições);
+14. MFA visual;
+15. estados globais/loading/error;
+16. tabelas principais + record cards mobile;
+17. gráficos comuns;
+18. remoção da dependência runtime de Material Symbols;
+19. auditoria de changed files sem backend/domínio.
 
-Antes de concluir a migração, revisar cada tela com as colunas:
-- tela;
-- status da migração;
-- componentes PrimeReact;
-- componentes legados;
-- CSS legado;
-- problemas visuais;
-- problemas mobile;
-- problemas desktop/notebook;
-- ação necessária.
+Pendente antes de sair de Draft:
+- homologação visual/funcional manual do preview atual em desktop/notebook/tablet/mobile;
+- smoke test dos fluxos principais, especialmente FCA e Administração;
+- executar testes Vitest se houver ambiente/tooling disponível;
+- checar mergeabilidade real contra `main` no head final e resolver apenas conflitos reais;
+- reconciliar documentação final se houver correções de homologação;
+- autorização explícita do usuário para tirar o PR de Draft;
+- autorização explícita separada para merge.
 
-Nenhuma tela é considerada concluída sem essa revisão.
+## 22. Matriz de homologação final
 
-## 19. Critério de tela concluída
+Validar no preview, sem alterar regra:
 
-Uma tela somente pode ser marcada como concluída quando:
-- funcionalidade original estiver preservada;
-- regras de negócio não tiverem sido alteradas;
-- componentes principais estiverem padronizados;
-- desktop/notebook/tablet/mobile estiverem corretos;
-- não houver overflow inadequado;
-- loading/empty/error estiverem corretos;
-- tokens forem usados;
-- labels de gráficos não se sobrepuserem;
-- não houver visual legado injustificado;
-- build e testes passarem no head exato validado;
-- preview estiver disponível quando aplicável.
+| Superfície | O que verificar |
+|---|---|
+| Login/SetPassword | alinhamento de ícones, responsividade, primeiro acesso, recuperação |
+| Shell | sidebar desktop/mobile, topbar, focus/ESC, logout |
+| Filtros | Período/Supervisor/Módulo, limpar dimensões, FCA período próprio |
+| Home | cards sem rail, cores semânticas, p.p. por sinal, chart, financeiro |
+| KPIs | cards, inventário, Chart.js, DataTable, mobile records |
+| Supervisores | cards de carteira, visão 360º, DataTable, FCA pendentes |
+| Depositantes | busca, DataTable/mobile, 360º, chart, financeiro/FCA |
+| Financeiro | consolidado, outras receitas, exceção de despesas, DataTable |
+| FCA lista | busca/status/período, DataTable/mobile, navegação |
+| FCA novo/edição | required, histórico, ações 1:N, cobertura, salvar/cancelar |
+| FCA detalhe | status derivado, ações, auditoria, retorno contextual |
+| Admin Acessos | Owner/Admin, filtro, confirmação, DataTable/mobile |
+| Admin Fotos | upload/substituição/remoção e fallback HUB |
+| Admin Substituições | cadastro, cobertura, módulo, vigência, edição |
+| MFA | setup/challenge AAL2 sem regressão |
 
-## 20. Git e merge
+## 23. Git e merge
 
-Regras obrigatórias desta modernização:
+Regras obrigatórias:
 - nunca desenvolver diretamente em `main`;
-- usar a branch `feature/frontend-modernization-primereact`;
-- commits pequenos e descritivos;
-- manter o PR #69 em Draft durante toda a modernização;
+- usar `feature/frontend-modernization-primereact`;
+- commits pequenos e auditáveis;
+- PR #69 permanece Draft durante homologação;
 - NÃO fazer merge parcial;
 - NÃO fazer merge automático;
-- só sair de Draft quando toda a modernização estiver concluída e auditada;
-- merge somente após autorização explícita do usuário;
-- nunca afirmar que build/test/deploy está verde sem validar o head exato.
+- só sair de Draft após auditoria e autorização explícita;
+- merge somente após nova autorização explícita;
+- nunca afirmar build/test/deploy verde sem validar o head exato.
 
-Cada push da branch pode gerar Preview no Cloudflare. Isso não equivale a produção. O merge em `main` é tratado como ação de release e permanece bloqueado até homologação completa.
-
-## 21. Próximos gates
-
-- validar o head mais recente após Dropdown/Chip/SearchField;
-- padronizar wrappers PrimeReact restantes somente onde houver ganho real;
-- iniciar migração controlada das tabelas, preservando record cards mobile;
-- migrar formulários e dialogs por fluxo, sem alterar regras;
-- revisar os demais charts artesanais e barras CSS;
-- executar matriz de auditoria completa;
-- reconciliar/remover CSS legado somente após último consumidor;
-- gerar lockfile real quando houver ambiente npm confiável;
-- validar build/test/preview no head final;
-- solicitar autorização explícita antes do merge.
+Preview não é produção. O merge em `main` é ação de release.
