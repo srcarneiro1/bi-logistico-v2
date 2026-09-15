@@ -1,5 +1,5 @@
 /* FCA — cards selecionáveis alinhados ao padrão final do Extra Cost Control.
-   Carregado por último para neutralizar regras legadas da variante filters. */
+   Carregado pela própria FcaListPage para neutralizar regras legadas da variante filters. */
 
 .fca-page .ui-summary-metrics-filters.nx-prime-metrics{
   gap:10px!important;
@@ -76,21 +76,26 @@
   line-height:1!important;
 }
 
-/* Mesmo hover do Extra Cost: preserva a semântica do card. */
-.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric:hover:not(:disabled){
+/* Hover só atua em cards não selecionados. O estado selecionado nunca é apagado pelo ponteiro. */
+.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric:hover:not(:disabled):not(.is-active):not([aria-pressed="true"]){
   background:var(--metric-bg)!important;
   border-color:var(--metric-border)!important;
   box-shadow:0 8px 22px rgba(18,24,34,.07)!important;
   filter:brightness(.987)!important;
 }
 
-/* Seleção final do Extra Cost: borda/ring vermelho sem trocar a anatomia ou a cor semântica. */
+/* Seleção persistente: borda/ring vermelho sem trocar a anatomia ou a cor semântica. */
 .fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric.is-active,
-.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric[aria-pressed="true"]{
+.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric[aria-pressed="true"],
+.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric.is-active:hover,
+.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric[aria-pressed="true"]:hover,
+.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric.is-active:active,
+.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric[aria-pressed="true"]:active{
   background:var(--metric-bg)!important;
   border-color:var(--unilog-red)!important;
   border-left-color:var(--unilog-red)!important;
   box-shadow:0 0 0 3px rgba(219,8,18,.09),var(--unilog-shadow)!important;
+  filter:none!important;
 }
 
 .fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric.is-active .ui-summary-metric-icon,
