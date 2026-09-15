@@ -16,7 +16,9 @@
 .finance-page{display:grid;gap:var(--space-4)}
 .finance-page .page-header{margin-bottom:0}
 
-.finance-hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,.7fr);gap:0;border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card);overflow:hidden}
+.finance-hero.p-card{overflow:hidden}
+.finance-hero.p-card>.p-card-body{height:100%;padding:0}
+.finance-hero.p-card>.p-card-body>.p-card-content{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,.7fr);gap:0;height:100%;padding:0}
 .finance-hero-main,.finance-hero-attainment{display:grid;gap:5px;padding:22px 24px}
 .finance-hero-main{border-right:1px solid var(--border-default)}
 .finance-hero span{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-secondary)}
@@ -51,7 +53,7 @@
 .finance-expenses-mobile-records{display:none}
 
 @media(max-width:900px){
-  .finance-hero{grid-template-columns:1fr}
+  .finance-hero.p-card>.p-card-body>.p-card-content{grid-template-columns:1fr}
   .finance-hero-main{border-right:0;border-bottom:1px solid var(--border-default)}
   .finance-depositors-panel .revenue-row{grid-template-columns:minmax(150px,.9fr) minmax(240px,1.4fr) 100px;gap:12px}
 }
