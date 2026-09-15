@@ -54,31 +54,39 @@ export function SetPasswordPage({ onComplete }: SetPasswordPageProps) {
 
   return (
     <main className="login-page">
-      <div className="login-shell">
-        <section className="login-brand-panel" aria-label="BI Logístico Unilog">
-          <img src={BRAND_LOGO} alt="Unilog Express" />
-          <div>
-            <span>PERFORMANCE OPERACIONAL</span>
-            <h1>BI Logístico</h1>
-            <p>Defina sua senha pessoal para concluir o acesso ao ambiente.</p>
+      <section className="login-shell" aria-labelledby="set-password-heading">
+        <aside className="login-brand-panel" aria-label="BI Logístico Unilog">
+          <div className="login-brand-topline">
+            <img src={BRAND_LOGO} alt="Unilog Express" />
+            <span className="login-product-chip">BI Logístico V2</span>
           </div>
-          <small>Unilog Express · V2</small>
-        </section>
 
-        <section className="login-card" aria-labelledby="set-password-heading">
+          <div className="login-brand-copy">
+            <span className="login-overline login-overline-light">SEGURANÇA DA CONTA</span>
+            <h1>Seu acesso começa por uma credencial pessoal e segura.</h1>
+            <p>Defina sua senha para concluir a ativação e liberar o ambiente de indicadores e gestão operacional.</p>
+          </div>
+
+          <div className="login-proof">
+            <span><i className="pi pi-shield" aria-hidden="true" /> Link validado</span>
+            <span><i className="pi pi-lock" aria-hidden="true" /> Senha pessoal</span>
+          </div>
+        </aside>
+
+        <section className="login-form-panel">
           <div className="login-heading">
-            <span>SEGURANÇA DA CONTA</span>
+            <span className="login-overline">DEFINIÇÃO DE SENHA</span>
             <h2 id="set-password-heading">Definir nova senha</h2>
             <p>Crie uma senha com pelo menos 8 caracteres. Ela será usada nos próximos acessos.</p>
           </div>
 
-          <form onSubmit={submit}>
+          <form className="login-form" onSubmit={submit}>
             <label htmlFor="new-password">Nova senha</label>
             <Password
               inputId="new-password"
               value={password}
               onChange={(event) => setPassword(event.target.value)}
-              placeholder="Nova senha"
+              placeholder="Mínimo de 8 caracteres"
               required
               minLength={8}
               autoComplete="new-password"
@@ -107,14 +115,17 @@ export function SetPasswordPage({ onComplete }: SetPasswordPageProps) {
 
             <Button
               label="Definir senha e entrar"
-              loading={loading}
+              icon={loading ? 'pi pi-spin pi-spinner' : 'pi pi-check'}
+              iconPos="right"
               type="submit"
-              className="button-primary login-submit"
+              className="login-primary-button"
+              disabled={loading}
             />
             <Button
               label="Cancelar e voltar ao login"
+              icon="pi pi-arrow-left"
               type="button"
-              className="button-ghost"
+              text
               onClick={() => void cancel()}
               disabled={loading}
             />
@@ -123,10 +134,11 @@ export function SetPasswordPage({ onComplete }: SetPasswordPageProps) {
           {error && <Message severity="error" text={error} className="login-message" />}
 
           <div className="login-security-note">
-            O link recebido por e-mail é temporário e serve apenas para validar a identidade antes da troca de senha.
+            <i className="pi pi-info-circle" aria-hidden="true" />
+            <span>O link recebido por e-mail é temporário e serve apenas para validar sua identidade antes da troca de senha.</span>
           </div>
         </section>
-      </div>
+      </section>
     </main>
   )
 }
