@@ -1,4 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Button } from 'primereact/button'
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
 import { FcaCompactList } from '../components/FcaCompactList'
 import { PageHeader } from '../components/PageHeader'
 import { SimpleLineChart } from '../components/SimpleLineChart'
@@ -38,8 +41,9 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
    const statuses=[metricStatus(op?.producaoPct,metaProd),metricStatus(op?.recebimentoPct,metaRec),metricStatus(inv?.totalPct,metaInv)]
    const status=statuses.reduce((a,b)=>rank[b]>rank[a]?b:a,'ok' as MetricStatus)
    const sup=hub.supervisors.find(s=>s.supervisorId===d.supervisorId)
-   return{d,op,inv,status,sup}
+   return{d,op,inv,status,sup,rowId:d.cnpj}
  }).sort((a,b)=>rank[b.status]-rank[a.status]||a.d.nome.localeCompare(b.d.nome,'pt-BR')),[baseRows,hub.facts.kpiOperacional,hub.facts.kpiInventarioDepositante,hub.supervisors,metaProd,metaRec,metaInv,selectedPeriodKey])
+ type DepositorRow=(typeof rows)[number]
  useEffect(()=>{if(selectedCnpj&&!rows.some(r=>r.d.cnpj===selectedCnpj))setSelectedCnpj('')},[filters.supervisorId,filters.moduloId,rows,selectedCnpj])
  const selected=hub.depositantes.find(d=>d.cnpj===selectedCnpj&&!isFinancialOnlyRevenue(d.nome))??null
  const supervisor=selected?hub.supervisors.find(s=>s.supervisorId===selected.supervisorId):null
@@ -57,6 +61,17 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
  const attainment=finance?.receitaPlanejada?((finance.receitaRealizada??0)/finance.receitaPlanejada):null
  const relatedFcas=selected?fcas.filter(f=>f.depositante_cnpj===selected.cnpj&&(!selectedPeriodKey||f.data_reuniao.slice(0,7)===selectedPeriodKey)).sort((a,b)=>Number(deriveFcaDisplayStatus(b)==='VENCIDO')-Number(deriveFcaDisplayStatus(a)==='VENCIDO')||b.data_reuniao.localeCompare(a.data_reuniao)||b.numero-a.numero):[]
  const criticalCount=rows.filter(r=>r.status==='crit').length,warningCount=rows.filter(r=>r.status==='warn').length,stableCount=rows.filter(r=>r.status==='ok').length
+ const nameBody=(row:DepositorRow)=>{
+   const isSelected=selectedCnpj===row.d.cnpj
+   return <Button text className="nx-table-link depositor-open-button" aria-label={`Abrir visão de ${row.d.nome}`} aria-expanded={isSelected} aria-controls={DEPOSITOR_DETAIL_ID} onClick={event=>{event.stopPropagation();setSelectedCnpj(row.d.cnpj)}}><span className="table-primary"><strong>{row.d.nome}</strong><span>{row.d.codAllStrategy??'Sem código AllStrategy'}</span></span></Button>
+ }
+ const supervisorBody=(row:DepositorRow)=><span>{row.sup?.nomeExibicao??row.d.supervisorId}</span>
+ const moduleBody=(row:DepositorRow)=><Chip>{row.d.moduloId}</Chip>
+ const prodBody=(row:DepositorRow)=><span className={`metric-cell metric-cell-${metricStatus(row.op?.producaoPct,metaProd)}`}>{pct(row.op?.producaoPct)}</span>
+ const recBody=(row:DepositorRow)=><span className={`metric-cell metric-cell-${metricStatus(row.op?.recebimentoPct,metaRec)}`}>{pct(row.op?.recebimentoPct)}</span>
+ const invBody=(row:DepositorRow)=><span className={`metric-cell metric-cell-${metricStatus(row.inv?.totalPct,metaInv)}`}>{pct(row.inv?.totalPct)}</span>
+ const statusBody=(row:DepositorRow)=><MetricStatusBadge status={row.status} label={statusLabel[row.status]}/>
+ const cnpjBody=(row:DepositorRow)=><span className="mono">{row.d.cnpj}</span>
  return <section className="depositors-discovery">
  <PageHeader eyebrow="CARTEIRA" title="Depositantes" description="Selecione um cliente para abrir a visão 360º do período, com operação, resultado e FCAs relacionados."/>
  <PageToolbar ariaLabel="Ferramentas de depositantes" search={<SearchField ariaLabel="Buscar depositante" value={search} onChange={setSearch} placeholder="Buscar por nome, CNPJ ou código…"/>}/>
@@ -72,7 +87,7 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
        {label:'FCAs no período',value:relatedFcas.length},
        {label:'Atingimento financeiro',value:attainment==null?'Sem planejamento':pct(attainment)},
      ]}
-     actions={<button className="button" onClick={()=>setSelectedCnpj('')}>Fechar visão</button>}
+     actions={<Button label="Fechar visão" icon="pi pi-times" outlined severity="secondary" onClick={()=>setSelectedCnpj('')}/>} 
    />
    <DetailMetrics items={[
      {key:'prod',label:'Produção',value:pct(opCurrent?.producaoPct),detail:`Meta ${pct(metaProd?.metaPct)}`,tone:metricStatus(opCurrent?.producaoPct,metaProd)==='crit'?'danger':metricStatus(opCurrent?.producaoPct,metaProd)==='warn'?'warning':metricStatus(opCurrent?.producaoPct,metaProd)==='ok'?'success':'neutral'},
@@ -81,7 +96,7 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
      {key:'rev',label:'Receita realizada',value:money(finance?.receitaRealizada),detail:attainment==null?'Sem planejamento':`${pct(attainment)} do planejado`,tone:attainment==null?'neutral':attainment>=1?'success':attainment<.95?'danger':'warning'},
    ]}/>
    <div className="depositor-grid"><Panel as="article"><PanelHeader eyebrow="HISTÓRICO ATÉ O PERÍODO" title="Evolução operacional"/><div className="panel-body"><SimpleLineChart series={historySeries}/></div></Panel><Panel as="article"><PanelHeader eyebrow="FINANCEIRO" title="Resultado do período"/><div className="finance-summary"><div><span>Planejado</span><strong>{money(finance?.receitaPlanejada)}</strong></div><div><span>Realizado</span><strong>{money(finance?.receitaRealizada)}</strong></div><div><span>Atingimento</span><strong className={attainment!=null&&attainment>=1?'text-ok':attainment!=null&&attainment<.95?'text-crit':''}>{pct(attainment)}</strong></div></div></Panel></div>
-   <Panel as="article" className="depositor-fcas"><PanelHeader eyebrow="FCA DO PERÍODO" title="Fatos, causas e ações do cliente" trailing={<Chip>{relatedFcas.length} registro(s)</Chip>}/>{fcaLoading?<Skeleton lines={4}/>:relatedFcas.length?<FcaCompactList items={relatedFcas.slice(0,8)} title={f=>`FCA #${String(f.numero).padStart(5,'0')}`} meta={f=>`${new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')} · ${f.indicador_nome}`} onOpen={()=>setFcaReturnContext({type:'depositante',cnpj:selected.cnpj})}/>:<EmptyState icon="fact_check" title="Nenhum FCA no período" description="Este depositante não possui FCA no período selecionado."/>}</Panel>
+   <Panel as="article" className="depositor-fcas"><PanelHeader eyebrow="FCA DO PERÍODO" title="Fatos, causas e ações do cliente" trailing={<Chip>{relatedFcas.length} registro(s)</Chip>}/>{fcaLoading?<Skeleton lines={4}/>:relatedFcas.length?<FcaCompactList items={relatedFcas.slice(0,8)} title={f=>`FCA #${String(f.numero).padStart(5,'0')}`} meta={f=>`${new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')} · ${f.indicador_nome}`} onOpen={()=>setFcaReturnContext({type:'depositante',cnpj:selected.cnpj})}/>:<EmptyState icon="check_circle" title="Nenhum FCA no período" description="Este depositante não possui FCA no período selecionado."/>}</Panel>
  </article>}
  <SummaryMetrics ariaLabel="Resumo dos depositantes no escopo" items={[
    {key:'depositors',label:'Depositantes',value:rows.length,detail:'visíveis no filtro',icon:'inventory_2'},
@@ -90,6 +105,25 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
    {key:'stable',label:'Estáveis',value:stableCount,detail:'dentro da meta',tone:'success',icon:'check_circle'},
  ]}/>
  <SectionHeader eyebrow="CARTEIRA" title="Performance por depositante" description="Ordenação prioriza clientes críticos e, em seguida, os casos em atenção." trailing={<Chip>{rows.length} resultado(s)</Chip>}/>
- <div className="table-wrap depositors-table-wrap"><table className="depositor-table responsive-data-table"><thead><tr><th scope="col">Depositante</th><th scope="col">Supervisor</th><th scope="col">Módulo</th><th scope="col">Produção</th><th scope="col">Recebimento</th><th scope="col">Inventário</th><th scope="col">Status</th><th scope="col">CNPJ</th></tr></thead><tbody>{rows.map(({d,op,inv,status,sup})=>{const isSelected=selectedCnpj===d.cnpj;return <tr key={d.cnpj} className={isSelected?'depositor-row-selected':''} onClick={()=>setSelectedCnpj(d.cnpj)}><td data-label="Depositante" data-primary="true"><button type="button" className="table-link depositor-open-button" onClick={event=>{event.stopPropagation();setSelectedCnpj(d.cnpj)}} aria-label={`Abrir visão de ${d.nome}`} aria-expanded={isSelected} aria-controls={DEPOSITOR_DETAIL_ID}><span className="table-primary"><strong>{d.nome}</strong><span>{d.codAllStrategy??'Sem código AllStrategy'}</span></span></button></td><td data-label="Supervisor">{sup?.nomeExibicao??d.supervisorId}</td><td data-label="Módulo"><span className="module-badge">{d.moduloId}</span></td><td data-label="Produção"><span className={`metric-cell metric-cell-${metricStatus(op?.producaoPct,metaProd)}`}>{pct(op?.producaoPct)}</span></td><td data-label="Recebimento"><span className={`metric-cell metric-cell-${metricStatus(op?.recebimentoPct,metaRec)}`}>{pct(op?.recebimentoPct)}</span></td><td data-label="Inventário"><span className={`metric-cell metric-cell-${metricStatus(inv?.totalPct,metaInv)}`}>{pct(inv?.totalPct)}</span></td><td data-label="Status"><MetricStatusBadge status={status} label={statusLabel[status]}/></td><td data-label="CNPJ" className="mono">{d.cnpj}</td></tr>})}{!rows.length&&<tr><td colSpan={8} className="table-empty">Nenhum depositante encontrado no escopo.</td></tr>}</tbody></table></div>
+ <div className="depositors-prime-table" aria-label="Performance por depositante">
+   <DataTable value={rows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table" rowClassName={(row:DepositorRow)=>row.d.cnpj===selectedCnpj?'depositor-row-selected':''} onRowClick={event=>setSelectedCnpj((event.data as DepositorRow).d.cnpj)} emptyMessage="Nenhum depositante encontrado no escopo." tableStyle={{minWidth:'1020px'}}>
+     <Column header="Depositante" body={nameBody}/>
+     <Column header="Supervisor" body={supervisorBody}/>
+     <Column header="Módulo" body={moduleBody}/>
+     <Column header="Produção" body={prodBody}/>
+     <Column header="Recebimento" body={recBody}/>
+     <Column header="Inventário" body={invBody}/>
+     <Column header="Status" body={statusBody}/>
+     <Column header="CNPJ" body={cnpjBody}/>
+   </DataTable>
+ </div>
+ <div className="depositors-mobile-records" role="list" aria-label="Performance por depositante">
+   {rows.map(row=>{const isSelected=selectedCnpj===row.d.cnpj;return <article key={row.rowId} className={`depositor-mobile-record ${isSelected?'is-selected':''}`} role="listitem" onClick={()=>setSelectedCnpj(row.d.cnpj)}>
+     <header><div><Button text className="nx-table-link depositor-open-button" aria-expanded={isSelected} aria-controls={DEPOSITOR_DETAIL_ID} onClick={event=>{event.stopPropagation();setSelectedCnpj(row.d.cnpj)}}><span className="table-primary"><strong>{row.d.nome}</strong><span>{row.d.codAllStrategy??'Sem código AllStrategy'}</span></span></Button><div className="depositor-mobile-context"><Chip>{row.d.moduloId}</Chip><span>{row.sup?.nomeExibicao??row.d.supervisorId}</span></div></div>{statusBody(row)}</header>
+     <div className="depositor-mobile-metrics"><div><span>Produção</span>{prodBody(row)}</div><div><span>Recebimento</span>{recBody(row)}</div><div><span>Inventário</span>{invBody(row)}</div></div>
+     <footer><span>CNPJ</span><span className="mono">{row.d.cnpj}</span></footer>
+   </article>})}
+   {!rows.length&&<EmptyState icon="search" title="Nenhum depositante encontrado" description="Ajuste a busca ou os filtros para consultar outro recorte."/>}
+ </div>
  </section>
 }
