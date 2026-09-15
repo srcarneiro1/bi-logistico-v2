@@ -281,9 +281,11 @@ Regras preservadas:
 Padrão canônico:
 - PrimeReact DataTable/Column;
 - classe `nx-prime-table`;
+- wrapper sem borda/raio próprio dentro dos painéis;
+- header de 42px, corpo de 46px e padding 12×14;
 - header claro, compacto e uppercase;
-- hover sutil;
-- Tags/Badges padronizados;
+- hover e estados de ordenação padronizados;
+- Tags/Badges de 24px;
 - record cards explícitos no mobile quando superiores ao scroll horizontal.
 
 Telas já migradas:
@@ -300,15 +302,17 @@ Não forçar DataTable em superfícies onde o card é semanticamente melhor, com
 
 PrimeReact Chart + Chart.js é o padrão para dados com semântica de gráfico.
 
-`SimpleLineChart` foi migrado do SVG artesanal e mantém interface pública/dados dos consumidores.
+`SimpleLineChart` foi migrado do SVG artesanal e mantém interface pública/dados dos consumidores. É o único wrapper PrimeReact Chart do BI neste ciclo e atende Home, KPIs e visão 360º de Depositantes.
 
 Padrão consolidado:
 - `responsive: true`;
 - `maintainAspectRatio: false`;
-- stage próximo de 300px para gráficos comuns;
+- stage final de 248px no desktop, 238px em telas intermediárias e 224px no mobile;
+- o próprio chart stage é owner do padding, sem padding externo duplicado;
 - tooltip grafite/ink com texto branco;
 - ticks/grid discretos;
 - vermelho/grafite e cores semânticas;
+- pontos 2.5px e hover 4px, linha 2px;
 - legendas limpas;
 - labels longos tratados sem colisão;
 - mobile fluido.
@@ -324,13 +328,13 @@ Faixas de referência:
 - 320–767.
 
 Padrões implementados:
-- sidebar vira drawer no mobile;
+- sidebar vira drawer em `<=1180px`, alinhado ao breakpoint canônico do Extra Cost;
 - `100dvh`/safe areas na autenticação;
 - filtros reorganizados;
 - grids KPI 4/3/2/1 conforme superfície;
 - DataTables extensas viram record cards nas principais telas;
 - charts fluidos;
-- ações PrimeReact ocupam largura útil no mobile quando necessário;
+- ações PrimeReact ocupam largura útil no mobile quando necessário, inclusive PageToolbar, EmptyState e DetailHero;
 - FCA forms e Admin forms viram uma coluna;
 - MFA adapta largura e CTA;
 - shell mantém focus trap, Escape, bloqueio de scroll, retorno de foco e fechamento por navegação.
@@ -400,7 +404,10 @@ Arquivos de consolidação criados no PR incluem:
 - `extra-cost-final-polish.css`;
 - `fca-prime-list.css`;
 - `fca-prime-controls.css`;
-- `admin-prime.css`.
+- `admin-prime.css`;
+- `table-final-polish.css`;
+- `chart-final-polish.css`;
+- `responsive-final-polish.css`.
 
 `src/primereact.css` continua como bridge de compatibilidade. A limpeza final deve ser conservadora e não é motivo para reabrir componentes já homologados visualmente.
 
@@ -418,7 +425,7 @@ audit=false
 
 Não criar lockfile manualmente. Somente aceitar lockfile gerado por npm real em ambiente confiável.
 
-Checkpoints relevantes comprovadamente verdes no Cloudflare durante o PR #69:
+Checkpoints relevantes comprovadamente verdes durante o PR #69:
 - `9227adf` — estabilização da instalação;
 - `e382a76` — shell/tokens;
 - `8154324` — Chart.js/PrimeReact Chart;
@@ -426,13 +433,17 @@ Checkpoints relevantes comprovadamente verdes no Cloudflare durante o PR #69:
 - `6209d2bee1b39a170521750a70ea5a1bf0078b49` — Supervisores/Depositantes;
 - `94c20411d1665b1bec569fa252802d78b59ed169` — Financeiro/listagem FCA;
 - `d7f867517e1b2bc3f940f777e7b6d5c3bc658b0b` — FCA/Admin/MFA;
-- `fd9dbd4588c887e55eb50ec92e5108cbf6bc64ee` — auditoria de resíduos, validação obrigatória e feedback global.
+- `fd9dbd4588c887e55eb50ec92e5108cbf6bc64ee` — auditoria de resíduos, validação obrigatória e feedback global;
+- `348ba2d859008704f30761586b635371fc8d4b08` — tabelas e gráficos finais, com GitHub Actions e Cloudflare Pages verdes;
+- `c9f08bc75ac2b2690fc6d1737827c7e56c9c8599` — reconciliação responsiva final, com GitHub Actions e Cloudflare Pages verdes.
 
-Preview verde do checkpoint `fd9dbd4`:
-- `https://63267c4e.bi-logistico-v2.pages.dev`
+Preview verde do checkpoint responsivo `c9f08bc`:
+- `https://8d6ca432.bi-logistico-v2.pages.dev`
 - branch preview: `https://feature-frontend-modernizati.bi-logistico-v2.pages.dev`
 
-O build do Cloudflare executa `npm run build` (`tsc -b && vite build`), portanto é o compile gate atual. O script `npm test` existe, mas não há workflow de GitHub Actions comprovadamente executando Vitest neste PR; não afirmar que testes unitários passaram sem execução explícita.
+O workflow GitHub Actions `test-and-build` está ativo e foi comprovadamente executado nos checkpoints finais. Ele instala dependências, executa `npm test` e depois `npm run build`. O Vitest foi efetivamente executado com sucesso, incluindo os testes de filtros de dashboard e cobertura/HUB existentes no repositório. O Cloudflare Pages também executa o build e permanece como gate adicional de deploy/preview.
+
+Nunca inferir sucesso futuro desses resultados: build/test/deploy devem ser revalidados no head exato após qualquer novo commit.
 
 ## 21. Estado atual da modernização
 
@@ -455,14 +466,16 @@ Concluído tecnicamente no branch:
 16. tabelas principais + record cards mobile;
 17. gráficos comuns;
 18. remoção da dependência runtime de Material Symbols;
-19. auditoria de changed files sem backend/domínio.
+19. auditoria de changed files sem backend/domínio;
+20. padronização final de tabelas e gráficos;
+21. reconciliação responsiva final de shell e ações PrimeReact;
+22. execução comprovada de Vitest/build no GitHub Actions e deploy no Cloudflare.
 
 Pendente antes de sair de Draft:
 - homologação visual/funcional manual do preview atual em desktop/notebook/tablet/mobile;
-- smoke test dos fluxos principais, especialmente FCA e Administração;
-- executar testes Vitest se houver ambiente/tooling disponível;
+- smoke funcional manual dos fluxos principais, especialmente FCA e Administração;
 - checar mergeabilidade real contra `main` no head final e resolver apenas conflitos reais;
-- reconciliar documentação final se houver correções de homologação;
+- reconciliar documentação apenas se novas correções de homologação forem necessárias;
 - autorização explícita do usuário para tirar o PR de Draft;
 - autorização explícita separada para merge.
 
