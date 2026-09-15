@@ -1,10 +1,15 @@
 # MEMÓRIA DO PROJETO — BI LOGÍSTICO V2
 
-Última atualização: 2026-09-14
+Última atualização: 2026-09-15
 
 ## 1. Objetivo desta memória
 
 Este arquivo é a fonte de verdade da modernização do frontend do BI Logístico V2. Ele deve ser atualizado ao longo da migração e usado para evitar decisões contraditórias entre etapas, chats e pull requests.
+
+Documentos complementares obrigatórios:
+- `docs/PRIMEREACT_DESIGN_SYSTEM.md` — fonte de verdade visual;
+- `docs/EXTRA_COST_CONTROL_C4.puml` — C4 da referência Extra Cost e arquitetura alvo;
+- `docs/EXTRA_COST_REFERENCE_AND_BI_MIGRATION_PLAN.md` — comparação, esforço, riscos, benefícios e gates.
 
 ## 2. Baseline confirmado
 
@@ -18,24 +23,31 @@ Baseline da migração:
 Branch da modernização:
 - `feature/frontend-modernization-primereact`
 
+Pull request:
+- PR #69 — `Modernização frontend: PrimeReact, design system e responsividade`
+- deve permanecer Draft até a conclusão integral da modernização;
+- não pode ser mergeado parcialmente ou automaticamente.
+
 ## 3. Decisão arquitetural aprovada
 
-A modernização NÃO migrará o projeto para Next.js.
+A modernização NÃO migrará o BI para Next.js neste PR.
 
-Arquitetura alvo:
+Arquitetura alvo deste ciclo:
 - React
 - TypeScript
 - Vite
 - React Router
-- PrimeReact
-- PrimeIcons
-- Chart.js, preferencialmente via PrimeReact Chart
-- Design System próprio Unilog
-- Cloudflare Pages + Pages Functions mantidos nesta migração
+- PrimeReact 10.9.9
+- PrimeIcons 7
+- Chart.js 4.5.1, preferencialmente via PrimeReact Chart
+- Design System próprio Unilog, alinhado ao Extra Cost Control
+- Cloudflare Pages + Pages Functions mantidos
 - Supabase mantido
 - Apps Script / HUB mantidos
 
-Motivo: o BI é uma aplicação autenticada e operacional. A migração para Next.js não resolve uma necessidade funcional atual e ampliaria o raio de risco envolvendo roteamento, build e deploy sem benefício proporcional.
+O Extra Cost Control é a referência visual e estrutural para componentes, charts, densidade, shell e responsividade, mas não deve ser copiado mecanicamente. O ganho principal vem de PrimeReact + Chart.js + wrappers + design system. O Next.js no Extra Cost é uma decisão de framework independente e não justifica ampliar o raio de risco do BI, que possui malha de rotas reais e rotas dinâmicas de FCA.
+
+Uma eventual migração Vite → Next.js fica deferida para iniciativa independente, após a camada de apresentação estar consolidada.
 
 ## 4. Regra principal de preservação
 
@@ -171,10 +183,12 @@ Preferências:
 - Tooltip
 - Avatar
 - Menu
-- Sidebar/Drawer
+- Sidebar/Drawer quando trouxer ganho real
 - Chart
 
 A identidade visual continuará sendo Unilog, controlada por tokens e wrappers do projeto.
+
+Não substituir um componente customizado apenas para aumentar a contagem de PrimeReact. Componentes executivos, heatmaps, matrizes, record cards e estruturas sem equivalente melhor podem continuar customizados.
 
 ## 10. Estratégia de componentes
 
@@ -186,50 +200,52 @@ Preferir wrappers semânticos do projeto para funções reutilizáveis, permitin
 - menor acoplamento à biblioteca;
 - evolução futura sem reescrever telas.
 
-Exemplos de camadas alvo:
-- `components/ui`
-- `components/layout`
-- `components/forms`
-- `components/data-display`
-- `components/charts`
-- `features/*`
+Wrappers já em modernização:
+- `Badge` → PrimeReact Tag mantendo API do BI;
+- `Chip` → PrimeReact Tag mantendo API do BI;
+- `SearchField` → PrimeReact InputText mantendo API do BI;
+- autenticação → InputText, Password, Button e Message;
+- shell → Avatar, Tag e Dropdown;
+- `SimpleLineChart` → PrimeReact Chart + Chart.js mantendo props e consumidores.
+
+`Panel` continua customizado neste momento porque o BI usa semântica HTML (`article`, `section`, `div`) e não há ganho em eliminar essa semântica apenas para usar `Card`. A decisão pode ser revista por superfície, sem reescrita indiscriminada.
 
 ## 11. Design System alvo
 
-Tokens mínimos obrigatórios:
+Tokens canônicos alinhados à referência Extra Cost:
 
 ### Marca
-- `--brand-primary`
-- `--brand-primary-hover`
-- `--brand-primary-soft`
+- `--brand-primary: #db0812`
+- `--brand-primary-hover: #b8070f`
+- `--brand-primary-soft: #fdecee`
 
 ### Neutros
-- `--ink`
-- `--graphite`
-- `--muted`
-- `--border`
-- `--border-soft`
-- `--canvas`
-- `--surface`
-- `--surface-soft`
+- `--ink: #171b24`
+- `--ink-2: #242a36`
+- `--graphite: #494a56`
+- `--graphite-2: #676d77`
+- `--muted: #8a9099`
+- `--border: #e2e5e9`
+- `--border-soft: #edf0f2`
+- `--canvas: #f5f6f8`
+- `--surface: #ffffff`
+- `--surface-soft: #f8f9fb`
 
 ### Estados
-- `--success`
-- `--warning`
-- `--danger`
-- `--info`
+- `--success: #3f7c59`
+- `--warning: #a87900`
+- `--danger: #c91a23`
+- `--info`: neutro/grafite, não azul decorativo
 
-Também devem ser padronizados:
-- tipografia;
-- espaçamento;
-- radius;
-- sombras;
+Também estão padronizados:
+- radius de controle 10px;
+- radius de card 14px;
+- radius de dialog 18px;
+- sombras discretas;
+- focus ring vermelho suave;
 - tamanhos de controle;
-- foco;
-- hover;
-- disabled;
-- selected;
-- estados de loading/empty/error.
+- spacing;
+- aliases legados preservados durante a transição.
 
 O vermelho Unilog é cor de marca e não deve significar erro por padrão.
 
@@ -253,6 +269,8 @@ No mobile:
 - labels não podem sair da viewport;
 - ações importantes devem permanecer acessíveis.
 
+O shell já mantém focus trap, Escape, bloqueio de scroll do body, retorno de foco e fechamento por navegação existentes.
+
 ## 13. Tabelas
 
 PrimeReact DataTable será adotado onde fizer sentido, com padronização de:
@@ -268,11 +286,13 @@ PrimeReact DataTable será adotado onde fizer sentido, com padronização de:
 
 No mobile, preservar ou melhorar o padrão de cards verticais quando ele for superior a uma tabela horizontalmente rolável.
 
+Não migrar tabelas em massa antes de definir a estratégia DataTable → record card para cada superfície.
+
 ## 14. Gráficos
 
 Preferir PrimeReact Chart + Chart.js quando o dado tiver semântica de gráfico.
 
-Migrar progressivamente implementações SVG/CSS/canvas manuais quando houver ganho claro.
+`SimpleLineChart` já foi migrado de SVG artesanal para PrimeReact Chart + Chart.js sem alterar sua interface pública nem os dados fornecidos por Home, KPIs e Depositantes.
 
 Regras:
 - nenhuma sobreposição de labels;
@@ -280,7 +300,9 @@ Regras:
 - tooltip deve carregar texto completo quando houver truncamento;
 - usar `autoSkip`, rotação, padding e altura dinâmica quando necessário;
 - mobile prioriza legibilidade;
-- não usar cores aleatórias sem semântica.
+- não usar cores aleatórias sem semântica;
+- heatmaps e matrizes podem continuar customizados;
+- a antiga tonalidade `blue` da API legada do chart é renderizada como cinza intermediário para eliminar azul decorativo sem quebrar consumidores.
 
 ## 15. CSS legado
 
@@ -293,30 +315,54 @@ Fluxo obrigatório:
 4. confirmar que não há consumidores restantes;
 5. remover CSS legado.
 
-Pode existir uma folha de transição carregada por último durante a migração, mas ela não pode se transformar em uma coleção permanente de overrides.
+`src/primereact.css` permanece como bridge carregada por último durante a transição. Ela não deve se transformar em coleção indefinida de exceções; regras devem ser consolidadas e removidas quando o owner final estiver estabelecido.
 
-## 16. Sequência de execução
+## 16. Build e deploy — Gate 0
 
-1. baseline e documentação;
-2. PrimeReact / PrimeIcons / Chart.js;
-3. tokens e providers;
-4. login / recuperação / MFA;
-5. shell, sidebar/drawer, topbar e navegação;
-6. componentes compartilhados;
-7. Visão Geral;
-8. KPIs;
-9. Supervisores;
-10. Depositantes;
-11. Financeiro;
-12. FCA;
-13. Administração;
-14. tabelas e comportamento mobile;
-15. gráficos;
-16. auditoria completa;
-17. remoção gradual de legado;
-18. homologação final.
+O projeto não possuía `package-lock.json` e o Cloudflare passou a falhar antes do build em `npm install`, com erro do Arborist `Cannot read properties of null (reading 'edgesOut')`.
 
-## 17. Matriz de auditoria obrigatória
+Foi comprovado que o problema não nasceu da modernização: o baseline `b004e9c` falhou com a mesma árvore que já havia sido implantada com sucesso anteriormente.
+
+Mitigação versionada aplicada em `.npmrc`:
+
+```ini
+legacy-peer-deps=true
+fund=false
+audit=false
+```
+
+Após essa mitigação, o Cloudflare voltou a instalar dependências, executar o build e publicar previews.
+
+Heads já comprovadamente verdes após o Gate 0:
+- `9227adf` — estabilização da instalação;
+- `e382a76` — shell/tokens modernizados;
+- `5ff96d7` — Badge em PrimeReact Tag;
+- `8154324` — `SimpleLineChart` em PrimeReact Chart + Chart.js.
+
+Ainda não existe lockfile oficial. Isso permanece como dívida de reprodutibilidade e deve ser resolvido somente com lockfile gerado por npm real, nunca manualmente inventado.
+
+## 17. Sequência de execução atualizada
+
+1. diagnóstico, C4 e memória — concluído;
+2. Gate 0 do Cloudflare/npm — mitigado e validado;
+3. PrimeReact / PrimeIcons / Chart.js — dependências e provider concluídos;
+4. tokens e bridge PrimeReact — fundação concluída, continuará refinamento;
+5. login / recuperação — primeira migração concluída;
+6. shell/sidebar/topbar — primeira migração concluída;
+7. filtros globais — migração para Dropdown em validação;
+8. componentes compartilhados — Badge, Chip e SearchField em andamento;
+9. charts comuns — `SimpleLineChart` concluído tecnicamente;
+10. Visão Geral e KPIs — próxima onda visual;
+11. Supervisores e Depositantes;
+12. Financeiro;
+13. FCA;
+14. Administração;
+15. DataTable / formulários / dialogs por superfície;
+16. auditoria mobile/desktop completa;
+17. limpeza gradual do legado;
+18. homologação final e smoke test.
+
+## 18. Matriz de auditoria obrigatória
 
 Antes de concluir a migração, revisar cada tela com as colunas:
 - tela;
@@ -331,7 +377,7 @@ Antes de concluir a migração, revisar cada tela com as colunas:
 
 Nenhuma tela é considerada concluída sem essa revisão.
 
-## 18. Critério de tela concluída
+## 19. Critério de tela concluída
 
 Uma tela somente pode ser marcada como concluída quando:
 - funcionalidade original estiver preservada;
@@ -346,25 +392,30 @@ Uma tela somente pode ser marcada como concluída quando:
 - build e testes passarem no head exato validado;
 - preview estiver disponível quando aplicável.
 
-## 19. Git e merge
+## 20. Git e merge
 
 Regras obrigatórias desta modernização:
 - nunca desenvolver diretamente em `main`;
 - usar a branch `feature/frontend-modernization-primereact`;
 - commits pequenos e descritivos;
-- manter um Draft PR durante toda a modernização;
+- manter o PR #69 em Draft durante toda a modernização;
 - NÃO fazer merge parcial;
 - NÃO fazer merge automático;
 - só sair de Draft quando toda a modernização estiver concluída e auditada;
 - merge somente após autorização explícita do usuário;
 - nunca afirmar que build/test/deploy está verde sem validar o head exato.
 
-## 20. Pendências iniciais
+Cada push da branch pode gerar Preview no Cloudflare. Isso não equivale a produção. O merge em `main` é tratado como ação de release e permanece bloqueado até homologação completa.
 
-- criar `docs/PRIMEREACT_DESIGN_SYSTEM.md`;
-- adicionar dependências PrimeReact, PrimeIcons e Chart.js;
-- definir wrappers e provider raiz;
-- mapear tokens atuais para os novos nomes sem quebrar consumidores existentes;
-- criar estratégia de transição CSS;
-- migrar primeiro uma superfície controlada para validar o padrão antes de escalar para todas as telas;
-- manter `PROJECT_STATE.md` apenas como documento histórico até sua eventual reconciliação; esta memória passa a ser a fonte de verdade da modernização.
+## 21. Próximos gates
+
+- validar o head mais recente após Dropdown/Chip/SearchField;
+- padronizar wrappers PrimeReact restantes somente onde houver ganho real;
+- iniciar migração controlada das tabelas, preservando record cards mobile;
+- migrar formulários e dialogs por fluxo, sem alterar regras;
+- revisar os demais charts artesanais e barras CSS;
+- executar matriz de auditoria completa;
+- reconciliar/remover CSS legado somente após último consumidor;
+- gerar lockfile real quando houver ambiente npm confiável;
+- validar build/test/preview no head final;
+- solicitar autorização explícita antes do merge.
