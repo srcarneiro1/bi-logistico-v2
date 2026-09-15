@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { Avatar } from 'primereact/avatar'
+import { Dropdown } from 'primereact/dropdown'
 import { Tag } from 'primereact/tag'
 import { getAvailablePeriods, periodLabel } from '../lib/dashboard'
 import { listFcaPeriods } from '../lib/fca'
@@ -97,6 +98,13 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
   const visiblePeriod=isFcaRoute?(filters.fcaPeriodo==='ALL'?'Todos os meses':periodLabel(filters.fcaPeriodo)):periodLabel(filters.periodo)
   const scope=[visiblePeriod,supervisorName,filters.moduloId].filter(Boolean).join(' · ')||'Escopo completo'
   const accessLabel=isOwner?'OWNER':hub.profile.governanceRole==='ADMIN'?'ADMINISTRADOR':hub.profile.perfil
+  const periodOptions=isFcaList
+    ?[{label:'Todos os meses',value:'ALL'},...fcaPeriods.map(period=>({label:periodLabel(period),value:period}))]
+    :periods.map(period=>({label:period.label,value:period.value}))
+  const supervisorOptions=isOperationalAdmin
+    ?[{label:'Todos os supervisores',value:''},...hub.supervisors.map(supervisor=>({label:supervisor.nomeExibicao,value:supervisor.supervisorId}))]
+    :[{label:hub.profile.nome,value:''}]
+  const moduleOptions=[{label:'Todos os módulos',value:''},...modules.map(module=>({label:module,value:module}))]
 
   function toggleCollapsed(){setCollapsed(v=>{const next=!v;localStorage.setItem('bi-logistico-v2:sidebar',next?'collapsed':'expanded');return next})}
   function resetFilters(){onFiltersChange({...filters,supervisorId:'',moduloId:''})}
@@ -130,9 +138,9 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
       {!contextualRoute&&<div className="filter-toolbar" role="region" aria-label="Filtros globais">
         <div className="filter-toolbar-title"><i className="pi pi-filter" aria-hidden="true"/><div><strong>Filtros</strong><small>Refine o escopo da análise</small></div></div>
         <div className="topbar-filters">
-          <label><span>Período</span><select aria-label="Período" value={isFcaList?filters.fcaPeriodo:filters.periodo} onChange={e=>changePeriod(e.target.value)}>{isFcaList&&<option value="ALL">Todos os meses</option>}{isFcaList?fcaPeriods.map(period=><option key={period} value={period}>{periodLabel(period)}</option>):periods.map(p=><option key={p.key} value={p.value}>{p.label}</option>)}</select></label>
-          <label><span>Supervisor</span><select aria-label="Supervisor" value={filters.supervisorId} disabled={!isOperationalAdmin} onChange={e=>onFiltersChange({...filters,supervisorId:e.target.value,moduloId:''})}><option value="">{isOperationalAdmin?'Todos os supervisores':hub.profile.nome}</option>{isOperationalAdmin&&hub.supervisors.map(s=><option key={s.supervisorId} value={s.supervisorId}>{s.nomeExibicao}</option>)}</select></label>
-          <label><span>Módulo</span><select aria-label="Módulo" value={filters.moduloId} onChange={e=>onFiltersChange({...filters,moduloId:e.target.value})}><option value="">Todos os módulos</option>{modules.map(m=><option key={m}>{m}</option>)}</select></label>
+          <label><span>Período</span><Dropdown aria-label="Período" value={isFcaList?filters.fcaPeriodo:filters.periodo} options={periodOptions} optionLabel="label" optionValue="value" onChange={event=>changePeriod(String(event.value??''))} className="topbar-filter-control"/></label>
+          <label><span>Supervisor</span><Dropdown aria-label="Supervisor" value={filters.supervisorId} options={supervisorOptions} optionLabel="label" optionValue="value" disabled={!isOperationalAdmin} onChange={event=>onFiltersChange({...filters,supervisorId:String(event.value??''),moduloId:''})} className="topbar-filter-control"/></label>
+          <label><span>Módulo</span><Dropdown aria-label="Módulo" value={filters.moduloId} options={moduleOptions} optionLabel="label" optionValue="value" onChange={event=>onFiltersChange({...filters,moduloId:String(event.value??'')})} className="topbar-filter-control"/></label>
           {isOperationalAdmin&&(filters.supervisorId||filters.moduloId)&&<button type="button" className="topbar-filter-reset" onClick={resetFilters} title="Limpar supervisor e módulo" aria-label="Limpar supervisor e módulo"><i className="pi pi-filter-slash" aria-hidden="true"/></button>}
         </div>
       </div>}
