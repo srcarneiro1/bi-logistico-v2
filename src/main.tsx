@@ -30,6 +30,7 @@ import './accessibility-interactions.css'
 import './primereact.css'
 import './extra-cost-alignment.css'
 import './extra-cost-final-polish.css'
+import './table-final-polish.css'
 
 const primeReactConfig = {
   ripple: true,
