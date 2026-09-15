@@ -33,6 +33,7 @@ import './extra-cost-final-polish.css'
 import './table-final-polish.css'
 import './chart-final-polish.css'
 import './responsive-final-polish.css'
+import './final-parity.css'
 
 const primeReactConfig = {
   ripple: true,
