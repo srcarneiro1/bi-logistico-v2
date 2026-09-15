@@ -4,14 +4,16 @@ import { pp } from '../lib/dashboard'
 
 type MetricCardVariant='primary'|'supporting'
 
+const statusTone:Record<MetricStatus,'neutral'|'success'|'warning'|'danger'>={neutral:'neutral',ok:'success',warn:'warning',crit:'danger'}
+
 export function MetricCard({label,value,meta,status='neutral',detail,delta,gap,variant='primary'}:{label:string;value:string;meta?:string;status?:MetricStatus;detail?:string;delta?:number|null;gap?:number|null;variant?:MetricCardVariant}){
-  return <Card className={`metric-card metric-card-${variant}`}>
-    <div className="metric-card-head"><span>{label}</span><i className={`metric-dot ${status}`} aria-hidden="true"/></div>
+  const tone=statusTone[status]
+  const primaryDetail=[meta,detail].filter(Boolean).join(' · ')
+  const comparison=[delta==null?null:`Mês ${pp(delta)}`,gap==null?null:`Meta ${pp(gap)}`].filter(Boolean).join(' · ')
+  return <Card className={`dashboard-metric dashboard-metric-${tone} nx-dashboard-metric-card metric-card metric-card-${variant}`}>
+    <span>{label}</span>
     <strong className="metric-card-value">{value}</strong>
-    <div className="metric-comparisons">
-      <span className={delta==null?'neutral':delta>=0?'positive':'negative'}><small>vs. mês anterior</small><b>{pp(delta)}</b></span>
-      <span className={gap==null?'neutral':gap>=0?'positive':'negative'}><small>distância da meta</small><b>{pp(gap)}</b></span>
-    </div>
-    {(meta||detail)&&<div className="metric-meta"><span>{meta}</span><span>{detail}</span></div>}
+    {primaryDetail&&<small>{primaryDetail}</small>}
+    {comparison&&<small className="metric-card-comparison">{comparison}</small>}
   </Card>
 }
