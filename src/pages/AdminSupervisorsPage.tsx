@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
+import { Button } from 'primereact/button'
 import { PageHeader } from '../components/PageHeader'
 import { Badge } from '../components/ui/Badge'
 import { Chip } from '../components/ui/Chip'
@@ -89,6 +90,7 @@ export function AdminSupervisorsPage({hub,onRefresh}:{hub:HubBootstrap;onRefresh
     <SectionHeader eyebrow="CADASTRO VISUAL" title="Supervisores da HUB" description="A origem da foto é exibida em cada registro; o restante do cadastro permanece somente leitura nesta área." trailing={<Chip>{supervisors.length} resultado(s)</Chip>}/>
     {supervisors.length===0?<EmptyState icon="group_off" title="Nenhum supervisor encontrado" description="Ajuste a busca para consultar outros supervisores."/>:<div className="admin-supervisor-grid">{supervisors.map(supervisor=>{
       const working=workingId===supervisor.supervisorId
+      const inputId=`supervisor-photo-${supervisor.supervisorId}`
       return <article className="admin-supervisor-card" key={supervisor.supervisorId}>
         <div className="admin-supervisor-card-head">
           <div className="admin-supervisor-avatar"><SupervisorAvatar supervisor={supervisor}/></div>
@@ -96,11 +98,9 @@ export function AdminSupervisorsPage({hub,onRefresh}:{hub:HubBootstrap;onRefresh
           <Badge tone={supervisor.fotoSource==='SUPABASE'?'success':supervisor.fotoUrl?'warning':'neutral'}>{sourceLabel(supervisor)}</Badge>
         </div>
         <div className="admin-supervisor-actions">
-          <label className={`button button-primary ${working?'is-disabled':''}`}>
-            <span className="material-symbols-rounded" aria-hidden="true">upload</span>{working?'Processando…':supervisor.fotoSource==='SUPABASE'?'Substituir foto':'Cadastrar foto'}
-            <input type="file" accept="image/jpeg,image/png,image/webp" disabled={working} onChange={event=>void handleFile(supervisor,event)}/>
-          </label>
-          {supervisor.fotoSource==='SUPABASE'&&<button type="button" className="button" disabled={working} onClick={()=>void removePhoto(supervisor)}>Remover foto interna</button>}
+          <input id={inputId} className="admin-supervisor-file-input" type="file" accept="image/jpeg,image/png,image/webp" disabled={working} onChange={event=>void handleFile(supervisor,event)}/>
+          <Button type="button" label={supervisor.fotoSource==='SUPABASE'?'Substituir foto':'Cadastrar foto'} icon="pi pi-upload" loading={working} onClick={()=>document.getElementById(inputId)?.click()}/>
+          {supervisor.fotoSource==='SUPABASE'&&<Button type="button" label="Remover foto interna" icon="pi pi-trash" outlined severity="secondary" disabled={working} onClick={()=>void removePhoto(supervisor)}/>}
         </div>
       </article>
     })}</div>}
