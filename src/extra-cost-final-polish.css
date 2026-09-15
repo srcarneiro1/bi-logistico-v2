@@ -38,12 +38,15 @@
   padding:0!important;
 }
 
-/* KPIs do BI preservam a superfície semântica (verde/amarelo/vermelho),
-   mas sem a barra vertical lateral. A borda esquerda volta à mesma espessura
-   e cor do restante do card. */
+/* Todos os cards métricos do BI preservam a superfície semântica,
+   mas nunca usam a faixa vertical lateral. */
 .nx-dashboard-metric-card.dashboard-metric-success,
 .nx-dashboard-metric-card.dashboard-metric-warning,
-.nx-dashboard-metric-card.dashboard-metric-danger{
+.nx-dashboard-metric-card.dashboard-metric-danger,
+.ui-summary-metric-success.nx-prime-metric,
+.ui-summary-metric-warning.nx-prime-metric,
+.ui-summary-metric-danger.nx-prime-metric,
+.ui-summary-metric-info.nx-prime-metric{
   border-left-width:1px!important;
   border-left-color:var(--metric-border)!important;
 }
@@ -60,6 +63,103 @@
 .nx-dashboard-metric-card .metric-card-pp-negative{color:var(--unilog-danger)!important}
 .nx-dashboard-metric-card .metric-card-pp-neutral{color:var(--unilog-muted)!important}
 .nx-dashboard-metric-card .metric-card-pp-separator{color:var(--unilog-muted)!important;font-weight:700!important}
+
+/* Taxonomia de cards do BI:
+   - métricas: mesma anatomia e paleta semântica;
+   - conteúdo/entidade: superfície neutra compartilhada;
+   - callouts/alertas ficam fora desta normalização. */
+.ui-detail-metrics{
+  display:grid!important;
+  gap:10px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.ui-detail-metric{
+  --metric-bg:#fff;
+  --metric-border:var(--unilog-border);
+  --metric-label:var(--unilog-muted);
+  --metric-value:var(--unilog-ink-2);
+  --metric-detail:var(--unilog-graphite-2);
+  min-height:108px!important;
+  align-content:center!important;
+  gap:6px!important;
+  padding:16px 18px!important;
+  border:1px solid var(--metric-border)!important;
+  border-radius:var(--unilog-radius)!important;
+  background:var(--metric-bg)!important;
+  box-shadow:var(--unilog-shadow)!important;
+}
+.ui-detail-metric>span{
+  color:var(--metric-label)!important;
+  font-size:9px!important;
+  line-height:1.25!important;
+  font-weight:800!important;
+  letter-spacing:.065em!important;
+  text-transform:uppercase!important;
+}
+.ui-detail-metric>strong{
+  color:var(--metric-value)!important;
+  font-size:22px!important;
+  line-height:1.08!important;
+  font-weight:800!important;
+  letter-spacing:-.025em!important;
+  font-variant-numeric:tabular-nums;
+}
+.ui-detail-metric>small{
+  color:var(--metric-detail)!important;
+  font-size:10px!important;
+  line-height:1.35!important;
+}
+.ui-detail-metric-success{
+  --metric-bg:#edf8f2;
+  --metric-border:#cce6d6;
+  --metric-label:#317552;
+  --metric-value:#2f7650;
+  --metric-detail:#5d7f6c;
+}
+.ui-detail-metric-warning{
+  --metric-bg:#fff7e8;
+  --metric-border:#f1ddae;
+  --metric-label:#9b6500;
+  --metric-value:#a46a00;
+  --metric-detail:#8d7447;
+}
+.ui-detail-metric-danger{
+  --metric-bg:#fff0f1;
+  --metric-border:#efc9cc;
+  --metric-label:#ad1b23;
+  --metric-value:#b51b24;
+  --metric-detail:#956166;
+}
+
+.supervisor-card,
+.admin-supervisor-card,
+.coverage-card,
+.finance-hero,
+.fca-form-stepper,
+.fca-editor-page .fca-form .form-section,
+.supervisor-detail-mobile-record,
+.depositor-mobile-record,
+.finance-expense-mobile-record,
+.fca-mobile-record,
+.admin-access-mobile-record{
+  border:1px solid var(--unilog-border)!important;
+  border-radius:var(--unilog-radius)!important;
+  background:var(--unilog-surface)!important;
+  box-shadow:var(--unilog-shadow)!important;
+}
+.supervisor-card.selected,
+.depositor-mobile-record.is-selected{
+  border-color:var(--border-strong)!important;
+  background:var(--unilog-surface-soft)!important;
+}
+.coverage-card:hover,
+.supervisor-card:hover{
+  box-shadow:0 8px 22px rgba(18,24,34,.07)!important;
+}
 
 /* Autenticação: ícones usam centralização geométrica própria, sem depender do baseline
    da fonte ou dos offsets internos do tema Lara. */
@@ -144,6 +244,11 @@
 .ui-skeleton.nx-prime-skeleton{display:grid;gap:10px;padding:var(--space-4);overflow:hidden}
 .ui-skeleton.nx-prime-skeleton>.p-skeleton{border-radius:6px}
 
+@media(max-width:900px){
+  .ui-detail-metric{min-height:96px!important;padding:14px 15px!important}
+  .ui-detail-metric>strong{font-size:20px!important}
+}
+
 @media(max-width:760px){
   .page-header.nx-prime-page-header.p-toolbar{margin-bottom:14px!important;gap:10px;flex-wrap:wrap}
   .nx-prime-page-header .p-toolbar-group-start,.nx-prime-page-header .p-toolbar-group-end{width:100%}
@@ -154,4 +259,8 @@
   .global-filter-stage{margin-bottom:16px}
   .nx-dashboard-filter-grid .p-dropdown{height:46px!important;min-height:46px!important}
   .nx-dashboard-filter-grid .p-dropdown-label{height:44px!important;min-height:44px!important;font-size:12px!important}
+}
+
+@media(max-width:600px){
+  .ui-detail-metric{min-height:88px!important;padding:12px!important}
 }
