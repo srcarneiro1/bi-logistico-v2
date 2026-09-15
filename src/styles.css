@@ -1,11 +1,10 @@
-:root{font-family:Inter,Roboto,Arial,Helvetica,sans-serif;font-synthesis:none}
+:root{font-family:Roboto,Arial,Helvetica,sans-serif;font-synthesis:none}
 *{box-sizing:border-box}
 html,body,#root{margin:0;min-width:320px;min-height:100%}
 body{min-height:100vh;background:var(--canvas);color:var(--ink);-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 h1,h2,h3,p{margin-top:0}
-.material-symbols-rounded{font-family:'Material Symbols Rounded';font-weight:normal;font-style:normal;font-size:20px;line-height:1;letter-spacing:normal;text-transform:none;display:inline-block;white-space:nowrap;word-wrap:normal;direction:ltr;-webkit-font-feature-settings:'liga';font-feature-settings:'liga';-webkit-font-smoothing:antialiased;font-variation-settings:'FILL' 0,'wght' 500,'GRAD' 0,'opsz' 20}
 
 /* Autenticação — mesma família visual do Extra Cost, com fluxo funcional do BI preservado. */
 .login-page{min-height:100dvh;display:grid;place-items:center;padding:max(32px,env(safe-area-inset-top)) max(32px,env(safe-area-inset-right)) max(32px,env(safe-area-inset-bottom)) max(32px,env(safe-area-inset-left));background:radial-gradient(circle at 15% 10%,rgba(219,8,18,.055),transparent 34%),linear-gradient(180deg,#f8f9fb 0%,#f3f5f7 100%)}
