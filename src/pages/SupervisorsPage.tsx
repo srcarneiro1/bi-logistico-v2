@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Button } from 'primereact/button'
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
 import { FcaCompactList } from '../components/FcaCompactList'
 import { PageHeader } from '../components/PageHeader'
 import { MetricStatusBadge } from '../components/ui/Badge'
@@ -58,7 +61,8 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
  const attentionCards=visibleCards.filter(c=>c.status==='warn').length
  const stableCards=visibleCards.filter(c=>c.status==='ok').length
  const selected=selectedSupervisorId?cards.find(c=>c.s.supervisorId===selectedSupervisorId):null
- const detailRows=selected?.deps.map(d=>{const op=scopedOp.find(r=>r.cnpj===d.cnpj),inv=scopedInv.find(r=>r.cnpj===d.cnpj);const statuses=[metricStatus(op?.producaoPct,metaProd),metricStatus(op?.recebimentoPct,metaRec),metricStatus(inv?.totalPct,metaInv)];const status=statuses.reduce((a,b)=>rank[b]>rank[a]?b:a,'ok' as MetricStatus);return{d,op,inv,status}}).sort((a,b)=>rank[b.status]-rank[a.status]||a.d.nome.localeCompare(b.d.nome,'pt-BR'))??[]
+ const detailRows=selected?.deps.map(d=>{const op=scopedOp.find(r=>r.cnpj===d.cnpj),inv=scopedInv.find(r=>r.cnpj===d.cnpj);const statuses=[metricStatus(op?.producaoPct,metaProd),metricStatus(op?.recebimentoPct,metaRec),metricStatus(inv?.totalPct,metaInv)];const status=statuses.reduce((a,b)=>rank[b]>rank[a]?b:a,'ok' as MetricStatus);return{d,op,inv,status,rowId:d.cnpj}}).sort((a,b)=>rank[b.status]-rank[a.status]||a.d.nome.localeCompare(b.d.nome,'pt-BR'))??[]
+ type SupervisorDetailRow=(typeof detailRows)[number]
  const selectedFcas=useMemo(()=>selected?[...scopedFcas].filter(f=>{
    if(f.supervisor_id!==selected.s.supervisorId)return false
    const status=deriveFcaDisplayStatus(f)
@@ -66,6 +70,12 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
  }).sort((a,b)=>Number(deriveFcaDisplayStatus(b)==='VENCIDO')-Number(deriveFcaDisplayStatus(a)==='VENCIDO')||b.data_reuniao.localeCompare(a.data_reuniao)||b.numero-a.numero):[],[scopedFcas,selected])
  const cardBadge=(critCount:number,warnCount:number,status:MetricStatus)=>critCount?`${critCount} crítico${critCount>1?'s':''}`:warnCount?`${warnCount} em atenção`:label[status]
  function openDepositante(cnpj:string){sessionStorage.setItem('bi-logistico-v2:depositante',cnpj);navigate('/depositantes')}
+ const depositanteBody=(row:SupervisorDetailRow)=><Button label={row.d.nome} text className="nx-table-link" onClick={()=>openDepositante(row.d.cnpj)}/>
+ const moduleBody=(row:SupervisorDetailRow)=><Chip>{row.d.moduloId}</Chip>
+ const prodBody=(row:SupervisorDetailRow)=><span className={`metric-cell metric-cell-${metricStatus(row.op?.producaoPct,metaProd)}`}>{pct(row.op?.producaoPct)}</span>
+ const recBody=(row:SupervisorDetailRow)=><span className={`metric-cell metric-cell-${metricStatus(row.op?.recebimentoPct,metaRec)}`}>{pct(row.op?.recebimentoPct)}</span>
+ const invBody=(row:SupervisorDetailRow)=><span className={`metric-cell metric-cell-${metricStatus(row.inv?.totalPct,metaInv)}`}>{pct(row.inv?.totalPct)}</span>
+ const statusBody=(row:SupervisorDetailRow)=><MetricStatusBadge status={row.status} label={label[row.status]}/>
  return <section className="portfolio-discovery">
    <PageHeader eyebrow="LIDERANÇA OPERACIONAL" title="Supervisores" description="Compare carteiras e abra o responsável para analisar depositantes e FCAs pendentes no escopo atual."/>
 
@@ -82,7 +92,7 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
          {label:'FCAs pendentes',value:selectedFcas.length},
          {label:'Módulos',value:Array.from(new Set(selected.deps.map(d=>d.moduloId))).join(', ')||'Sem módulo no escopo'},
        ]}
-       actions={<button type="button" className="button" onClick={()=>setSelectedSupervisorId('')}>Fechar visão</button>}
+       actions={<Button type="button" label="Fechar visão" icon="pi pi-times" outlined severity="secondary" onClick={()=>setSelectedSupervisorId('')}/>} 
      />
 
      <DetailMetrics items={[
@@ -93,8 +103,26 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
      ]}/>
 
      <div className="supervisor-360-grid">
-       <Panel><PanelHeader eyebrow="CARTEIRA" title="Performance por depositante" trailing={<Chip>{selected.deps.length} depositante(s)</Chip>}/><div className="table-wrap embedded"><table className="responsive-data-table"><thead><tr><th scope="col">Depositante</th><th scope="col">Módulo</th><th scope="col">Produção</th><th scope="col">Recebimento</th><th scope="col">Inventário</th><th scope="col">Status</th></tr></thead><tbody>{detailRows.map(({d,op,inv,status})=><tr key={d.cnpj}><td data-label="Depositante" data-primary="true"><button type="button" className="table-link" onClick={()=>openDepositante(d.cnpj)}><strong>{d.nome}</strong></button></td><td data-label="Módulo">{d.moduloId}</td><td data-label="Produção"><span className={`metric-cell metric-cell-${metricStatus(op?.producaoPct,metaProd)}`}>{pct(op?.producaoPct)}</span></td><td data-label="Recebimento"><span className={`metric-cell metric-cell-${metricStatus(op?.recebimentoPct,metaRec)}`}>{pct(op?.recebimentoPct)}</span></td><td data-label="Inventário"><span className={`metric-cell metric-cell-${metricStatus(inv?.totalPct,metaInv)}`}>{pct(inv?.totalPct)}</span></td><td data-label="Status"><MetricStatusBadge status={status} label={label[status]}/></td></tr>)}</tbody></table></div></Panel>
-       <Panel className="supervisor-open-fcas"><PanelHeader eyebrow="PENDÊNCIAS" title="FCAs pendentes no período" trailing={<Chip tone={selectedFcas.length?'danger':'neutral'}>{selectedFcas.length} pendente(s)</Chip>}/>{selectedFcas.length?<FcaCompactList items={selectedFcas} title={f=>`FCA #${String(f.numero).padStart(5,'0')} · ${f.depositante_nome}`} meta={f=>`${f.indicador_nome} · ${new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}`} onOpen={()=>setFcaReturnContext({type:'supervisor',supervisorId:selected.s.supervisorId})}/>:<EmptyState icon="task_alt" title="Nenhum FCA pendente" description="Este supervisor não possui FCA pendente no filtro atual."/>}</Panel>
+       <Panel><PanelHeader eyebrow="CARTEIRA" title="Performance por depositante" trailing={<Chip>{selected.deps.length} depositante(s)</Chip>}/>
+         <div className="supervisor-detail-prime-table" aria-label="Performance por depositante">
+           <DataTable value={detailRows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table" emptyMessage="Sem depositantes no escopo atual." tableStyle={{minWidth:'720px'}}>
+             <Column header="Depositante" body={depositanteBody}/>
+             <Column header="Módulo" body={moduleBody}/>
+             <Column header="Produção" body={prodBody}/>
+             <Column header="Recebimento" body={recBody}/>
+             <Column header="Inventário" body={invBody}/>
+             <Column header="Status" body={statusBody}/>
+           </DataTable>
+         </div>
+         <div className="supervisor-detail-mobile-records" role="list" aria-label="Performance por depositante">
+           {detailRows.map(row=><article key={row.rowId} className="supervisor-detail-mobile-record" role="listitem">
+             <header><div><Button label={row.d.nome} text className="nx-table-link" onClick={()=>openDepositante(row.d.cnpj)}/><Chip>{row.d.moduloId}</Chip></div>{statusBody(row)}</header>
+             <div className="supervisor-detail-mobile-metrics"><div><span>Produção</span>{prodBody(row)}</div><div><span>Recebimento</span>{recBody(row)}</div><div><span>Inventário</span>{invBody(row)}</div></div>
+           </article>)}
+           {!detailRows.length&&<EmptyState icon="pi pi-table" title="Sem depositantes no escopo" description="Não há depositantes vinculados a este supervisor nos filtros atuais."/>}
+         </div>
+       </Panel>
+       <Panel className="supervisor-open-fcas"><PanelHeader eyebrow="PENDÊNCIAS" title="FCAs pendentes no período" trailing={<Chip tone={selectedFcas.length?'danger':'neutral'}>{selectedFcas.length} pendente(s)</Chip>}/>{selectedFcas.length?<FcaCompactList items={selectedFcas} title={f=>`FCA #${String(f.numero).padStart(5,'0')} · ${f.depositante_nome}`} meta={f=>`${f.indicador_nome} · ${new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}`} onOpen={()=>setFcaReturnContext({type:'supervisor',supervisorId:selected.s.supervisorId})}/>:<EmptyState icon="pi pi-check-circle" title="Nenhum FCA pendente" description="Este supervisor não possui FCA pendente no filtro atual."/>}</Panel>
      </div>
    </article>}
 
@@ -109,10 +137,10 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
    <div className="supervisor-grid">{visibleCards.map(({s,prod,rec,inv,deps,status,critCount,warnCount,fcaCount})=>{
      const isSelected=selectedSupervisorId===s.supervisorId
      return <button type="button" className={`supervisor-card ${isSelected?'selected':''}`} key={s.supervisorId} aria-expanded={isSelected} aria-controls={SUPERVISOR_DETAIL_ID} onClick={()=>setSelectedSupervisorId(isSelected?'':s.supervisorId)}>
-       <div className="supervisor-head"><SupervisorPhoto name={s.nomeExibicao} src={s.fotoUrl}/><div><strong>{s.nomeExibicao}</strong><span>{deps.length} depositante(s) · {fcaCount} FCA(s)</span></div><span className="supervisor-card-open material-symbols-rounded" aria-hidden="true">{isSelected?'expand_less':'chevron_right'}</span></div>
+       <div className="supervisor-head"><SupervisorPhoto name={s.nomeExibicao} src={s.fotoUrl}/><div><strong>{s.nomeExibicao}</strong><span>{deps.length} depositante(s) · {fcaCount} FCA(s)</span></div><i className={`supervisor-card-open pi ${isSelected?'pi-angle-up':'pi-chevron-right'}`} aria-hidden="true"/></div>
        <div className="supervisor-card-priority"><span>Saúde da carteira</span><strong className={`text-${status}`}>{cardBadge(critCount,warnCount,status)}</strong></div>
        <div className="supervisor-metrics"><div><span>Produção</span><b className={`text-${metricStatus(prod,metaProd)}`}>{pct(prod)}</b></div><div><span>Recebimento</span><b className={`text-${metricStatus(rec,metaRec)}`}>{pct(rec)}</b></div><div><span>Inventário</span><b className={`text-${metricStatus(inv,metaInv)}`}>{pct(inv)}</b></div></div>
-       <div className="supervisor-modules">{Array.from(new Set(deps.map(d=>d.moduloId))).map(m=><span key={m}>{m}</span>)}</div>
+       <div className="supervisor-modules">{Array.from(new Set(deps.map(d=>d.moduloId))).map(m=><Chip key={m}>{m}</Chip>)}</div>
      </button>
    })}</div>
  </section>
