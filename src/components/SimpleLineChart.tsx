@@ -44,7 +44,7 @@ function shouldShowAxisLabel(periodo:string,index:number,total:number){
   return index%step===0
 }
 
-export function SimpleLineChart({series,height=300}:SimpleLineChartProps){
+export function SimpleLineChart({series,height=248}:SimpleLineChartProps){
   const [hiddenSeries,setHiddenSeries]=useState<Set<string>>(()=>new Set())
 
   useEffect(()=>{
@@ -84,9 +84,9 @@ export function SimpleLineChart({series,height=300}:SimpleLineChartProps){
         pointBackgroundColor:'#fff',
         pointBorderColor:color,
         pointBorderWidth:2,
-        pointRadius:3.5,
-        pointHoverRadius:5,
-        borderWidth:2.5,
+        pointRadius:2.5,
+        pointHoverRadius:4,
+        borderWidth:2,
         tension:.28,
         spanGaps:true,
       }
