@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { Card } from 'primereact/card'
 import { ProgressBar } from 'primereact/progressbar'
 import { MetricCard } from '../components/MetricCard'
@@ -17,6 +18,7 @@ function normalizeScope(value:string){return value.toLocaleUpperCase('pt-BR').no
 function hasOperationalRevenueScope(supervisorId:string,moduloId:string){return Boolean(supervisorId&&supervisorId!=='000000'&&normalizeScope(moduloId)!=='NAO APLICAVEL')}
 
 export function HomePage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilters}){
+  const navigate=useNavigate()
   const kpis=mainKpis(hub,filters),ops=operationalRows(hub,filters),revenues=revenueRows(hub,filters).filter(r=>hasOperationalRevenueScope(r.supervisorId,r.moduloId))
   const plan=sum(revenues.map(r=>r.receitaPlanejada)),real=sum(revenues.map(r=>r.receitaRealizada)),attainment=plan?real/plan:null
   const useGlobal=hub.profile.perfil==='ADMIN'&&!filters.supervisorId&&!filters.moduloId&&hub.facts.kpiGeral.length>0
@@ -36,6 +38,8 @@ export function HomePage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
   const executiveTitle=criticalCount?`${criticalCount} ponto(s) crítico(s) no escopo`:attentionRows.length?`${attentionRows.length} ponto(s) pedem atenção`:'Escopo sem desvios relevantes'
   const executiveDescription=criticalCount?'Priorize os depositantes com indicadores críticos antes de avançar para a leitura consolidada.':attentionRows.length?'Há indicadores em atenção; consulte a gestão à vista para identificar os depositantes afetados.':'Os indicadores monitorados não apresentam criticidade ou atenção no escopo atual.'
   const renderMetric=(k:(typeof kpis)[number])=>{const c=kpiComparison(hub,filters,k.label,k.value);return <MetricCard key={k.label} variant="supporting" label={k.label} value={pct(k.value)} status={metricStatus(k.value,k.meta)} meta={k.meta?.metaPct!=null?`Meta ${pct(k.meta.metaPct)}`:'Sem meta'} detail={k.meta?.criticoPct!=null?`Crítico < ${pct(k.meta.criticoPct)}`:undefined} delta={c.delta} gap={c.gap}/>}
+  function openDepositor(cnpj:string){sessionStorage.setItem('bi-logistico-v2:depositante',cnpj);navigate('/depositantes')}
+
   return <section className="home-dashboard">
     <PageHeader eyebrow="PERFORMANCE OPERACIONAL" title="Visão geral" description="Leitura consolidada dos principais indicadores, pontos de atenção e desempenho financeiro no escopo selecionado." />
 
@@ -62,6 +66,6 @@ export function HomePage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
       </div>
     </div>
 
-    <Panel as="article" className="home-attention-panel"><PanelHeader eyebrow="GESTÃO À VISTA" title="Pontos de atenção" trailing={<Chip tone={attentionRows.length?'danger':'neutral'}>{attentionRows.length} alertas</Chip>}/>{attention.length?<div className="attention-list">{attention.map((r,i)=>{const statuses=[metricStatus(r.producaoPct,prodMeta),metricStatus(r.recebimentoPct,recMeta),metricStatus(r.inventario?.totalPct,invMeta)];const rowStatus=statuses.includes('crit')?'crit':'warn';const rowKey=[periodKey(r.periodo),r.cnpj,r.supervisorId,r.moduloId].join(':');return <div className="attention-row" key={rowKey}><span className="rank">{String(i+1).padStart(2,'0')}</span><div><strong>{r.nomeDepositante}</strong><small>{r.moduloId}</small></div><div className="attention-metrics"><span>Prod. <b className={`text-${metricStatus(r.producaoPct,prodMeta)}`}>{pct(r.producaoPct)}</b></span><span>Receb. <b className={`text-${metricStatus(r.recebimentoPct,recMeta)}`}>{pct(r.recebimentoPct)}</b></span><span>Inv. <b className={`text-${metricStatus(r.inventario?.totalPct,invMeta)}`}>{pct(r.inventario?.totalPct)}</b></span></div><MetricStatusBadge status={rowStatus} label={rowStatus==='crit'?'Crítico':'Atenção'} className="attention-status"/></div>})}</div>:<EmptyState icon="check_circle" title="Nenhum desvio relevante" description="Os indicadores do escopo atual não apresentam criticidade ou atenção."/>}</Panel>
+    <Panel as="article" className="home-attention-panel"><PanelHeader eyebrow="GESTÃO À VISTA" title="Pontos de atenção" trailing={<Chip tone={attentionRows.length?'danger':'neutral'}>{attentionRows.length} alertas</Chip>}/>{attention.length?<div className="attention-list">{attention.map((r,i)=>{const statuses=[metricStatus(r.producaoPct,prodMeta),metricStatus(r.recebimentoPct,recMeta),metricStatus(r.inventario?.totalPct,invMeta)];const rowStatus=statuses.includes('crit')?'crit':'warn';const rowKey=[periodKey(r.periodo),r.cnpj,r.supervisorId,r.moduloId].join(':');return <button type="button" className="attention-row" key={rowKey} onClick={()=>openDepositor(r.cnpj)} aria-label={`Abrir visão 360º de ${r.nomeDepositante}`}><span className="rank">{String(i+1).padStart(2,'0')}</span><div><strong>{r.nomeDepositante}</strong><small>{r.moduloId}</small></div><div className="attention-metrics"><span>Prod. <b className={`text-${metricStatus(r.producaoPct,prodMeta)}`}>{pct(r.producaoPct)}</b></span><span>Receb. <b className={`text-${metricStatus(r.recebimentoPct,recMeta)}`}>{pct(r.recebimentoPct)}</b></span><span>Inv. <b className={`text-${metricStatus(r.inventario?.totalPct,invMeta)}`}>{pct(r.inventario?.totalPct)}</b></span></div><MetricStatusBadge status={rowStatus} label={rowStatus==='crit'?'Crítico':'Atenção'} className="attention-status"/></button>})}</div>:<EmptyState icon="check_circle" title="Nenhum desvio relevante" description="Os indicadores do escopo atual não apresentam criticidade ou atenção."/>}</Panel>
   </section>
 }
