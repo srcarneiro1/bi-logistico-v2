@@ -1,0 +1,138 @@
+/* FCA — cards selecionáveis alinhados ao padrão final do Extra Cost Control.
+   Carregado por último para neutralizar regras legadas da variante filters. */
+
+.fca-page .ui-summary-metrics-filters.nx-prime-metrics{
+  gap:10px!important;
+}
+
+.fca-page .ui-summary-metrics-filters .ui-summary-metric.nx-prime-metric{
+  position:relative!important;
+  min-height:108px!important;
+  overflow:hidden!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:12px!important;
+  padding:16px 18px!important;
+  border:1px solid var(--metric-border)!important;
+  border-left-width:1px!important;
+  border-left-color:var(--metric-border)!important;
+  border-radius:var(--unilog-radius)!important;
+  background:var(--metric-bg)!important;
+  box-shadow:var(--unilog-shadow)!important;
+  color:var(--metric-value)!important;
+  text-align:left!important;
+  transform:none!important;
+  filter:none!important;
+}
+
+.fca-page .ui-summary-metrics-filters .ui-summary-metric.nx-prime-metric>.p-button-label{
+  display:contents!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+}
+
+.fca-page .ui-summary-metrics-filters .ui-summary-metric-copy{
+  display:grid!important;
+  gap:3px!important;
+  min-width:0!important;
+}
+
+.fca-page .ui-summary-metrics-filters .ui-summary-metric-copy>span{
+  color:var(--metric-label)!important;
+  font-size:9px!important;
+  line-height:1.25!important;
+  font-weight:800!important;
+  letter-spacing:.065em!important;
+  text-transform:uppercase!important;
+}
+
+.fca-page .ui-summary-metrics-filters .ui-summary-metric-copy>strong{
+  color:var(--metric-value)!important;
+  font-size:22px!important;
+  line-height:1.08!important;
+  font-weight:800!important;
+  letter-spacing:-.025em!important;
+  font-variant-numeric:tabular-nums;
+}
+
+.fca-page .ui-summary-metrics-filters .ui-summary-metric-copy>small{
+  display:block!important;
+  color:var(--metric-detail)!important;
+  font-size:10px!important;
+  line-height:1.35!important;
+}
+
+.fca-page .ui-summary-metrics-filters .ui-summary-metric-icon{
+  width:38px!important;
+  height:38px!important;
+  display:grid!important;
+  place-items:center!important;
+  flex:0 0 38px!important;
+  border:1px solid color-mix(in srgb,var(--metric-border) 75%,#fff)!important;
+  border-radius:11px!important;
+  background:rgba(255,255,255,.64)!important;
+  color:var(--metric-value)!important;
+  font-size:16px!important;
+  line-height:1!important;
+}
+
+/* Mesmo hover do Extra Cost: preserva a semântica do card. */
+.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric:hover:not(:disabled){
+  background:var(--metric-bg)!important;
+  border-color:var(--metric-border)!important;
+  box-shadow:0 8px 22px rgba(18,24,34,.07)!important;
+  filter:brightness(.987)!important;
+}
+
+/* Seleção final do Extra Cost: borda/ring vermelho sem trocar a anatomia ou a cor semântica. */
+.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric.is-active,
+.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric[aria-pressed="true"]{
+  background:var(--metric-bg)!important;
+  border-color:var(--unilog-red)!important;
+  border-left-color:var(--unilog-red)!important;
+  box-shadow:0 0 0 3px rgba(219,8,18,.09),var(--unilog-shadow)!important;
+}
+
+.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric.is-active .ui-summary-metric-icon,
+.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric[aria-pressed="true"] .ui-summary-metric-icon{
+  border-color:rgba(219,8,18,.22)!important;
+}
+
+.fca-page .ui-summary-metrics-filters button.ui-summary-metric.nx-prime-metric:focus-visible{
+  outline:none!important;
+  border-color:var(--unilog-red)!important;
+  box-shadow:0 0 0 3px rgba(219,8,18,.09),var(--unilog-shadow)!important;
+}
+
+@media(max-width:900px){
+  .fca-page .ui-summary-metrics-filters .ui-summary-metric.nx-prime-metric{
+    min-height:96px!important;
+    padding:14px 15px!important;
+  }
+  .fca-page .ui-summary-metrics-filters .ui-summary-metric-copy>strong{
+    font-size:20px!important;
+  }
+}
+
+@media(max-width:760px){
+  .fca-page .ui-summary-metrics-filters.nx-prime-metrics{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+  }
+}
+
+@media(max-width:600px){
+  .fca-page .ui-summary-metrics-filters .ui-summary-metric.nx-prime-metric{
+    min-height:88px!important;
+    padding:12px!important;
+  }
+}
+
+@media(max-width:480px){
+  .fca-page .ui-summary-metrics-filters.nx-prime-metrics{
+    grid-template-columns:1fr!important;
+  }
+  .fca-page .ui-summary-metrics-filters>.ui-summary-metric:last-child:nth-child(odd){
+    grid-column:auto!important;
+  }
+}
