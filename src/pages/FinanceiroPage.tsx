@@ -1,3 +1,5 @@
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
 import { PageHeader } from '../components/PageHeader'
 import { Chip } from '../components/ui/Chip'
 import { ContextNotice } from '../components/ui/ContextNotice'
@@ -22,6 +24,8 @@ export function FinanceiroPage({hub,filters}:{hub:HubBootstrap;filters:Dashboard
  const otherOperationalRealized=sum(otherOperationalRows.map(r=>r.receitaRealizada))
  const canShowConsolidatedExpense=hub.profile.perfil==='ADMIN'&&!filters.supervisorId&&!filters.moduloId
  const expenses=canShowConsolidatedExpense?hub.facts.despesa.filter(r=>!filters.periodo||periodKey(r.periodo)===periodKey(filters.periodo)):[]
+ const expenseRows=expenses.map(r=>({...r,rowId:`${r.periodo}-${r.codAllStrategy}`}))
+ type ExpenseRow=(typeof expenseRows)[number]
  const expPlan=sum(expenses.map(r=>r.despesaPlanejada)),expReal=sum(expenses.map(r=>r.despesaRealizada)),result=realized+expReal
  const attainmentStatus=attainment!=null&&attainment>=1?'ok':attainment!=null&&attainment<.9?'crit':'warn'
  const support=[
@@ -33,6 +37,10 @@ export function FinanceiroPage({hub,filters}:{hub:HubBootstrap;filters:Dashboard
      {key:'result',label:'Resultado direto',value:money(result),detail:'receita realizada + despesa realizada',icon:'account_balance_wallet',tone:result<0?'danger' as const:'success' as const},
    ]:[]),
  ]
+ const expensePlanBody=(row:ExpenseRow)=>money(row.despesaPlanejada)
+ const expenseRealBody=(row:ExpenseRow)=>money(row.despesaRealizada)
+ const expenseVariance=(row:ExpenseRow)=>(row.despesaRealizada??0)-(row.despesaPlanejada??0)
+ const expenseVarianceBody=(row:ExpenseRow)=><span className={expenseVariance(row)<0?'text-crit':'text-ok'}>{money(expenseVariance(row))}</span>
  return <section className="finance-page"><PageHeader eyebrow="RESULTADO" title="Financeiro" description="Receita planejada versus realizada no escopo selecionado. Receitas sem dimensão operacional permanecem no financeiro pelo período, sem serem atribuídas artificialmente ao Supervisor/Módulo selecionado. Outras receitas operacionais entram apenas no consolidado; depositantes sem Supervisor/Módulo permanecem na análise por depositante. Despesas são consolidadas porque a base atual não possui dimensão de supervisor ou módulo."/>
  <div className="finance-hero">
    <div className="finance-hero-main"><span>Receita realizada</span><strong>{money(realized)}</strong><small>{depositanteRows.length} depositante(s) no financeiro{otherOperationalRows.length?' + outras receitas operacionais':''}</small></div>
@@ -41,6 +49,18 @@ export function FinanceiroPage({hub,filters}:{hub:HubBootstrap;filters:Dashboard
  <SummaryMetrics ariaLabel="Resumo financeiro do período" items={support}/>
  {!canShowConsolidatedExpense&&hub.profile.perfil==='ADMIN'&&<ContextNotice title="Despesas não aplicadas ao filtro de Supervisor/Módulo" description="A fDespesa atual possui período e conta, mas não possui Supervisor ou Módulo. Para evitar um resultado incorreto, os cards de despesa e resultado direto ficam ocultos enquanto esses filtros estiverem ativos."/>}
  <Panel as="article" className="finance-depositors-panel"><PanelHeader eyebrow="POR DEPOSITANTE" title="Planejado x realizado" trailing={<Chip>{depositanteRows.length} depositante(s)</Chip>}/><div className="revenue-list">{depositanteRows.map(r=>{const p=r.receitaPlanejada??0,real=r.receitaRealizada??0,at=p?real/p:0;const status=p?(at>=1?'ok':at>=.9?'warn':'crit'):'neutral';const scale=Math.max(p,real,1),plannedWidth=(p/scale)*100,realWidth=(real/scale)*100;return <div className="revenue-row" key={revenueKey(r)}><div className="revenue-identity"><strong>{r.nomeDepositante}</strong><span>{hasOperationalScope(r)?r.moduloId:'Sem escopo operacional'}</span></div><div className="revenue-bars"><div><span>Plan.</span><i><b style={{width:`${plannedWidth}%`}}/></i><em>{money(p)}</em></div><div className={`revenue-bar-real revenue-bar-real-${status}`}><span>Real.</span><i><b style={{width:`${realWidth}%`}}/></i><em>{money(real)}</em></div></div><div className="revenue-attainment"><span>Atingimento</span><strong className={`text-${status}`}>{p?pct(at):'s/ plano'}</strong></div></div>})}{!depositanteRows.length&&<EmptyState icon="payments" title="Sem receita por depositante no escopo selecionado" description="Ajuste os filtros globais para consultar outro período, supervisor ou módulo."/>}</div></Panel>
- {canShowConsolidatedExpense&&expenses.length>0&&<Panel as="article" className="finance-expenses-panel"><PanelHeader eyebrow="DESPESAS CONSOLIDADAS" title="Composição do período" trailing={<Chip>sem rateio por supervisor</Chip>}/><div className="table-wrap embedded"><table className="responsive-data-table"><thead><tr><th scope="col">Conta</th><th scope="col">Planejado</th><th scope="col">Realizado</th><th scope="col">Variação</th></tr></thead><tbody>{expenses.map(r=><tr key={`${r.periodo}-${r.codAllStrategy}`}><td data-label="Conta" data-primary="true"><strong>{r.codAllStrategy}</strong></td><td data-label="Planejado">{money(r.despesaPlanejada)}</td><td data-label="Realizado">{money(r.despesaRealizada)}</td><td data-label="Variação" className={(r.despesaRealizada??0)<(r.despesaPlanejada??0)?'text-crit':'text-ok'}>{money((r.despesaRealizada??0)-(r.despesaPlanejada??0))}</td></tr>)}</tbody></table></div></Panel>}
+ {canShowConsolidatedExpense&&expenses.length>0&&<Panel as="article" className="finance-expenses-panel"><PanelHeader eyebrow="DESPESAS CONSOLIDADAS" title="Composição do período" trailing={<Chip>sem rateio por supervisor</Chip>}/>
+   <div className="finance-expenses-prime-table" aria-label="Despesas consolidadas do período">
+     <DataTable value={expenseRows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table" tableStyle={{minWidth:'620px'}}>
+       <Column field="codAllStrategy" header="Conta"/>
+       <Column field="despesaPlanejada" header="Planejado" body={expensePlanBody}/>
+       <Column field="despesaRealizada" header="Realizado" body={expenseRealBody}/>
+       <Column header="Variação" body={expenseVarianceBody}/>
+     </DataTable>
+   </div>
+   <div className="finance-expenses-mobile-records" role="list" aria-label="Despesas consolidadas do período">
+     {expenseRows.map(row=><article className="finance-expense-mobile-record" key={row.rowId} role="listitem"><header><strong>{row.codAllStrategy}</strong><span className={expenseVariance(row)<0?'text-crit':'text-ok'}>{money(expenseVariance(row))}</span></header><div><span>Planejado<strong>{money(row.despesaPlanejada)}</strong></span><span>Realizado<strong>{money(row.despesaRealizada)}</strong></span></div></article>)}
+   </div>
+ </Panel>}
  </section>
 }
