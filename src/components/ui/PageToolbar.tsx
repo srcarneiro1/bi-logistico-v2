@@ -17,7 +17,7 @@ export function PageToolbar({
   embedded=false,
   className='',
 }:PageToolbarProps){
-  return <div className={`ui-page-toolbar ${embedded?'ui-page-toolbar-embedded':''} ${className}`.trim()} role="region" aria-label={ariaLabel}>
+  return <div className={`ui-page-toolbar nx-prime-toolbar ${embedded?'ui-page-toolbar-embedded':''} ${className}`.trim()} role="region" aria-label={ariaLabel}>
     <div className="ui-page-toolbar-main">
       {search&&<div className="ui-page-toolbar-search">{search}</div>}
       {filters&&<div className="ui-page-toolbar-filters">{filters}</div>}
