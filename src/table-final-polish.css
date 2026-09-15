@@ -95,6 +95,21 @@
 .depositors-prime-table .nx-prime-table .p-datatable-tbody>tr.depositor-row-selected>td{background:#f7f8fa!important}
 .depositors-prime-table .nx-prime-table .p-datatable-tbody>tr.depositor-row-selected:hover>td{background:#f5f6f8!important}
 
+/* O nome do Depositante funciona como link textual: não deve herdar a borda estrutural de Button. */
+.depositors-prime-table .depositor-open-button.p-button,
+.depositors-prime-table .depositor-open-button.p-button:hover,
+.depositors-prime-table .depositor-open-button.p-button:active{
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.depositors-prime-table .depositor-open-button.p-button:focus-visible{
+  outline:2px solid rgba(219,8,18,.62)!important;
+  outline-offset:2px!important;
+  box-shadow:none!important;
+}
+
 /* Ações textuais dentro da tabela permanecem compactas e não alteram a altura da linha. */
 .nx-prime-table .nx-table-link.p-button,
 .nx-prime-table .fca-open-prime.p-button{
