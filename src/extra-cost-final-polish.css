@@ -45,6 +45,19 @@
   border-left-color:var(--metric-border)!important;
 }
 
+/* Variações em pontos percentuais têm semântica própria, independente do card. */
+.nx-dashboard-metric-card .metric-card-comparison{
+  display:flex!important;
+  align-items:center!important;
+  gap:5px!important;
+  flex-wrap:wrap!important;
+}
+.nx-dashboard-metric-card .metric-card-pp{font-weight:800!important}
+.nx-dashboard-metric-card .metric-card-pp-positive{color:var(--unilog-success)!important}
+.nx-dashboard-metric-card .metric-card-pp-negative{color:var(--unilog-danger)!important}
+.nx-dashboard-metric-card .metric-card-pp-neutral{color:var(--unilog-muted)!important}
+.nx-dashboard-metric-card .metric-card-pp-separator{color:var(--unilog-muted)!important;font-weight:700!important}
+
 /* Garantia final contra offsets herdados do Lara no ícone do login. */
 .login-form .login-field-icon>i.pi{
   left:14px!important;
