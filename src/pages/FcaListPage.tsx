@@ -1,5 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { Button } from 'primereact/button'
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
+import { Dropdown } from 'primereact/dropdown'
 import { PageHeader } from '../components/PageHeader'
 import { StatusBadge } from '../components/ui/Badge'
 import { Chip } from '../components/ui/Chip'
@@ -14,7 +18,17 @@ import type { DashboardFilters } from '../types/dashboard'
 import type { FcaWithActions } from '../types/fca'
 import type { HubBootstrap } from '../types/hub'
 
+const statusOptions=[
+  {label:'Todos os status',value:''},
+  {label:'Aberto',value:'ABERTO'},
+  {label:'Em andamento',value:'EM_ANDAMENTO'},
+  {label:'Concluído',value:'CONCLUIDO'},
+  {label:'Vencido',value:'VENCIDO'},
+  {label:'Cancelado',value:'CANCELADO'},
+]
+
 export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters}){
+  const navigate=useNavigate()
   const[rows,setRows]=useState<FcaWithActions[]>([])
   const[loading,setLoading]=useState(true)
   const[error,setError]=useState<string|null>(null)
@@ -55,9 +69,15 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
     {key:'overdue',label:'Vencidos',value:counts.VENCIDO??0,detail:'prioridade de atuação',icon:'error',tone:'danger',active:status==='VENCIDO',onClick:()=>setStatus('VENCIDO')},
     {key:'done',label:'Concluídos',value:counts.CONCLUIDO??0,detail:'encerrados no escopo',icon:'check_circle',tone:'success',active:status==='CONCLUIDO',onClick:()=>setStatus('CONCLUIDO')},
   ]
+  const recordBody=(row:FcaWithActions)=><div className="fca-record-cell"><Link className="fca-number-link" to={`/fca/${row.id}`}>#{String(row.numero).padStart(5,'0')}</Link><small>{new Date(`${row.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</small></div>
+  const entityBody=(row:FcaWithActions)=><div className="fca-entity-cell"><strong>{row.depositante_nome}</strong><span>{row.indicador_nome}</span></div>
+  const ownerBody=(row:FcaWithActions)=><div className="fca-owner-cell"><strong>{row.supervisor_nome}</strong><span>Supervisor</span></div>
+  const moduleBody=(row:FcaWithActions)=><Chip>{row.modulo_id}</Chip>
+  const statusBody=(row:FcaWithActions)=><StatusBadge status={deriveFcaDisplayStatus(row)}/>
+  const actionBody=(row:FcaWithActions)=><Button label="Abrir" icon="pi pi-chevron-right" iconPos="right" text className="fca-open-prime" onClick={()=>navigate(`/fca/${row.id}`)}/>
 
   return <section className="fca-page">
-    <PageHeader eyebrow="CONTROLE DE DESVIOS" title="Fatos, causas e ações" description="Acompanhe registros, priorize vencimentos e abra cada FCA para consultar causa, plano de ação e rastreabilidade." actions={<Link className="button button-primary" to="/fca/novo"><span className="material-symbols-rounded">add</span>Novo FCA</Link>}/>
+    <PageHeader eyebrow="CONTROLE DE DESVIOS" title="Fatos, causas e ações" description="Acompanhe registros, priorize vencimentos e abra cada FCA para consultar causa, plano de ação e rastreabilidade." actions={<Button label="Novo FCA" icon="pi pi-plus" onClick={()=>navigate('/fca/novo')}/>}/>
 
     <SummaryMetrics items={summary} ariaLabel="Filtrar FCA por status" variant="filters"/>
 
@@ -67,13 +87,32 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
         embedded
         ariaLabel="Filtros da FCA"
         search={<SearchField ariaLabel="Pesquisar FCA" placeholder="Pesquisar FCA, depositante, causa…" value={search} onChange={setSearch}/>}
-        filters={<select aria-label="Status da FCA" value={status} onChange={event=>setStatus(event.target.value)}><option value="">Todos os status</option><option value="ABERTO">Aberto</option><option value="EM_ANDAMENTO">Em andamento</option><option value="CONCLUIDO">Concluído</option><option value="VENCIDO">Vencido</option><option value="CANCELADO">Cancelado</option></select>}
+        filters={<Dropdown aria-label="Status da FCA" value={status} options={statusOptions} optionLabel="label" optionValue="value" onChange={event=>setStatus(event.value)} className="fca-status-dropdown"/>}
       />
 
       <div className="fca-results">
         {loading&&<Skeleton lines={7}/>} 
         {!loading&&error&&<EmptyState tone="error" icon="error" title="Não foi possível carregar os FCAs" description={error}/>} 
-        {!loading&&!error&&(filtered.length===0?<EmptyState title="Nenhum FCA encontrado" description="Ajuste os filtros ou a busca para consultar outros registros."/>:<div className="table-wrap embedded fca-table-wrap"><table className="fca-table responsive-data-table"><thead><tr><th scope="col">Registro</th><th scope="col">Depositante / KPI</th><th scope="col">Responsável</th><th scope="col">Módulo</th><th scope="col">Status</th><th scope="col"><span className="sr-only">Ação</span></th></tr></thead><tbody>{filtered.map(row=>{const display=deriveFcaDisplayStatus(row);return <tr key={row.id}><td data-label="FCA" data-primary="true"><div className="fca-record-cell"><Link className="fca-number-link" to={`/fca/${row.id}`}>#{String(row.numero).padStart(5,'0')}</Link><small>{new Date(`${row.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}</small></div></td><td data-label="Depositante"><div className="fca-entity-cell"><strong>{row.depositante_nome}</strong><span>{row.indicador_nome}</span></div></td><td data-label="Responsável"><div className="fca-owner-cell"><strong>{row.supervisor_nome}</strong><span>Supervisor</span></div></td><td data-label="Módulo"><span className="module-badge">{row.modulo_id}</span></td><td data-label="Status"><StatusBadge status={display}/></td><td className="fca-open-cell"><Link className="fca-open-link" to={`/fca/${row.id}`}>Abrir<span className="material-symbols-rounded" aria-hidden="true">chevron_right</span></Link></td></tr>})}</tbody></table></div>)}
+        {!loading&&!error&&(filtered.length===0?<EmptyState title="Nenhum FCA encontrado" description="Ajuste os filtros ou a busca para consultar outros registros."/>:<>
+          <div className="fca-prime-table" aria-label="FCA no escopo atual">
+            <DataTable value={filtered} dataKey="id" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table" tableStyle={{minWidth:'880px'}}>
+              <Column header="Registro" body={recordBody}/>
+              <Column header="Depositante / KPI" body={entityBody}/>
+              <Column header="Responsável" body={ownerBody}/>
+              <Column header="Módulo" body={moduleBody}/>
+              <Column header="Status" body={statusBody}/>
+              <Column header="Ação" body={actionBody}/>
+            </DataTable>
+          </div>
+          <div className="fca-mobile-records" role="list" aria-label="FCA no escopo atual">
+            {filtered.map(row=><article key={row.id} className="fca-mobile-record" role="listitem">
+              <header><div>{recordBody(row)}</div>{statusBody(row)}</header>
+              <div className="fca-mobile-entity"><strong>{row.depositante_nome}</strong><span>{row.indicador_nome}</span></div>
+              <div className="fca-mobile-meta"><div><span>Responsável</span><strong>{row.supervisor_nome}</strong></div><div><span>Módulo</span><Chip>{row.modulo_id}</Chip></div></div>
+              <Button label="Abrir FCA" icon="pi pi-chevron-right" iconPos="right" outlined severity="secondary" onClick={()=>navigate(`/fca/${row.id}`)}/>
+            </article>)}
+          </div>
+        </>)}
       </div>
     </Panel>
   </section>
