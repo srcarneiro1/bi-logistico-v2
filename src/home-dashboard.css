@@ -11,12 +11,17 @@
 .home-scope-grid>div{display:grid;gap:6px;min-height:76px;padding:12px 13px;border:1px solid var(--border-default);border-radius:var(--radius-control);background:var(--surface-secondary)}
 .home-scope-grid span{font-size:10px;color:var(--text-secondary)}
 .home-scope-grid strong{font-size:20px;color:var(--text-primary)}
+.home-attainment-progress{margin:2px 14px 0}
+.home-attainment-progress .p-progressbar{height:8px;overflow:hidden;border-radius:999px;background:var(--surface-muted)}
+.home-attainment-progress .p-progressbar-value{height:100%;border-radius:inherit;background:var(--brand-primary);transition:width .22s ease}
+.home-attainment-progress.is-good .p-progressbar-value{background:var(--success)}
+.home-attainment-progress.is-alert .p-progressbar-value{background:var(--danger)}
 
 /* Desktop: a coluna de apoio não deve comandar a altura do painel principal. */
 @media(min-width:1021px){
   .home-side-stack .finance-summary{padding:6px 14px}
   .home-side-stack .finance-summary>div{padding:7px 0}
-  .home-side-stack .progress-track{margin:2px 14px 0}
+  .home-side-stack .home-attainment-progress{margin:2px 14px 0}
   .home-side-stack .panel-note{margin:8px 14px 12px}
   .home-side-stack .home-scope-grid{padding:10px}
   .home-side-stack .home-scope-grid>div{min-height:62px;padding:10px 12px;gap:4px}
@@ -59,4 +64,8 @@
 @media(max-width:480px){
   .home-scope-grid{grid-template-columns:1fr}
   .home-attention-panel .attention-metrics{grid-template-columns:1fr}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .home-attainment-progress .p-progressbar-value{transition:none}
 }
