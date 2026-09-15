@@ -35,6 +35,16 @@
   padding:0!important;
 }
 
+/* KPIs do BI preservam a superfície semântica (verde/amarelo/vermelho),
+   mas sem a barra vertical lateral. A borda esquerda volta à mesma espessura
+   e cor do restante do card. */
+.nx-dashboard-metric-card.dashboard-metric-success,
+.nx-dashboard-metric-card.dashboard-metric-warning,
+.nx-dashboard-metric-card.dashboard-metric-danger{
+  border-left-width:1px!important;
+  border-left-color:var(--metric-border)!important;
+}
+
 /* Garantia final contra offsets herdados do Lara no ícone do login. */
 .login-form .login-field-icon>i.pi{
   left:14px!important;
