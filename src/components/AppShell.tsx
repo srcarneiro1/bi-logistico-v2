@@ -18,8 +18,8 @@ const baseItems=[
   {to:'/fca',label:'FCA',icon:'pi pi-check-square'},
 ]
 
-function MenuIcon({open=false}:{open?:boolean}){
-  return <i className={open?'pi pi-angle-left':'pi pi-bars'} aria-hidden="true"/>
+function MenuIcon({open=false,menu=false}:{open?:boolean;menu?:boolean}){
+  return <i className={menu?'pi pi-bars':open?'pi pi-angle-left':'pi pi-angle-right'} aria-hidden="true"/>
 }
 
 export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:HubBootstrap;filters:DashboardFilters;onFiltersChange:(next:DashboardFilters)=>void;onSignOut:()=>Promise<void>;children:ReactNode}){
@@ -120,7 +120,7 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
     </aside>
     <div className="workspace">
       <header className="topbar">
-        <div className="topbar-title"><button ref={mobileMenuButtonRef} type="button" className="mobile-menu-button" onClick={()=>setMobileOpen(true)} title="Abrir menu" aria-label="Abrir menu de navegação" aria-expanded={mobileOpen} aria-controls={MOBILE_SIDEBAR_ID}><MenuIcon/></button><div><span className="topbar-kicker">BI LOGÍSTICO</span><strong>{current?.label??'Visão geral'}</strong></div></div>
+        <div className="topbar-title"><button ref={mobileMenuButtonRef} type="button" className="mobile-menu-button" onClick={()=>setMobileOpen(true)} title="Abrir menu" aria-label="Abrir menu de navegação" aria-expanded={mobileOpen} aria-controls={MOBILE_SIDEBAR_ID}><MenuIcon menu/></button><div><span className="topbar-kicker">BI LOGÍSTICO</span><strong>{current?.label??'Visão geral'}</strong></div></div>
         <div className="topbar-profile" title={scope}>
           <span className="topbar-scope"><small>Escopo ativo</small><strong>{scope}</strong></span>
           <Tag value={accessLabel} severity="secondary" rounded className="topbar-access-tag"/>
