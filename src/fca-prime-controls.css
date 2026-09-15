@@ -1,0 +1,24 @@
+.fca-editor-page .fca-form .p-inputtext,
+.fca-editor-page .fca-form .p-dropdown,
+.fca-editor-page .fca-form .p-inputtextarea{width:100%;min-width:0}
+.fca-editor-page .fca-form .p-inputtext,
+.fca-editor-page .fca-form .p-dropdown{min-height:42px;border-radius:var(--radius-control)}
+.fca-editor-page .fca-form .p-inputtextarea{min-height:78px;border-radius:var(--radius-control);resize:vertical}
+.fca-editor-page .fca-form .p-inputtext:enabled:focus,
+.fca-editor-page .fca-form .p-dropdown:not(.p-disabled).p-focus,
+.fca-editor-page .fca-form .p-inputtextarea:enabled:focus{border-color:#c5c9cf;box-shadow:0 0 0 3px rgba(73,74,86,.07)}
+.fca-editor-page .fca-form .p-dropdown .p-dropdown-label{display:flex;align-items:center;padding:.7rem .8rem;font-size:11px}
+.fca-editor-page .fca-form .p-dropdown .p-dropdown-trigger{width:2.5rem;color:var(--text-muted)}
+.fca-editor-page .fca-form .p-dropdown.p-disabled{opacity:.72;background:var(--surface-secondary)}
+.fca-editor-page .fca-form .p-button{min-height:42px;border-radius:var(--radius-control)}
+.fca-editor-page .form-section-heading-row>.p-button{flex:0 0 auto}
+.fca-editor-page .action-remove.p-button{min-height:36px;margin-left:auto;padding:.45rem .6rem}
+.fca-editor-page .sticky-form-actions>.p-button{min-width:130px}
+.fca-plan-meta>span>i{font-size:12px;color:var(--text-muted)}
+.ui-context-notice>i{font-size:18px;color:var(--text-secondary);align-self:start;margin-top:1px}
+
+@media(max-width:760px){
+  .fca-editor-page .form-section-heading-row>.p-button{width:100%}
+  .fca-editor-page .sticky-form-actions>.p-button{width:100%;min-height:46px}
+  .fca-editor-page .action-remove.p-button{width:100%;justify-content:center;margin-left:0}
+}
