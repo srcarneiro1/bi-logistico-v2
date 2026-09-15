@@ -119,10 +119,10 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
              <header><div><Button label={row.d.nome} text className="nx-table-link" onClick={()=>openDepositante(row.d.cnpj)}/><Chip>{row.d.moduloId}</Chip></div>{statusBody(row)}</header>
              <div className="supervisor-detail-mobile-metrics"><div><span>Produção</span>{prodBody(row)}</div><div><span>Recebimento</span>{recBody(row)}</div><div><span>Inventário</span>{invBody(row)}</div></div>
            </article>)}
-           {!detailRows.length&&<EmptyState icon="pi pi-table" title="Sem depositantes no escopo" description="Não há depositantes vinculados a este supervisor nos filtros atuais."/>}
+           {!detailRows.length&&<EmptyState icon="table_rows" title="Sem depositantes no escopo" description="Não há depositantes vinculados a este supervisor nos filtros atuais."/>}
          </div>
        </Panel>
-       <Panel className="supervisor-open-fcas"><PanelHeader eyebrow="PENDÊNCIAS" title="FCAs pendentes no período" trailing={<Chip tone={selectedFcas.length?'danger':'neutral'}>{selectedFcas.length} pendente(s)</Chip>}/>{selectedFcas.length?<FcaCompactList items={selectedFcas} title={f=>`FCA #${String(f.numero).padStart(5,'0')} · ${f.depositante_nome}`} meta={f=>`${f.indicador_nome} · ${new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}`} onOpen={()=>setFcaReturnContext({type:'supervisor',supervisorId:selected.s.supervisorId})}/>:<EmptyState icon="pi pi-check-circle" title="Nenhum FCA pendente" description="Este supervisor não possui FCA pendente no filtro atual."/>}</Panel>
+       <Panel className="supervisor-open-fcas"><PanelHeader eyebrow="PENDÊNCIAS" title="FCAs pendentes no período" trailing={<Chip tone={selectedFcas.length?'danger':'neutral'}>{selectedFcas.length} pendente(s)</Chip>}/>{selectedFcas.length?<FcaCompactList items={selectedFcas} title={f=>`FCA #${String(f.numero).padStart(5,'0')} · ${f.depositante_nome}`} meta={f=>`${f.indicador_nome} · ${new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}`} onOpen={()=>setFcaReturnContext({type:'supervisor',supervisorId:selected.s.supervisorId})}/>:<EmptyState icon="check_circle" title="Nenhum FCA pendente" description="Este supervisor não possui FCA pendente no filtro atual."/>}</Panel>
      </div>
    </article>}
 
