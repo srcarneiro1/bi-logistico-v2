@@ -5,6 +5,7 @@ import { Button } from 'primereact/button'
 import { Card } from 'primereact/card'
 import { Dropdown } from 'primereact/dropdown'
 import { Tag } from 'primereact/tag'
+import { PageFilterProvider } from './PageFilterContext'
 import { getAvailablePeriods, periodLabel } from '../lib/dashboard'
 import { listFcaPeriods } from '../lib/fca'
 import type { DashboardFilters } from '../types/dashboard'
@@ -97,6 +98,19 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
   function resetFilters(){onFiltersChange({...filters,supervisorId:'',moduloId:''})}
   function changePeriod(value:string){if(isFcaList)onFiltersChange({...filters,fcaPeriodo:value});else onFiltersChange({...filters,periodo:value})}
 
+  const pageFilter=contextualRoute?null:<section className="global-filter-stage" aria-label="Filtros globais">
+    <Card className="dashboard-filter-panel nx-dashboard-filter-card global-filter-card">
+      <div className="nx-dashboard-filter-grid">
+        <label className="nx-field">Período<Dropdown aria-label="Período" value={isFcaList?filters.fcaPeriodo:filters.periodo} options={periodOptions} optionLabel="label" optionValue="value" onChange={event=>changePeriod(String(event.value??''))}/></label>
+        <label className="nx-field">Supervisor<Dropdown aria-label="Supervisor" value={filters.supervisorId} options={supervisorOptions} optionLabel="label" optionValue="value" disabled={!isOperationalAdmin} onChange={event=>onFiltersChange({...filters,supervisorId:String(event.value??''),moduloId:''})}/></label>
+        <label className="nx-field">Módulo<Dropdown aria-label="Módulo" value={filters.moduloId} options={moduleOptions} optionLabel="label" optionValue="value" onChange={event=>onFiltersChange({...filters,moduloId:String(event.value??'')})}/></label>
+      </div>
+      <div className="nx-dashboard-filter-actions">
+        <Button type="button" label="Limpar dimensões" icon="pi pi-filter-slash" outlined onClick={resetFilters} disabled={!isOperationalAdmin||(!filters.supervisorId&&!filters.moduloId)}/>
+      </div>
+    </Card>
+  </section>
+
   return <div className={`app-shell ${collapsed?'sidebar-collapsed':''}`}>
     {mobileOpen&&<button className="sidebar-backdrop" type="button" aria-label="Fechar menu de navegação" onClick={()=>setMobileOpen(false)}/>} 
     <aside id={MOBILE_SIDEBAR_ID} ref={sidebarRef} className={`sidebar ${mobileOpen?'mobile-open':''}`} aria-label="Navegação principal" {...(mobileOpen?{role:'dialog','aria-modal':true as const}:{})}>
@@ -109,21 +123,12 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
         <div className="topbar-title"><button ref={mobileMenuButtonRef} type="button" className="mobile-menu-button" onClick={()=>setMobileOpen(true)} title="Abrir menu" aria-label="Abrir menu de navegação" aria-expanded={mobileOpen} aria-controls={MOBILE_SIDEBAR_ID}><MenuIcon menu/></button><div><span className="topbar-kicker">BI LOGÍSTICO</span><strong>{current?.label??'Visão geral'}</strong></div></div>
         <div className="topbar-profile" title={scope}><span className="topbar-scope"><small>Escopo ativo</small><strong>{scope}</strong></span><Tag value={accessLabel} severity="secondary" rounded className="topbar-access-tag"/><span className="topbar-sync"><span className="sync-dot"/><span>HUB conectada</span></span></div>
       </header>
-
-      {!contextualRoute&&<section className="global-filter-stage" aria-label="Filtros globais">
-        <Card className="dashboard-filter-panel nx-dashboard-filter-card global-filter-card">
-          <div className="nx-dashboard-filter-grid">
-            <label className="nx-field">Período<Dropdown aria-label="Período" value={isFcaList?filters.fcaPeriodo:filters.periodo} options={periodOptions} optionLabel="label" optionValue="value" onChange={event=>changePeriod(String(event.value??''))}/></label>
-            <label className="nx-field">Supervisor<Dropdown aria-label="Supervisor" value={filters.supervisorId} options={supervisorOptions} optionLabel="label" optionValue="value" disabled={!isOperationalAdmin} onChange={event=>onFiltersChange({...filters,supervisorId:String(event.value??''),moduloId:''})}/></label>
-            <label className="nx-field">Módulo<Dropdown aria-label="Módulo" value={filters.moduloId} options={moduleOptions} optionLabel="label" optionValue="value" onChange={event=>onFiltersChange({...filters,moduloId:String(event.value??'')})}/></label>
-          </div>
-          <div className="nx-dashboard-filter-actions">
-            <Button type="button" label="Limpar dimensões" icon="pi pi-filter-slash" outlined onClick={resetFilters} disabled={!isOperationalAdmin||(!filters.supervisorId&&!filters.moduloId)}/>
-          </div>
-        </Card>
-      </section>}
-
-      <main className="content">{!hub.analyticsReady&&<div className="analytics-warning"><i className="pi pi-info-circle" aria-hidden="true"/><div><strong>Camada analítica ainda não publicada no Apps Script.</strong><span>Cadastros e FCA funcionam, mas os indicadores aparecerão após atualizar a ponte da HUB para a versão 2.</span></div></div>}{children}</main>
+      <main className="content">
+        <PageFilterProvider value={pageFilter}>
+          {!hub.analyticsReady&&<div className="analytics-warning"><i className="pi pi-info-circle" aria-hidden="true"/><div><strong>Camada analítica ainda não publicada no Apps Script.</strong><span>Cadastros e FCA funcionam, mas os indicadores aparecerão após atualizar a ponte da HUB para a versão 2.</span></div></div>}
+          {children}
+        </PageFilterProvider>
+      </main>
     </div>
   </div>
 }
