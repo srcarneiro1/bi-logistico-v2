@@ -1,0 +1,88 @@
+/* Gráficos — paridade final com a densidade do Extra Cost Control.
+   O stage do gráfico é o único owner do espaço interno ao redor do canvas. */
+
+.nx-chart-stage{
+  position:relative!important;
+  display:block!important;
+  width:100%!important;
+  height:248px;
+  min-width:0!important;
+  padding:12px 16px 14px!important;
+  background:#fff!important;
+  box-sizing:border-box!important;
+}
+
+.nx-chart-stage>.p-chart{
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+}
+
+.nx-chart-stage>.p-chart>canvas,
+.nx-chart-stage canvas{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-width:100%!important;
+  max-height:100%!important;
+}
+
+/* Evita padding duplicado: Panel contém o gráfico, stage contém o canvas. */
+.home-trend-panel .panel-body,
+.kpis-leadtime-panel .panel-body,
+.kpis-history-panel .panel-body,
+.depositor-grid>.ui-panel:first-child .panel-body{
+  padding:0!important;
+}
+
+.simple-chart{display:grid!important;gap:8px!important;min-width:0!important}
+.simple-chart .chart-legend{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  padding:6px 16px 10px!important;
+}
+.simple-chart .chart-legend button{
+  min-height:28px!important;
+  color:#5f636b!important;
+  font-size:10px!important;
+  font-weight:650!important;
+}
+.simple-chart .chart-legend button:hover:not(:disabled){color:#242a36!important}
+.simple-chart .chart-legend button:focus-visible{
+  outline:none!important;
+  box-shadow:0 0 0 3px rgba(219,8,18,.09)!important;
+  border-radius:6px!important;
+}
+.simple-chart .chart-legend button i{width:9px!important;height:9px!important;flex:0 0 9px!important}
+
+@media(max-width:900px){
+  .nx-chart-stage{height:238px!important;padding:12px 12px 14px!important}
+}
+
+@media(max-width:760px){
+  .simple-chart .chart-legend{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:6px 12px!important;
+    padding:6px 12px 10px!important;
+  }
+  .simple-chart .chart-legend button{
+    width:100%!important;
+    min-height:40px!important;
+    justify-content:flex-start!important;
+    padding:6px 0!important;
+    white-space:normal!important;
+    text-align:left!important;
+  }
+}
+
+@media(max-width:600px){
+  .nx-chart-stage{height:224px!important;padding:10px 8px 12px!important}
+}
+
+@media(max-width:420px){
+  .simple-chart .chart-legend{grid-template-columns:1fr!important}
+}
