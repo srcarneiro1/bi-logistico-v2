@@ -1,6 +1,8 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { PrimeReactProvider } from 'primereact/api'
+import 'primereact/resources/themes/lara-light-indigo/theme.css'
+import 'primereact/resources/primereact.min.css'
 import 'primeicons/primeicons.css'
 import App from './App'
 import './styles.css'
@@ -25,7 +27,6 @@ import './accessibility-interactions.css'
 import './primereact.css'
 
 const primeReactConfig = {
-  unstyled: true,
   ripple: true,
 }
 
