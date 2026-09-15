@@ -58,15 +58,73 @@
 .nx-dashboard-metric-card .metric-card-pp-neutral{color:var(--unilog-muted)!important}
 .nx-dashboard-metric-card .metric-card-pp-separator{color:var(--unilog-muted)!important;font-weight:700!important}
 
-/* Garantia final contra offsets herdados do Lara no ícone do login. */
+/* Autenticação: ícones usam centralização geométrica própria, sem depender do baseline
+   da fonte ou dos offsets internos do tema Lara. */
+.login-form .login-field-icon{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+}
 .login-form .login-field-icon>i.pi{
+  position:absolute!important;
   left:14px!important;
+  top:0!important;
+  bottom:0!important;
+  width:16px!important;
+  height:100%!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:0!important;
+  transform:none!important;
+  line-height:1!important;
+  pointer-events:none!important;
+}
+.login-form .login-field-icon>.p-inputtext{padding-left:40px!important}
+
+.login-form .login-password.p-password{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+}
+.login-form .login-password .p-icon-field{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+}
+.login-form .login-password .p-password-input{
+  width:100%!important;
+  min-height:46px!important;
+  padding-right:44px!important;
+}
+.login-form .login-password .p-password-toggle-mask-icon,
+.login-form .login-password .p-password-show-icon,
+.login-form .login-password .p-password-hide-icon{
+  position:absolute!important;
+  right:14px!important;
   top:50%!important;
+  width:16px!important;
+  height:16px!important;
+  display:grid!important;
+  place-items:center!important;
   margin:0!important;
   transform:translateY(-50%)!important;
   line-height:1!important;
 }
-.login-form .login-field-icon>.p-inputtext{padding-left:40px!important}
+.login-proof i.pi,
+.login-security-note i.pi{
+  width:14px;
+  height:14px;
+  display:inline-grid;
+  place-items:center;
+  flex:0 0 14px;
+  margin:0;
+  line-height:1;
+}
+.login-form .p-button .p-button-icon{
+  display:inline-grid!important;
+  place-items:center!important;
+  line-height:1!important;
+}
 
 /* Dropdowns de filtro seguem a mesma altura e densidade do Extra Cost. */
 .nx-dashboard-filter-grid>.nx-field{font-size:9px!important;font-weight:700!important;line-height:1.3!important;color:#646a74!important}
