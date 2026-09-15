@@ -1,11 +1,28 @@
 /* Último passe de paridade visual com o Extra Cost Control.
    Carregado após extra-cost-alignment.css para resolver somente a composição final. */
 
+/* PageHeader PrimeReact: mesma estrutura do Extra Cost. */
+.page-header.nx-prime-page-header.p-toolbar{
+  min-width:0;
+  margin:0 0 16px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  align-items:flex-start!important;
+}
+.nx-prime-page-header .p-toolbar-group-start,
+.nx-prime-page-header .p-toolbar-group-end{min-width:0}
+.nx-prime-page-header .p-toolbar-group-start{flex:1 1 auto}
+.nx-page-title-copy{display:grid;gap:3px;min-width:0}
+.nx-page-title-copy .ui-eyebrow{font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--unilog-muted)}
+.nx-page-title-copy h1{margin:2px 0 3px;font-size:28px;line-height:1.15;letter-spacing:-.035em;color:var(--unilog-ink);overflow-wrap:anywhere}
+.nx-page-title-copy p{margin:0;max-width:780px;font-size:12px;line-height:1.5;color:#6e747e}
+.page-actions.nx-modern-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+
 /* O filtro agora pertence à página, imediatamente após o heading. */
-.page-header{margin-bottom:16px}
-.home-dashboard .page-header{margin-bottom:16px}
 .global-filter-stage{max-width:none;margin:0 0 18px;padding:0}
-.global-filter-stage+.content{padding-top:initial}
 
 /* Mesmo ritmo vertical do dashboard do Extra Cost. */
 .home-dashboard,.kpis-page{gap:16px}
@@ -27,8 +44,13 @@
 .nx-dashboard-filter-grid .p-dropdown-label{height:40px!important;min-height:40px!important;padding:0 10px!important}
 .nx-dashboard-filter-grid .p-dropdown-trigger{width:36px!important}
 
-@media(max-width:720px){
-  .page-header,.home-dashboard .page-header{margin-bottom:14px}
+@media(max-width:760px){
+  .page-header.nx-prime-page-header.p-toolbar{margin-bottom:14px!important;gap:10px;flex-wrap:wrap}
+  .nx-prime-page-header .p-toolbar-group-start,.nx-prime-page-header .p-toolbar-group-end{width:100%}
+  .nx-page-title-copy h1{font-size:23px}
+  .nx-page-title-copy p{font-size:11px}
+  .page-actions.nx-modern-actions{width:100%;justify-content:stretch}
+  .page-actions.nx-modern-actions>.p-button,.page-actions.nx-modern-actions>.button{flex:1 1 auto}
   .global-filter-stage{margin-bottom:16px}
   .nx-dashboard-filter-grid .p-dropdown{height:46px!important;min-height:46px!important}
   .nx-dashboard-filter-grid .p-dropdown-label{height:44px!important;min-height:44px!important;font-size:12px!important}
