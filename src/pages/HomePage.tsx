@@ -1,3 +1,4 @@
+import { ProgressBar } from 'primereact/progressbar'
 import { MetricCard } from '../components/MetricCard'
 import { PageHeader } from '../components/PageHeader'
 import { SimpleLineChart } from '../components/SimpleLineChart'
@@ -26,6 +27,7 @@ export function HomePage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
   const attention=attentionRows.slice(0,6)
   const scopeDepositantes=new Set(ops.map(r=>r.cnpj)).size,scopeSupervisors=new Set(ops.map(r=>r.supervisorId)).size,scopeModules=new Set(ops.map(r=>r.moduloId)).size
   const financeGood=attainment!=null&&attainment>=1
+  const attainmentPercent=Math.min(100,Math.max(0,(attainment??0)*100))
   const renderMetric=(k:(typeof kpis)[number])=>{const c=kpiComparison(hub,filters,k.label,k.value);return <MetricCard key={k.label} variant="supporting" label={k.label} value={pct(k.value)} status={metricStatus(k.value,k.meta)} meta={k.meta?.metaPct!=null?`Meta ${pct(k.meta.metaPct)}`:'Sem meta'} detail={k.meta?.criticoPct!=null?`Crítico < ${pct(k.meta.criticoPct)}`:undefined} delta={c.delta} gap={c.gap}/>}
   return <section className="home-dashboard">
     <PageHeader eyebrow="PERFORMANCE OPERACIONAL" title="Visão geral" description="Leitura consolidada dos principais indicadores, pontos de atenção e desempenho financeiro no escopo selecionado." />
@@ -38,7 +40,7 @@ export function HomePage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
     <div className="home-main-grid">
       <Panel as="article" className="home-trend-panel"><PanelHeader eyebrow="HISTÓRICO ATÉ O PERÍODO" title="Evolução dos KPIs" trailing={<Chip>últimos {Math.max(prodTrend.length,recTrend.length,invTrend.length)} meses</Chip>}/><div className="panel-body"><SimpleLineChart series={[{label:'Produção',values:prodTrend,tone:'red'},{label:'Recebimento',values:recTrend,tone:'gray'},...(invTrend.length?[{label:'Inventário',values:invTrend,tone:'blue' as const}]:[])]}/></div></Panel>
       <div className="home-side-stack">
-        <Panel as="article"><PanelHeader eyebrow="FINANCEIRO" title="Receita do período" trailing={attainment!=null?<Chip tone={financeGood?'success':attainment<.95?'danger':'neutral'}>{financeGood?'Acima do planejado':attainment<.95?'Abaixo do planejado':'Dentro da faixa'}</Chip>:undefined}/><div className="finance-summary"><div><span>Planejado</span><strong>{money(plan)}</strong></div><div><span>Realizado</span><strong>{money(real)}</strong></div><div className={attainment!=null&&attainment<.95?'finance-alert':''}><span>Atingimento</span><strong className={financeGood?'text-ok':''}>{pct(attainment)}</strong></div></div><div className={`progress-track ${financeGood?'good':''}`}><i style={{width:`${Math.min(100,(attainment??0)*100)}%`}} /></div><p className="panel-note">{revenues.length} depositante(s) com lançamento no escopo atual.</p></Panel>
+        <Panel as="article"><PanelHeader eyebrow="FINANCEIRO" title="Receita do período" trailing={attainment!=null?<Chip tone={financeGood?'success':attainment<.95?'danger':'neutral'}>{financeGood?'Acima do planejado':attainment<.95?'Abaixo do planejado':'Dentro da faixa'}</Chip>:undefined}/><div className="finance-summary"><div><span>Planejado</span><strong>{money(plan)}</strong></div><div><span>Realizado</span><strong>{money(real)}</strong></div><div className={attainment!=null&&attainment<.95?'finance-alert':''}><span>Atingimento</span><strong className={financeGood?'text-ok':''}>{pct(attainment)}</strong></div></div><div className={`home-attainment-progress ${financeGood?'is-good':attainment!=null&&attainment<.95?'is-alert':''}`}><ProgressBar value={attainmentPercent} showValue={false}/></div><p className="panel-note">{revenues.length} depositante(s) com lançamento no escopo atual.</p></Panel>
         <Panel as="article" className="home-scope-panel"><PanelHeader eyebrow="ESCOPO" title="Resumo da seleção" trailing={<Chip>filtro atual</Chip>}/><div className="home-scope-grid"><div><span>Depositantes</span><strong>{scopeDepositantes}</strong></div><div><span>Supervisores</span><strong>{scopeSupervisors}</strong></div><div><span>Módulos</span><strong>{scopeModules}</strong></div><div><span>Média produção</span><strong>{pct(avg(ops.map(r=>r.producaoPct)))}</strong></div></div></Panel>
       </div>
     </div>
