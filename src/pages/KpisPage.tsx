@@ -56,7 +56,7 @@ export function KpisPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
   <Panel as="article" className="kpis-table-panel">
    <PanelHeader eyebrow="BASE OPERACIONAL" title="Performance por depositante" trailing={<Chip>{rows.length} depositantes</Chip>}/>
    <div className="kpis-prime-table" aria-label="Performance por depositante">
-    <DataTable value={rows} dataKey="rowId" size="small" rowHover emptyMessage="Sem dados para o escopo atual." tableStyle={{minWidth:'720px'}}>
+    <DataTable value={rows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table" emptyMessage="Sem dados para o escopo atual." tableStyle={{minWidth:'720px'}}>
      <Column field="nomeDepositante" header="Depositante" sortable body={(row:KpiRow)=><strong>{row.nomeDepositante}</strong>}/>
      <Column field="moduloId" header="Módulo" sortable body={(row:KpiRow)=><Chip>{row.moduloId}</Chip>}/>
      <Column field="producaoPct" header="Produção" sortable body={metricBody('producaoPct','statusProd')}/>
