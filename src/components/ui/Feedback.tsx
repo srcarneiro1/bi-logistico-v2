@@ -17,7 +17,7 @@ interface SkeletonProps{
 }
 
 const emptyPrimeIcon:Record<string,string>={
-  inbox:'pi pi-inbox',error:'pi pi-exclamation-circle',lock:'pi pi-lock',check_circle:'pi pi-check-circle',task_alt:'pi pi-check-square',table_rows:'pi pi-table',link_off:'pi pi-link',search:'pi pi-search',info:'pi pi-info-circle',warning:'pi pi-exclamation-triangle'
+  inbox:'pi pi-inbox',error:'pi pi-exclamation-circle',lock:'pi pi-lock',check_circle:'pi pi-check-circle',task_alt:'pi pi-check-square',table_rows:'pi pi-table',link_off:'pi pi-link',search:'pi pi-search',info:'pi pi-info-circle',warning:'pi pi-exclamation-triangle',group_off:'pi pi-users',history:'pi pi-history',event_busy:'pi pi-calendar-times',fact_check:'pi pi-file-check'
 }
 
 export function EmptyState({title,description,icon='inbox',action,tone='neutral'}:EmptyStateProps){
