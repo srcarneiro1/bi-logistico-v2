@@ -81,13 +81,13 @@ export function SimpleLineChart({series,height=248}:SimpleLineChartProps){
         data:periods.map(period=>byPeriod.get(period)??null),
         borderColor:color,
         backgroundColor:color,
-        pointBackgroundColor:'#fff',
+        pointBackgroundColor:color,
         pointBorderColor:color,
-        pointBorderWidth:2,
+        pointBorderWidth:1,
         pointRadius:2.5,
         pointHoverRadius:4,
-        borderWidth:2,
-        tension:.28,
+        borderWidth:2.5,
+        tension:.25,
         spanGaps:true,
       }
     }),
@@ -98,8 +98,8 @@ export function SimpleLineChart({series,height=248}:SimpleLineChartProps){
     maintainAspectRatio:false,
     animation:false as const,
     normalized:true,
-    interaction:{mode:'nearest' as const,intersect:false},
-    layout:{padding:{top:4,right:8,bottom:0,left:2}},
+    interaction:{mode:'index' as const,intersect:false},
+    layout:{padding:{top:4,right:6,bottom:2,left:2}},
     plugins:{
       legend:{display:false},
       tooltip:{
@@ -110,6 +110,7 @@ export function SimpleLineChart({series,height=248}:SimpleLineChartProps){
         borderWidth:1,
         padding:10,
         displayColors:true,
+        usePointStyle:true,
         callbacks:{
           title:(contexts:any[])=>periodLabel(String(contexts[0]?.label??'')),
           label:(context:any)=>` ${context.dataset.label}: ${pct(context.parsed.y)}`,
