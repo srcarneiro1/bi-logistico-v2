@@ -1,0 +1,109 @@
+/* Tabelas — paridade final com o Extra Cost Control.
+   Esta camada é carregada depois dos owners para que toda nx-prime-table use uma única anatomia. */
+
+.nx-prime-table.p-datatable{
+  border:0!important;
+  border-radius:0!important;
+  background:#fff!important;
+  font-variant-numeric:tabular-nums;
+}
+
+.nx-prime-table .p-datatable-wrapper{
+  max-width:100%!important;
+  overflow-x:auto!important;
+  border:0!important;
+  border-radius:0!important;
+  background:#fff!important;
+  box-shadow:none!important;
+  overscroll-behavior-inline:contain;
+  -webkit-overflow-scrolling:touch;
+}
+
+.nx-prime-table .p-datatable-table{
+  width:100%!important;
+  border-collapse:collapse!important;
+  border-spacing:0!important;
+}
+
+.nx-prime-table .p-datatable-thead>tr>th{
+  min-height:42px!important;
+  padding:12px 14px!important;
+  border-width:0 0 1px!important;
+  border-color:var(--unilog-border-soft)!important;
+  background:#f8f9fb!important;
+  color:#59616c!important;
+  font-size:9px!important;
+  line-height:1.25!important;
+  font-weight:800!important;
+  letter-spacing:.055em!important;
+  text-transform:uppercase!important;
+  vertical-align:middle!important;
+  white-space:nowrap;
+}
+
+.nx-prime-table .p-datatable-tbody>tr,
+.nx-prime-table.p-datatable-striped .p-datatable-tbody>tr.p-row-odd{
+  background:#fff!important;
+  transition:background-color .12s ease!important;
+}
+
+.nx-prime-table .p-datatable-tbody>tr>td{
+  min-height:46px!important;
+  padding:12px 14px!important;
+  border-width:0 0 1px!important;
+  border-color:var(--unilog-border-soft)!important;
+  background:inherit!important;
+  color:#444b55!important;
+  font-size:11px!important;
+  line-height:1.4!important;
+  vertical-align:middle!important;
+}
+
+.nx-prime-table .p-datatable-tbody>tr:hover>td{background:#fbfcfd!important}
+.nx-prime-table .p-datatable-tbody>tr:last-child>td{border-bottom:0!important}
+
+.nx-prime-table .p-column-header-content{display:flex!important;align-items:center!important;gap:6px!important}
+.nx-prime-table .p-sortable-column{cursor:pointer;user-select:none}
+.nx-prime-table .p-sortable-column:hover{background:#f4f5f7!important}
+.nx-prime-table .p-sortable-column:focus-visible{outline:none!important;box-shadow:inset 0 0 0 2px rgba(219,8,18,.18)!important}
+.nx-prime-table .p-sortable-column-icon{font-size:10px!important;color:var(--unilog-muted)!important}
+
+.nx-prime-table .p-tag,
+.nx-prime-table .ui-chip{
+  min-height:24px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:4px 8px!important;
+  border-radius:999px!important;
+  font-size:9px!important;
+  font-weight:750!important;
+  line-height:1.2!important;
+}
+
+.nx-prime-table .p-paginator,
+.nx-prime-paginator.p-paginator{
+  min-height:48px!important;
+  padding:8px 12px!important;
+  border:0!important;
+  border-top:1px solid var(--unilog-border-soft)!important;
+  border-radius:0!important;
+  background:#fff!important;
+}
+
+/* A seleção de Depositante é contexto de navegação, não status semântico. */
+.depositors-prime-table .nx-prime-table .p-datatable-tbody>tr.depositor-row-selected>td{background:#f7f8fa!important}
+.depositors-prime-table .nx-prime-table .p-datatable-tbody>tr.depositor-row-selected:hover>td{background:#f5f6f8!important}
+
+/* Ações textuais dentro da tabela permanecem compactas e não alteram a altura da linha. */
+.nx-prime-table .nx-table-link.p-button,
+.nx-prime-table .fca-open-prime.p-button{
+  min-height:30px!important;
+  border-radius:8px!important;
+}
+
+@media(max-width:760px){
+  /* As telas extensas usam record cards no mobile; este fallback protege tabelas que permaneçam visíveis. */
+  .nx-prime-table .p-datatable-thead>tr>th{padding:11px 12px!important}
+  .nx-prime-table .p-datatable-tbody>tr>td{padding:11px 12px!important}
+}
