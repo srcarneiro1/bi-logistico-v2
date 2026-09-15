@@ -64,6 +64,11 @@ export function SimpleLineChart({series,height=300}:SimpleLineChartProps){
   const min=Math.max(0,Math.min(...safeScaleValues)-.04)
   const max=Math.max(1,Math.max(...safeScaleValues)+.02)
 
+  const seriesByPeriod=useMemo(()=>series.map(item=>({
+    label:item.label,
+    values:new Map(item.values.map(point=>[point.periodo,point.value])),
+  })),[series])
+
   const chartData=useMemo(()=>({
     labels:periods,
     datasets:visibleSeries.map((item,visibleIndex)=>{
@@ -117,7 +122,7 @@ export function SimpleLineChart({series,height=300}:SimpleLineChartProps){
         border:{display:false},
         ticks:{
           color:'#858A93',
-          font:{size:9,family:'Inter, Roboto, Arial, sans-serif'},
+          font:{size:9,family:'Roboto, Arial, sans-serif'},
           padding:7,
           autoSkip:false,
           maxRotation:0,
@@ -135,7 +140,7 @@ export function SimpleLineChart({series,height=300}:SimpleLineChartProps){
         border:{display:false},
         ticks:{
           color:'#858A93',
-          font:{size:9,family:'Inter, Roboto, Arial, sans-serif'},
+          font:{size:9,family:'Roboto, Arial, sans-serif'},
           padding:6,
           callback:(value:any)=>pct(Number(value)),
         },
@@ -160,9 +165,14 @@ export function SimpleLineChart({series,height=300}:SimpleLineChartProps){
   if(!hasData)return <EmptyState icon="query_stats" title="Sem histórico disponível" description="Não há pontos de série para o período e o escopo selecionados. Ajuste os filtros para consultar outro recorte."/>
 
   return <div className="simple-chart">
-    <div className="simple-chart-stage nx-chart-stage" style={{height}} role="img" aria-label={`Evolução histórica dos indicadores em ${periods.length} período(s)`}>
+    <div className="simple-chart-stage nx-chart-stage" style={{height}} aria-hidden="true">
       <Chart type="line" data={chartData} options={chartOptions}/>
     </div>
+    <table className="sr-only">
+      <caption>Evolução histórica dos indicadores</caption>
+      <thead><tr><th scope="col">Período</th>{seriesByPeriod.map(item=><th scope="col" key={item.label}>{item.label}</th>)}</tr></thead>
+      <tbody>{periods.map(period=><tr key={period}><th scope="row">{periodLabel(period)}</th>{seriesByPeriod.map(item=>{const value=item.values.get(period);return <td key={item.label}>{value==null?'Sem dado':pct(value)}</td>})}</tr>)}</tbody>
+    </table>
     <div className="chart-legend" aria-label="Séries do gráfico">{series.map((item,index)=>{
       const tone=item.tone??fallbackTones[index%fallbackTones.length]
       const visible=!hiddenSeries.has(item.label)
