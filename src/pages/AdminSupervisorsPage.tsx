@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type ChangeEvent } from 'react'
 import { Button } from 'primereact/button'
+import { Card } from 'primereact/card'
 import { PageHeader } from '../components/PageHeader'
 import { Badge } from '../components/ui/Badge'
 import { Chip } from '../components/ui/Chip'
@@ -91,7 +92,7 @@ export function AdminSupervisorsPage({hub,onRefresh}:{hub:HubBootstrap;onRefresh
     {supervisors.length===0?<EmptyState icon="group_off" title="Nenhum supervisor encontrado" description="Ajuste a busca para consultar outros supervisores."/>:<div className="admin-supervisor-grid">{supervisors.map(supervisor=>{
       const working=workingId===supervisor.supervisorId
       const inputId=`supervisor-photo-${supervisor.supervisorId}`
-      return <article className="admin-supervisor-card" key={supervisor.supervisorId}>
+      return <Card className="admin-supervisor-card nx-entity-card" key={supervisor.supervisorId}>
         <div className="admin-supervisor-card-head">
           <div className="admin-supervisor-avatar"><SupervisorAvatar supervisor={supervisor}/></div>
           <div className="admin-supervisor-identity"><strong>{supervisor.nomeExibicao}</strong><span>{supervisor.email||'Sem e-mail'}</span><small>ID {supervisor.supervisorId}</small></div>
@@ -102,7 +103,7 @@ export function AdminSupervisorsPage({hub,onRefresh}:{hub:HubBootstrap;onRefresh
           <Button type="button" label={supervisor.fotoSource==='SUPABASE'?'Substituir foto':'Cadastrar foto'} icon="pi pi-upload" loading={working} onClick={()=>document.getElementById(inputId)?.click()}/>
           {supervisor.fotoSource==='SUPABASE'&&<Button type="button" label="Remover foto interna" icon="pi pi-trash" outlined severity="secondary" disabled={working} onClick={()=>void removePhoto(supervisor)}/>}
         </div>
-      </article>
+      </Card>
     })}</div>}
   </section>
 }
