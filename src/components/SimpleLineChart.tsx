@@ -44,7 +44,7 @@ function shouldShowAxisLabel(periodo:string,index:number,total:number){
   return index%step===0
 }
 
-export function SimpleLineChart({series,height=230}:SimpleLineChartProps){
+export function SimpleLineChart({series,height=300}:SimpleLineChartProps){
   const [hiddenSeries,setHiddenSeries]=useState<Set<string>>(()=>new Set())
 
   useEffect(()=>{
@@ -98,7 +98,7 @@ export function SimpleLineChart({series,height=230}:SimpleLineChartProps){
     plugins:{
       legend:{display:false},
       tooltip:{
-        backgroundColor:'#171b24',
+        backgroundColor:'#242a36',
         titleColor:'#fff',
         bodyColor:'#fff',
         borderColor:'rgba(255,255,255,.08)',
@@ -116,7 +116,7 @@ export function SimpleLineChart({series,height=230}:SimpleLineChartProps){
         grid:{display:false},
         border:{display:false},
         ticks:{
-          color:'#8A9099',
+          color:'#858A93',
           font:{size:9,family:'Inter, Roboto, Arial, sans-serif'},
           padding:7,
           autoSkip:false,
@@ -134,7 +134,7 @@ export function SimpleLineChart({series,height=230}:SimpleLineChartProps){
         grid:{color:'#ECEEF1'},
         border:{display:false},
         ticks:{
-          color:'#8A9099',
+          color:'#858A93',
           font:{size:9,family:'Inter, Roboto, Arial, sans-serif'},
           padding:6,
           callback:(value:any)=>pct(Number(value)),
@@ -160,7 +160,7 @@ export function SimpleLineChart({series,height=230}:SimpleLineChartProps){
   if(!hasData)return <EmptyState icon="query_stats" title="Sem histórico disponível" description="Não há pontos de série para o período e o escopo selecionados. Ajuste os filtros para consultar outro recorte."/>
 
   return <div className="simple-chart">
-    <div className="simple-chart-stage" style={{height}} role="img" aria-label={`Evolução histórica dos indicadores em ${periods.length} período(s)`}>
+    <div className="simple-chart-stage nx-chart-stage" style={{height}} role="img" aria-label={`Evolução histórica dos indicadores em ${periods.length} período(s)`}>
       <Chart type="line" data={chartData} options={chartOptions}/>
     </div>
     <div className="chart-legend" aria-label="Séries do gráfico">{series.map((item,index)=>{
