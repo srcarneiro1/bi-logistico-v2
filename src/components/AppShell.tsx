@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { Avatar } from 'primereact/avatar'
+import { Button } from 'primereact/button'
+import { Card } from 'primereact/card'
 import { Dropdown } from 'primereact/dropdown'
 import { Tag } from 'primereact/tag'
 import { getAvailablePeriods, periodLabel } from '../lib/dashboard'
@@ -135,15 +137,19 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
           <span className="topbar-sync"><span className="sync-dot"/><span>HUB conectada</span></span>
         </div>
       </header>
-      {!contextualRoute&&<div className="filter-toolbar" role="region" aria-label="Filtros globais">
-        <div className="filter-toolbar-title"><i className="pi pi-filter" aria-hidden="true"/><div><strong>Filtros</strong><small>Refine o escopo da análise</small></div></div>
-        <div className="topbar-filters">
-          <label><span>Período</span><Dropdown aria-label="Período" value={isFcaList?filters.fcaPeriodo:filters.periodo} options={periodOptions} optionLabel="label" optionValue="value" onChange={event=>changePeriod(String(event.value??''))} className="topbar-filter-control"/></label>
-          <label><span>Supervisor</span><Dropdown aria-label="Supervisor" value={filters.supervisorId} options={supervisorOptions} optionLabel="label" optionValue="value" disabled={!isOperationalAdmin} onChange={event=>onFiltersChange({...filters,supervisorId:String(event.value??''),moduloId:''})} className="topbar-filter-control"/></label>
-          <label><span>Módulo</span><Dropdown aria-label="Módulo" value={filters.moduloId} options={moduleOptions} optionLabel="label" optionValue="value" onChange={event=>onFiltersChange({...filters,moduloId:String(event.value??'')})} className="topbar-filter-control"/></label>
-          {isOperationalAdmin&&(filters.supervisorId||filters.moduloId)&&<button type="button" className="topbar-filter-reset" onClick={resetFilters} title="Limpar supervisor e módulo" aria-label="Limpar supervisor e módulo"><i className="pi pi-filter-slash" aria-hidden="true"/></button>}
-        </div>
-      </div>}
+
+      {!contextualRoute&&<section className="global-filter-stage" aria-label="Filtros globais">
+        <Card className="filter-toolbar global-filter-card">
+          <div className="filter-toolbar-title"><span className="global-filter-icon"><i className="pi pi-filter" aria-hidden="true"/></span><div><strong>Filtros de análise</strong><small>Refine o escopo sem alterar a base original</small></div></div>
+          <div className="topbar-filters">
+            <label><span>Período</span><Dropdown aria-label="Período" value={isFcaList?filters.fcaPeriodo:filters.periodo} options={periodOptions} optionLabel="label" optionValue="value" onChange={event=>changePeriod(String(event.value??''))} className="topbar-filter-control"/></label>
+            <label><span>Supervisor</span><Dropdown aria-label="Supervisor" value={filters.supervisorId} options={supervisorOptions} optionLabel="label" optionValue="value" disabled={!isOperationalAdmin} onChange={event=>onFiltersChange({...filters,supervisorId:String(event.value??''),moduloId:''})} className="topbar-filter-control"/></label>
+            <label><span>Módulo</span><Dropdown aria-label="Módulo" value={filters.moduloId} options={moduleOptions} optionLabel="label" optionValue="value" onChange={event=>onFiltersChange({...filters,moduloId:String(event.value??'')})} className="topbar-filter-control"/></label>
+            {isOperationalAdmin&&(filters.supervisorId||filters.moduloId)&&<Button type="button" icon="pi pi-filter-slash" label="Limpar" outlined className="topbar-filter-reset" onClick={resetFilters} title="Limpar supervisor e módulo" aria-label="Limpar supervisor e módulo"/>}
+          </div>
+        </Card>
+      </section>}
+
       <main className="content">{!hub.analyticsReady&&<div className="analytics-warning"><i className="pi pi-info-circle" aria-hidden="true"/><div><strong>Camada analítica ainda não publicada no Apps Script.</strong><span>Cadastros e FCA funcionam, mas os indicadores aparecerão após atualizar a ponte da HUB para a versão 2.</span></div></div>}{children}</main>
     </div>
   </div>
