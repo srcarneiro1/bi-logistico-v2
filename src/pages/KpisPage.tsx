@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { MetricCard } from '../components/MetricCard'
@@ -9,6 +10,7 @@ import { EmptyState } from '../components/ui/Feedback'
 import { Panel, PanelHeader } from '../components/ui/Panel'
 import { SectionHeader } from '../components/ui/SectionHeader'
 import { indicatorMeta, inventoryAggregate, kpiComparison, mainKpis, metricStatus, operationalRows, pct, periodKey, periodLabel, trendGlobal, trendInventory, trendScopedInventory, trendScopedOperational } from '../lib/dashboard'
+import { openDepositorFrom } from '../lib/navigationContext'
 import type { DashboardFilters, MetricStatus } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
 
@@ -17,6 +19,7 @@ const rank:Record<MetricStatus,number>={crit:3,warn:2,neutral:1,ok:0}
 function historyWindow<T extends {periodo:string}>(series:T[],periodo:string,max=18){const key=periodKey(periodo);return series.filter(x=>!key||periodKey(x.periodo)<=key).slice(-max)}
 
 export function KpisPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilters}){
+ const navigate=useNavigate()
  const kpis=mainKpis(hub,filters),inv=inventoryAggregate(hub,filters),ops=operationalRows(hub,filters)
  const isGlobal=hub.profile.perfil==='ADMIN'&&!filters.supervisorId&&!filters.moduloId
  const prod=historyWindow(isGlobal?trendGlobal(hub.facts.kpiGeral,'Lead Time Produção'):trendScopedOperational(hub.facts.kpiOperacional,'producaoPct',filters),filters.periodo)
@@ -38,6 +41,8 @@ export function KpisPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
  const metricBody=(field:'producaoPct'|'recebimentoPct',statusField:'statusProd'|'statusRec')=>(row:KpiRow)=><span className={`metric-cell metric-cell-${row[statusField]}`}>{pct(row[field])}</span>
  const inventoryBody=(row:KpiRow)=><span className={`metric-cell metric-cell-${row.statusInv}`}>{pct(row.inventario?.totalPct)}</span>
  const statusBody=(row:KpiRow)=><MetricStatusBadge status={row.status} label={statusLabel[row.status]}/>
+ function openDepositor(row:KpiRow){openDepositorFrom(row.cnpj,{type:'kpis'});navigate('/depositantes')}
+ function handleMobileKey(event:React.KeyboardEvent<HTMLElement>,row:KpiRow){if(event.key==='Enter'||event.key===' '){event.preventDefault();openDepositor(row)}}
  return <section className="kpis-page">
   <PageHeader eyebrow="INDICADORES" title="KPIs operacionais" description="Metas, criticidade e evolução dos indicadores no escopo selecionado."/>
 
@@ -56,7 +61,7 @@ export function KpisPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
   <Panel as="article" className="kpis-table-panel">
    <PanelHeader eyebrow="BASE OPERACIONAL" title="Performance por depositante" trailing={<Chip>{rows.length} depositantes</Chip>}/>
    <div className="kpis-prime-table" aria-label="Performance por depositante">
-    <DataTable value={rows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table" emptyMessage="Sem dados para o escopo atual." tableStyle={{minWidth:'720px'}}>
+    <DataTable value={rows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table nx-depositor-table" onRowClick={event=>openDepositor(event.data as KpiRow)} emptyMessage="Sem dados para o escopo atual." tableStyle={{minWidth:'720px'}}>
      <Column field="nomeDepositante" header="Depositante" sortable body={(row:KpiRow)=><strong>{row.nomeDepositante}</strong>}/>
      <Column field="moduloId" header="Módulo" sortable body={(row:KpiRow)=><Chip>{row.moduloId}</Chip>}/>
      <Column field="producaoPct" header="Produção" sortable body={metricBody('producaoPct','statusProd')}/>
@@ -66,7 +71,7 @@ export function KpisPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
     </DataTable>
    </div>
    <div className="kpis-mobile-records" role="list" aria-label="Performance por depositante">
-    {rows.map(row=><article key={row.rowId} className="kpis-mobile-record" role="listitem">
+    {rows.map(row=><article key={row.rowId} className="kpis-mobile-record nx-depositor-record" role="button" tabIndex={0} aria-label={`Abrir visão 360º de ${row.nomeDepositante}`} onClick={()=>openDepositor(row)} onKeyDown={event=>handleMobileKey(event,row)}>
      <header><div><strong>{row.nomeDepositante}</strong><Chip>{row.moduloId}</Chip></div>{statusBody(row)}</header>
      <div className="kpis-mobile-metrics">
       <div><span>Produção</span>{metricBody('producaoPct','statusProd')(row)}</div>
