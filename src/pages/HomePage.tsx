@@ -10,6 +10,7 @@ import { EmptyState } from '../components/ui/Feedback'
 import { Panel, PanelHeader } from '../components/ui/Panel'
 import { SectionHeader } from '../components/ui/SectionHeader'
 import { avg, indicatorMeta, kpiComparison, mainKpis, metricStatus, money, operationalRows, pct, periodKey, periodLabel, revenueRows, sum, trendGlobal, trendScopedInventory, trendScopedOperational } from '../lib/dashboard'
+import { openDepositorFrom } from '../lib/navigationContext'
 import type { DashboardFilters } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
 
@@ -38,7 +39,7 @@ export function HomePage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
   const executiveTitle=criticalCount?`${criticalCount} ponto(s) crítico(s) no escopo`:attentionRows.length?`${attentionRows.length} ponto(s) pedem atenção`:'Escopo sem desvios relevantes'
   const executiveDescription=criticalCount?'Priorize os depositantes com indicadores críticos antes de avançar para a leitura consolidada.':attentionRows.length?'Há indicadores em atenção; consulte a gestão à vista para identificar os depositantes afetados.':'Os indicadores monitorados não apresentam criticidade ou atenção no escopo atual.'
   const renderMetric=(k:(typeof kpis)[number])=>{const c=kpiComparison(hub,filters,k.label,k.value);return <MetricCard key={k.label} variant="supporting" label={k.label} value={pct(k.value)} status={metricStatus(k.value,k.meta)} meta={k.meta?.metaPct!=null?`Meta ${pct(k.meta.metaPct)}`:'Sem meta'} detail={k.meta?.criticoPct!=null?`Crítico < ${pct(k.meta.criticoPct)}`:undefined} delta={c.delta} gap={c.gap}/>}
-  function openDepositor(cnpj:string){sessionStorage.setItem('bi-logistico-v2:depositante',cnpj);navigate('/depositantes')}
+  function openDepositor(cnpj:string){openDepositorFrom(cnpj,{type:'home'});navigate('/depositantes')}
 
   return <section className="home-dashboard">
     <PageHeader eyebrow="PERFORMANCE OPERACIONAL" title="Visão geral" description="Leitura consolidada dos principais indicadores, pontos de atenção e desempenho financeiro no escopo selecionado." />
