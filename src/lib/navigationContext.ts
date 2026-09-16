@@ -4,6 +4,8 @@ export type FcaReturnContext=
 
 export type DepositorReturnContext=
  |{type:'home'}
+ |{type:'kpis'}
+ |{type:'financeiro'}
  |{type:'supervisor';supervisorId:string}
 
 const FCA_RETURN_KEY='bi-logistico-v2:fca-return'
@@ -66,7 +68,7 @@ export function getDepositorReturnContext():DepositorReturnContext|null{
  if(!raw)return null
  try{
   const parsed=JSON.parse(raw) as DepositorReturnContext
-  if(parsed.type==='home')return parsed
+  if(parsed.type==='home'||parsed.type==='kpis'||parsed.type==='financeiro')return parsed
   if(parsed.type==='supervisor'&&parsed.supervisorId)return parsed
  }catch{/* contexto inválido é descartado abaixo */}
  sessionStorage.removeItem(DEPOSITOR_ORIGIN_KEY)
@@ -83,5 +85,7 @@ export function prepareDepositorReturnTarget(context:DepositorReturnContext|null
   sessionStorage.setItem(SUPERVISOR_RETURN_KEY,context.supervisorId)
   return'/supervisores'
  }
+ if(context?.type==='kpis')return'/kpis'
+ if(context?.type==='financeiro')return'/financeiro'
  return'/'
 }
