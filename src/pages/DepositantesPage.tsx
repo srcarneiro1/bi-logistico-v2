@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from 'primereact/button'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
@@ -16,7 +17,7 @@ import { SectionHeader } from '../components/ui/SectionHeader'
 import { SummaryMetrics } from '../components/ui/SummaryMetrics'
 import { deriveFcaDisplayStatus, listFcas } from '../lib/fca'
 import { indicatorMeta, metricStatus, money, pct, periodKey } from '../lib/dashboard'
-import { setFcaReturnContext } from '../lib/navigationContext'
+import { clearDepositorReturnContext, consumeDepositorTarget, getDepositorReturnContext, prepareDepositorReturnTarget, setFcaReturnContext } from '../lib/navigationContext'
 import type { DashboardFilters, MetricStatus } from '../types/dashboard'
 import type { FcaWithActions } from '../types/fca'
 import type { HubBootstrap } from '../types/hub'
@@ -29,7 +30,15 @@ const normalizeDepositorName=(value:string)=>value.toLocaleUpperCase('pt-BR').no
 const isFinancialOnlyRevenue=(name:string)=>normalizeDepositorName(name)==='OUTRAS RECEITAS OPERACIONAIS'
 
 export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilters}){
- const incoming=useMemo(()=>{const cnpj=sessionStorage.getItem('bi-logistico-v2:depositante')||'';if(cnpj)sessionStorage.removeItem('bi-logistico-v2:depositante');return cnpj},[])
+ const navigate=useNavigate()
+ const initialNavigation=useMemo(()=>{
+   const cnpj=consumeDepositorTarget()
+   const context=cnpj?getDepositorReturnContext():null
+   if(!cnpj)clearDepositorReturnContext()
+   return{cnpj,context}
+ },[])
+ const incoming=initialNavigation.cnpj
+ const returnContext=initialNavigation.context
  const[search,setSearch]=useState(''),[selectedCnpj,setSelectedCnpj]=useState(incoming),[fcas,setFcas]=useState<FcaWithActions[]>([]),[fcaLoading,setFcaLoading]=useState(false)
  useEffect(()=>{setFcaLoading(true);void listFcas().then(setFcas).catch(()=>setFcas([])).finally(()=>setFcaLoading(false))},[])
  const selectedPeriodKey=periodKey(filters.periodo)
@@ -61,6 +70,8 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
  const attainment=finance?.receitaPlanejada?((finance.receitaRealizada??0)/finance.receitaPlanejada):null
  const relatedFcas=selected?fcas.filter(f=>f.depositante_cnpj===selected.cnpj&&(!selectedPeriodKey||f.data_reuniao.slice(0,7)===selectedPeriodKey)).sort((a,b)=>Number(deriveFcaDisplayStatus(b)==='VENCIDO')-Number(deriveFcaDisplayStatus(a)==='VENCIDO')||b.data_reuniao.localeCompare(a.data_reuniao)||b.numero-a.numero):[]
  const criticalCount=rows.filter(r=>r.status==='crit').length,warningCount=rows.filter(r=>r.status==='warn').length,stableCount=rows.filter(r=>r.status==='ok').length
+ const returnLabel=returnContext?.type==='supervisor'?'Voltar para Supervisores':returnContext?.type==='home'?'Voltar para Visão geral':''
+ function returnToOrigin(){navigate(prepareDepositorReturnTarget(returnContext))}
  const nameBody=(row:DepositorRow)=>{
    const isSelected=selectedCnpj===row.d.cnpj
    return <Button text className="nx-table-link depositor-open-button" aria-label={`Abrir visão de ${row.d.nome}`} aria-expanded={isSelected} aria-controls={DEPOSITOR_DETAIL_ID} onClick={event=>{event.stopPropagation();setSelectedCnpj(row.d.cnpj)}}><span className="table-primary"><strong>{row.d.nome}</strong><span>{row.d.codAllStrategy??'Sem código AllStrategy'}</span></span></Button>
@@ -87,7 +98,7 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
        {label:'FCAs no período',value:relatedFcas.length},
        {label:'Atingimento financeiro',value:attainment==null?'Sem planejamento':pct(attainment)},
      ]}
-     actions={<Button label="Fechar visão" icon="pi pi-times" outlined severity="secondary" onClick={()=>setSelectedCnpj('')}/>} 
+     actions={<>{returnContext&&<Button label={returnLabel} icon="pi pi-arrow-left" outlined severity="secondary" onClick={returnToOrigin}/>}<Button label="Fechar visão" icon="pi pi-times" outlined severity="secondary" onClick={()=>setSelectedCnpj('')}/></>} 
    />
    <DetailMetrics items={[
      {key:'prod',label:'Produção',value:pct(opCurrent?.producaoPct),detail:`Meta ${pct(metaProd?.metaPct)}`,tone:metricStatus(opCurrent?.producaoPct,metaProd)==='crit'?'danger':metricStatus(opCurrent?.producaoPct,metaProd)==='warn'?'warning':metricStatus(opCurrent?.producaoPct,metaProd)==='ok'?'success':'neutral'},
