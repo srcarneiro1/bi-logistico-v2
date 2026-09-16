@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Button } from 'primereact/button'
+import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Dropdown } from 'primereact/dropdown'
@@ -8,7 +9,6 @@ import { PageHeader } from '../components/PageHeader'
 import { StatusBadge } from '../components/ui/Badge'
 import { Chip } from '../components/ui/Chip'
 import { EmptyState, Skeleton } from '../components/ui/Feedback'
-import { PageToolbar } from '../components/ui/PageToolbar'
 import { Panel, PanelHeader } from '../components/ui/Panel'
 import { SearchField } from '../components/ui/SearchField'
 import { SummaryMetrics, type SummaryMetricItem } from '../components/ui/SummaryMetrics'
@@ -82,14 +82,15 @@ export function FcaListPage({filters}:{hub:HubBootstrap;filters:DashboardFilters
 
     <SummaryMetrics items={summary} ariaLabel="Filtrar FCA por status" variant="filters"/>
 
+    <Card className="nx-dashboard-filter-card global-filter-card page-local-filter-card" aria-label="Filtros da FCA">
+      <div className="nx-dashboard-filter-grid">
+        <label className="nx-field">Busca<SearchField ariaLabel="Pesquisar FCA" placeholder="Pesquisar FCA, depositante, causa…" value={search} onChange={setSearch}/></label>
+        <label className="nx-field">Status<Dropdown aria-label="Status da FCA" value={status} options={statusOptions} optionLabel="label" optionValue="value" onChange={event=>setStatus(event.value)} className="fca-status-dropdown"/></label>
+      </div>
+    </Card>
+
     <Panel className="fca-workspace-card">
       <PanelHeader eyebrow="REGISTROS" title="FCA no escopo atual" description={`${filtered.length} registro(s) após filtros · vencidos permanecem priorizados visualmente pelo status.`} trailing={<Chip>{filters.fcaPeriodo==='ALL'?'Todos os meses':filters.fcaPeriodo}</Chip>}/>
-      <PageToolbar
-        embedded
-        ariaLabel="Filtros da FCA"
-        search={<SearchField ariaLabel="Pesquisar FCA" placeholder="Pesquisar FCA, depositante, causa…" value={search} onChange={setSearch}/>}
-        filters={<Dropdown aria-label="Status da FCA" value={status} options={statusOptions} optionLabel="label" optionValue="value" onChange={event=>setStatus(event.value)} className="fca-status-dropdown"/>}
-      />
 
       <div className="fca-results">
         {loading&&<Skeleton lines={7}/>} 
