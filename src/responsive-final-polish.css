@@ -4,23 +4,76 @@
 @media(max-width:1180px){
   .app-shell,.app-shell.sidebar-collapsed{display:block}
   .sidebar-backdrop{display:block;position:fixed;inset:0;z-index:55;border:0;background:rgba(18,24,34,.46);backdrop-filter:blur(2px)}
-  .sidebar,.sidebar-collapsed .sidebar{position:fixed;z-index:60;left:0;top:0;width:min(78vw,292px);height:100dvh;transform:translateX(-102%);transition:transform .2s ease;box-shadow:10px 0 32px rgba(18,24,34,.22);padding:18px 12px max(14px,env(safe-area-inset-bottom));display:flex;flex-direction:column;overflow-y:auto}
+
+  /* Mobile drawer parity with Extra Cost:
+     the shell itself never scrolls; only the navigation region does.
+     Brand and signed-in user remain visible inside the viewport. */
+  .sidebar,.sidebar-collapsed .sidebar{
+    position:fixed;
+    z-index:60;
+    left:0;
+    top:0;
+    width:min(276px,calc(100vw - 24px));
+    height:100dvh;
+    max-height:100dvh;
+    transform:translateX(-102%);
+    transition:transform .2s ease;
+    box-shadow:10px 0 32px rgba(18,24,34,.22);
+    padding:18px 12px max(14px,env(safe-area-inset-bottom));
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
   .sidebar.mobile-open{transform:translateX(0)}
-  .sidebar-brand,.sidebar-collapsed .sidebar-brand{height:54px;min-height:54px;margin-bottom:18px;padding:0 4px;display:flex;flex-direction:row;justify-content:flex-start;align-items:center;gap:10px}
+
+  .sidebar-brand,.sidebar-collapsed .sidebar-brand{
+    flex:0 0 auto;
+    height:54px;
+    min-height:54px;
+    margin-bottom:18px;
+    padding:0 4px;
+    display:flex;
+    flex-direction:row;
+    justify-content:flex-start;
+    align-items:center;
+    gap:10px;
+  }
   .sidebar-brand img,.sidebar-collapsed .sidebar-brand img{display:block;width:92px;height:42px;object-position:left center}
   .sidebar-collapse,.sidebar-collapsed .sidebar-collapse{display:none}
   .sidebar-mobile-close{display:grid;position:absolute;right:0;top:5px;width:44px;height:44px;border-radius:10px;background:rgba(255,255,255,.07);color:#fff;border:0;place-items:center}
   .sidebar-mobile-close .pi{font-size:15px}
   .sidebar-mobile-close:hover{background:rgba(255,255,255,.12)}
-  .sidebar-nav,.sidebar-collapsed .sidebar-nav{display:grid;grid-template-columns:minmax(0,1fr);grid-auto-flow:row;align-content:start;width:100%;gap:5px;padding:0 0 18px}
+
+  .sidebar-nav,.sidebar-collapsed .sidebar-nav{
+    flex:1 1 auto;
+    min-height:0;
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-auto-flow:row;
+    align-content:start;
+    width:100%;
+    gap:5px;
+    padding:0 0 12px;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
   .sidebar-nav>div,.sidebar-collapsed .sidebar-nav>div{display:block;width:100%;min-width:0}
   .sidebar-nav a,.sidebar-collapsed .sidebar-nav a{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;width:100%;min-width:0;padding:10px 12px;gap:11px}
   .sidebar-nav a>.pi{flex:0 0 18px}
   .nav-label,.sidebar-collapsed .nav-label{display:block;min-width:0}
   .nav-section-label,.sidebar-collapsed .nav-section-label{display:block;padding:18px 12px 7px}
-  .sidebar-user,.sidebar-collapsed .sidebar-user{margin-top:auto;grid-template-columns:36px minmax(0,1fr) 44px;justify-items:stretch;padding:14px 3px 0}
+
+  .sidebar-user,.sidebar-collapsed .sidebar-user{
+    flex:0 0 auto;
+    margin-top:10px;
+    grid-template-columns:36px minmax(0,1fr) 44px;
+    justify-items:stretch;
+    padding:14px 3px 4px;
+  }
   .sidebar-user-copy,.sidebar-collapsed .sidebar-user-copy{display:grid}
   .sidebar-user>button,.sidebar-collapsed .sidebar-user>button{display:grid;width:44px;height:44px}
+
   .topbar{padding-left:18px;padding-right:18px}
   .mobile-menu-button{display:grid;width:44px;height:44px}
   .content{padding:24px 18px 38px}
