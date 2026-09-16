@@ -6,7 +6,7 @@
 .fca-editor-page .fca-form .p-inputtextarea{min-height:78px;border-radius:var(--radius-control);resize:vertical}
 .fca-editor-page .fca-form .p-inputtext:enabled:focus,
 .fca-editor-page .fca-form .p-dropdown:not(.p-disabled).p-focus,
-.fca-editor-page .fca-form .p-inputtextarea:enabled:focus{border-color:#c5c9cf;box-shadow:0 0 0 3px rgba(73,74,86,.07)}
+.fca-editor-page .fca-form .p-inputtextarea:enabled:focus{border-color:var(--unilog-red)!important;box-shadow:0 0 0 3px rgba(219,8,18,.08)!important}
 .fca-editor-page .fca-form .p-dropdown .p-dropdown-label{display:flex;align-items:center;padding:.7rem .8rem;font-size:11px}
 .fca-editor-page .fca-form .p-dropdown .p-dropdown-trigger{width:2.5rem;color:var(--text-muted)}
 .fca-editor-page .fca-form .p-dropdown.p-disabled{opacity:.72;background:var(--surface-secondary)}
