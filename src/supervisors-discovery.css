@@ -38,8 +38,32 @@
 .supervisor-open-fcas{min-height:100%}
 .supervisor-detail-prime-table{display:block}
 .supervisor-detail-prime-table .p-datatable-wrapper{border:0;border-radius:0;box-shadow:none}
-.supervisor-detail-prime-table .nx-table-link.p-button{justify-content:flex-start;min-height:0;padding:0!important;color:var(--unilog-ink-2)!important;font-size:11px;font-weight:750;text-align:left}
-.supervisor-detail-prime-table .nx-table-link.p-button:hover{background:transparent!important;color:var(--unilog-red)!important}
+.supervisor-detail-prime-table .nx-table-link.p-button,
+.supervisor-detail-prime-table .nx-table-link.p-button:hover,
+.supervisor-detail-prime-table .nx-table-link.p-button:active,
+.supervisor-detail-mobile-record .nx-table-link.p-button,
+.supervisor-detail-mobile-record .nx-table-link.p-button:hover,
+.supervisor-detail-mobile-record .nx-table-link.p-button:active{
+  justify-content:flex-start;
+  min-height:0;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  outline:none!important;
+  color:var(--unilog-ink-2)!important;
+  font-size:11px;
+  font-weight:750;
+  text-align:left;
+}
+.supervisor-detail-prime-table .nx-table-link.p-button:hover,
+.supervisor-detail-mobile-record .nx-table-link.p-button:hover{color:var(--unilog-red)!important}
+.supervisor-detail-prime-table .nx-table-link.p-button:focus-visible,
+.supervisor-detail-mobile-record .nx-table-link.p-button:focus-visible{
+  outline:2px solid rgba(219,8,18,.58)!important;
+  outline-offset:2px!important;
+}
 .supervisor-detail-mobile-records{display:none}
 
 @media(max-width:1200px){.supervisor-360-grid{grid-template-columns:1fr}}
@@ -52,7 +76,7 @@
   .supervisor-detail-mobile-record{display:grid;gap:12px;padding:14px;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);box-shadow:var(--shadow-card)}
   .supervisor-detail-mobile-record>header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:11px;border-bottom:1px solid var(--border-soft)}
   .supervisor-detail-mobile-record>header>div{display:grid;gap:6px;min-width:0}
-  .supervisor-detail-mobile-record .nx-table-link.p-button{justify-content:flex-start;min-height:0;padding:0!important;color:var(--unilog-ink-2)!important;font-size:12px;font-weight:750;text-align:left}
+  .supervisor-detail-mobile-record .nx-table-link.p-button{font-size:12px}
   .supervisor-detail-mobile-record>header .ui-chip{justify-self:start}
   .supervisor-detail-mobile-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
   .supervisor-detail-mobile-metrics>div{display:grid;gap:6px;align-content:start;padding:10px;border:1px solid var(--border-soft);border-radius:var(--radius-control);background:var(--surface-soft)}
