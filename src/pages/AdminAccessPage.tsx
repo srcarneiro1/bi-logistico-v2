@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Button } from 'primereact/button'
+import { Card } from 'primereact/card'
 import { Column } from 'primereact/column'
 import { DataTable } from 'primereact/datatable'
 import { Dropdown } from 'primereact/dropdown'
@@ -7,7 +8,6 @@ import { PageHeader } from '../components/PageHeader'
 import { Badge } from '../components/ui/Badge'
 import { Chip } from '../components/ui/Chip'
 import { EmptyState, Skeleton } from '../components/ui/Feedback'
-import { PageToolbar } from '../components/ui/PageToolbar'
 import { Panel, PanelHeader } from '../components/ui/Panel'
 import { SearchField } from '../components/ui/SearchField'
 import { SummaryMetrics } from '../components/ui/SummaryMetrics'
@@ -104,11 +104,12 @@ export function AdminAccessPage({hub}:{hub:HubBootstrap}){
       {key:'inactive',label:'Inativos',value:counts.inactive,detail:'cadastro sem operação',tone:counts.inactive?'warning':'neutral',icon:'person_off'},
     ]}/>
 
-    <PageToolbar
-      ariaLabel="Ferramentas de acessos"
-      search={<SearchField ariaLabel="Buscar usuário" value={search} onChange={setSearch} placeholder="Buscar por nome, e-mail ou perfil…"/>}
-      filters={<Dropdown aria-label="Filtrar governança" value={roleFilter} options={roleOptions} onChange={event=>setRoleFilter(String(event.value))} className="admin-role-filter"/>}
-    />
+    <Card className="nx-dashboard-filter-card global-filter-card page-local-filter-card" aria-label="Filtros de acessos">
+      <div className="nx-dashboard-filter-grid">
+        <label className="nx-field">Busca<SearchField ariaLabel="Buscar usuário" value={search} onChange={setSearch} placeholder="Buscar por nome, e-mail ou perfil…"/></label>
+        <label className="nx-field">Governança<Dropdown aria-label="Filtrar governança" value={roleFilter} options={roleOptions} onChange={event=>setRoleFilter(String(event.value))} className="admin-role-filter"/></label>
+      </div>
+    </Card>
 
     {pendingChange&&<section className="admin-confirmation" role="region" aria-labelledby="admin-confirm-title">
       <div><i className="pi pi-shield" aria-hidden="true"/><div><strong id="admin-confirm-title">Confirmar alteração de governança</strong><p>{pendingChange.makeAdmin?`Conceder acesso administrativo a ${pendingChange.user.nome}?`:`Revogar o acesso administrativo de ${pendingChange.user.nome}?`} O perfil operacional e o escopo logístico não serão alterados.</p></div></div>

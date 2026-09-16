@@ -1,0 +1,53 @@
+/* Filtros locais — mesma anatomia visual dos filtros globais / Extra Cost. */
+
+.page-local-filter-card.p-card{
+  overflow:visible!important;
+  margin:0 0 16px!important;
+}
+
+.page-local-filter-card .nx-dashboard-filter-grid{
+  grid-template-columns:minmax(0,2fr) minmax(190px,1fr)!important;
+  align-items:end!important;
+}
+
+.page-local-filter-card .ui-search-field.nx-prime-search>.p-inputtext{
+  min-height:42px!important;
+  height:42px!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  padding-right:12px!important;
+  color:#515966!important;
+  font-size:12px!important;
+  font-weight:400!important;
+  box-shadow:none!important;
+}
+
+.page-local-filter-card .ui-search-field.nx-prime-search>.p-inputtext:enabled:hover{
+  border-color:#c9cdd2!important;
+}
+
+.page-local-filter-card .ui-search-field.nx-prime-search>.p-inputtext:enabled:focus{
+  border-color:var(--unilog-red)!important;
+  box-shadow:0 0 0 3px rgba(219,8,18,.08)!important;
+}
+
+.page-local-filter-card .ui-search-field.nx-prime-search>i.pi{
+  color:#69717d!important;
+  font-size:13px!important;
+}
+
+@media(max-width:720px){
+  .page-local-filter-card.p-card{
+    margin-bottom:14px!important;
+  }
+  .page-local-filter-card .nx-dashboard-filter-grid{
+    grid-template-columns:1fr!important;
+    row-gap:17px!important;
+  }
+  .page-local-filter-card .ui-search-field.nx-prime-search>.p-inputtext{
+    min-height:48px!important;
+    height:48px!important;
+    padding-right:14px!important;
+    font-size:13px!important;
+  }
+}
