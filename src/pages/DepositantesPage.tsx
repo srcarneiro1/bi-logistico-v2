@@ -70,7 +70,7 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
  const attainment=finance?.receitaPlanejada?((finance.receitaRealizada??0)/finance.receitaPlanejada):null
  const relatedFcas=selected?fcas.filter(f=>f.depositante_cnpj===selected.cnpj&&(!selectedPeriodKey||f.data_reuniao.slice(0,7)===selectedPeriodKey)).sort((a,b)=>Number(deriveFcaDisplayStatus(b)==='VENCIDO')-Number(deriveFcaDisplayStatus(a)==='VENCIDO')||b.data_reuniao.localeCompare(a.data_reuniao)||b.numero-a.numero):[]
  const criticalCount=rows.filter(r=>r.status==='crit').length,warningCount=rows.filter(r=>r.status==='warn').length,stableCount=rows.filter(r=>r.status==='ok').length
- const returnLabel=returnContext?.type==='supervisor'?'Voltar para Supervisores':returnContext?.type==='home'?'Voltar para Visão geral':''
+ const returnLabel=returnContext?.type==='supervisor'?'Voltar para Supervisores':returnContext?.type==='kpis'?'Voltar para KPIs':returnContext?.type==='financeiro'?'Voltar para Financeiro':returnContext?.type==='home'?'Voltar para Visão geral':''
  function returnToOrigin(){navigate(prepareDepositorReturnTarget(returnContext))}
  const nameBody=(row:DepositorRow)=>{
    const isSelected=selectedCnpj===row.d.cnpj
@@ -117,7 +117,7 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
  ]}/>
  <SectionHeader eyebrow="CARTEIRA" title="Performance por depositante" description="Ordenação prioriza clientes críticos e, em seguida, os casos em atenção." trailing={<Chip>{rows.length} resultado(s)</Chip>}/>
  <div className="depositors-prime-table" aria-label="Performance por depositante">
-   <DataTable value={rows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table" rowClassName={(row:DepositorRow)=>row.d.cnpj===selectedCnpj?'depositor-row-selected':''} onRowClick={event=>setSelectedCnpj((event.data as DepositorRow).d.cnpj)} emptyMessage="Nenhum depositante encontrado no escopo." tableStyle={{minWidth:'1020px'}}>
+   <DataTable value={rows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table nx-depositor-table" rowClassName={(row:DepositorRow)=>row.d.cnpj===selectedCnpj?'depositor-row-selected':''} onRowClick={event=>setSelectedCnpj((event.data as DepositorRow).d.cnpj)} emptyMessage="Nenhum depositante encontrado no escopo." tableStyle={{minWidth:'1020px'}}>
      <Column header="Depositante" body={nameBody}/>
      <Column header="Supervisor" body={supervisorBody}/>
      <Column header="Módulo" body={moduleBody}/>
@@ -129,7 +129,7 @@ export function DepositantesPage({hub,filters}:{hub:HubBootstrap;filters:Dashboa
    </DataTable>
  </div>
  <div className="depositors-mobile-records" role="list" aria-label="Performance por depositante">
-   {rows.map(row=>{const isSelected=selectedCnpj===row.d.cnpj;return <article key={row.rowId} className={`depositor-mobile-record ${isSelected?'is-selected':''}`} role="listitem" onClick={()=>setSelectedCnpj(row.d.cnpj)}>
+   {rows.map(row=>{const isSelected=selectedCnpj===row.d.cnpj;return <article key={row.rowId} className={`depositor-mobile-record nx-depositor-record ${isSelected?'is-selected':''}`} role="button" tabIndex={0} aria-label={`Abrir visão 360º de ${row.d.nome}`} onClick={()=>setSelectedCnpj(row.d.cnpj)} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();setSelectedCnpj(row.d.cnpj)}}}>
      <header><div><Button text className="nx-table-link depositor-open-button" aria-expanded={isSelected} aria-controls={DEPOSITOR_DETAIL_ID} onClick={event=>{event.stopPropagation();setSelectedCnpj(row.d.cnpj)}}><span className="table-primary"><strong>{row.d.nome}</strong><span>{row.d.codAllStrategy??'Sem código AllStrategy'}</span></span></Button><div className="depositor-mobile-context"><Chip>{row.d.moduloId}</Chip><span>{row.sup?.nomeExibicao??row.d.supervisorId}</span></div></div>{statusBody(row)}</header>
      <div className="depositor-mobile-metrics"><div><span>Produção</span>{prodBody(row)}</div><div><span>Recebimento</span>{recBody(row)}</div><div><span>Inventário</span>{invBody(row)}</div></div>
      <footer><span>CNPJ</span><span className="mono">{row.d.cnpj}</span></footer>
