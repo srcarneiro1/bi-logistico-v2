@@ -71,12 +71,8 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
    return status==='ABERTO'||status==='EM_ANDAMENTO'||status==='VENCIDO'
  }).sort((a,b)=>Number(deriveFcaDisplayStatus(b)==='VENCIDO')-Number(deriveFcaDisplayStatus(a)==='VENCIDO')||b.data_reuniao.localeCompare(a.data_reuniao)||b.numero-a.numero):[],[scopedFcas,selected])
  const cardBadge=(critCount:number,warnCount:number,status:MetricStatus)=>critCount?`${critCount} crítico${critCount>1?'s':''}`:warnCount?`${warnCount} em atenção`:label[status]
- function openDepositante(cnpj:string){
-   const supervisorId=selected?.s.supervisorId||selectedSupervisorId
-   openDepositorFrom(cnpj,{type:'supervisor',supervisorId})
-   navigate('/depositantes')
- }
- const depositanteBody=(row:SupervisorDetailRow)=><Button label={row.d.nome} text className="nx-table-link" onClick={()=>openDepositante(row.d.cnpj)}/>
+ function openDepositante(cnpj:string,supervisorId:string){openDepositorFrom(cnpj,{type:'supervisor',supervisorId});navigate('/depositantes')}
+ const depositanteBody=(row:SupervisorDetailRow)=><Button label={row.d.nome} text className="nx-table-link" onClick={event=>{event.stopPropagation();openDepositante(row.d.cnpj,row.d.supervisorId)}}/>
  const moduleBody=(row:SupervisorDetailRow)=><Chip>{row.d.moduloId}</Chip>
  const prodBody=(row:SupervisorDetailRow)=><span className={`metric-cell metric-cell-${metricStatus(row.op?.producaoPct,metaProd)}`}>{pct(row.op?.producaoPct)}</span>
  const recBody=(row:SupervisorDetailRow)=><span className={`metric-cell metric-cell-${metricStatus(row.op?.recebimentoPct,metaRec)}`}>{pct(row.op?.recebimentoPct)}</span>
@@ -111,7 +107,7 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
      <div className="supervisor-360-grid">
        <Panel><PanelHeader eyebrow="CARTEIRA" title="Performance por depositante" trailing={<Chip>{selected.deps.length} depositante(s)</Chip>}/>
          <div className="supervisor-detail-prime-table" aria-label="Performance por depositante">
-           <DataTable value={detailRows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table" emptyMessage="Sem depositantes com dados no escopo atual." tableStyle={{minWidth:'720px'}}>
+           <DataTable value={detailRows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table nx-depositor-table" onRowClick={event=>{const row=event.data as SupervisorDetailRow;openDepositante(row.d.cnpj,row.d.supervisorId)}} emptyMessage="Sem depositantes com dados no escopo atual." tableStyle={{minWidth:'720px'}}>
              <Column header="Depositante" body={depositanteBody}/>
              <Column header="Módulo" body={moduleBody}/>
              <Column header="Produção" body={prodBody}/>
@@ -121,8 +117,8 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
            </DataTable>
          </div>
          <div className="supervisor-detail-mobile-records" role="list" aria-label="Performance por depositante">
-           {detailRows.map(row=><article key={row.rowId} className="supervisor-detail-mobile-record" role="listitem">
-             <header><div><Button label={row.d.nome} text className="nx-table-link" onClick={()=>openDepositante(row.d.cnpj)}/><Chip>{row.d.moduloId}</Chip></div>{statusBody(row)}</header>
+           {detailRows.map(row=><article key={row.rowId} className="supervisor-detail-mobile-record nx-depositor-record" role="button" tabIndex={0} aria-label={`Abrir visão 360º de ${row.d.nome}`} onClick={()=>openDepositante(row.d.cnpj,row.d.supervisorId)} onKeyDown={event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();openDepositante(row.d.cnpj,row.d.supervisorId)}}}>
+             <header><div><Button label={row.d.nome} text className="nx-table-link" onClick={event=>{event.stopPropagation();openDepositante(row.d.cnpj,row.d.supervisorId)}}/><Chip>{row.d.moduloId}</Chip></div>{statusBody(row)}</header>
              <div className="supervisor-detail-mobile-metrics"><div><span>Produção</span>{prodBody(row)}</div><div><span>Recebimento</span>{recBody(row)}</div><div><span>Inventário</span>{invBody(row)}</div></div>
            </article>)}
            {!detailRows.length&&<EmptyState icon="table_rows" title="Sem depositantes com dados" description="Não há depositantes com indicadores no período e filtros atuais."/>}
