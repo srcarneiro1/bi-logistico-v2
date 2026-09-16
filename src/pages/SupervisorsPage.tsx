@@ -47,7 +47,8 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
  }),[fcas,filters.moduloId,filters.periodo])
  const cards=hub.supervisors.map(s=>{
    const op=scopedOp.filter(r=>r.supervisorId===s.supervisorId),inv=scopedInv.filter(r=>r.supervisorId===s.supervisorId)
-   const deps=hub.depositantes.filter(d=>d.supervisorId===s.supervisorId&&(!filters.moduloId||d.moduloId===filters.moduloId))
+   const activeCnpjs=new Set([...op.map(r=>r.cnpj),...inv.map(r=>r.cnpj)])
+   const deps=hub.depositantes.filter(d=>d.supervisorId===s.supervisorId&&(!filters.moduloId||d.moduloId===filters.moduloId)&&activeCnpjs.has(d.cnpj))
    const fcaCount=scopedFcas.filter(f=>f.supervisor_id===s.supervisorId).length
    const prod=avg(op.map(x=>x.producaoPct)),rec=avg(op.map(x=>x.recebimentoPct)),invAvg=avg(inv.map(x=>x.totalPct))
    const statuses=[metricStatus(prod,metaProd),metricStatus(rec,metaRec),metricStatus(invAvg,metaInv)]
@@ -84,14 +85,14 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
      <DetailHero
        eyebrow="Supervisor selecionado"
        title={selected.s.nomeExibicao}
-       description={`${selected.deps.length} depositante(s) no escopo atual.`}
+       description={`${selected.deps.length} depositante(s) com dados no escopo atual.`}
        leading={<SupervisorPhoto name={selected.s.nomeExibicao} src={selected.s.fotoUrl} detail/>}
        status={<MetricStatusBadge status={selected.status} label={cardBadge(selected.critCount,selected.warnCount,selected.status)}/>} 
        meta={[
          {label:'Depositantes',value:selected.deps.length},
          {label:'FCAs no período',value:selected.fcaCount},
          {label:'FCAs pendentes',value:selectedFcas.length},
-         {label:'Módulos',value:Array.from(new Set(selected.deps.map(d=>d.moduloId))).join(', ')||'Sem módulo no escopo'},
+         {label:'Módulos',value:Array.from(new Set(selected.deps.map(d=>d.moduloId))).join(', ')||'Sem módulo com dados'},
        ]}
        actions={<Button type="button" label="Fechar visão" icon="pi pi-times" outlined severity="secondary" onClick={()=>setSelectedSupervisorId('')}/>} 
      />
@@ -106,7 +107,7 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
      <div className="supervisor-360-grid">
        <Panel><PanelHeader eyebrow="CARTEIRA" title="Performance por depositante" trailing={<Chip>{selected.deps.length} depositante(s)</Chip>}/>
          <div className="supervisor-detail-prime-table" aria-label="Performance por depositante">
-           <DataTable value={detailRows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table" emptyMessage="Sem depositantes no escopo atual." tableStyle={{minWidth:'720px'}}>
+           <DataTable value={detailRows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table" emptyMessage="Sem depositantes com dados no escopo atual." tableStyle={{minWidth:'720px'}}>
              <Column header="Depositante" body={depositanteBody}/>
              <Column header="Módulo" body={moduleBody}/>
              <Column header="Produção" body={prodBody}/>
@@ -120,7 +121,7 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
              <header><div><Button label={row.d.nome} text className="nx-table-link" onClick={()=>openDepositante(row.d.cnpj)}/><Chip>{row.d.moduloId}</Chip></div>{statusBody(row)}</header>
              <div className="supervisor-detail-mobile-metrics"><div><span>Produção</span>{prodBody(row)}</div><div><span>Recebimento</span>{recBody(row)}</div><div><span>Inventário</span>{invBody(row)}</div></div>
            </article>)}
-           {!detailRows.length&&<EmptyState icon="table_rows" title="Sem depositantes no escopo" description="Não há depositantes vinculados a este supervisor nos filtros atuais."/>}
+           {!detailRows.length&&<EmptyState icon="table_rows" title="Sem depositantes com dados" description="Não há depositantes com indicadores no período e filtros atuais."/>}
          </div>
        </Panel>
        <Panel className="supervisor-open-fcas"><PanelHeader eyebrow="PENDÊNCIAS" title="FCAs pendentes no período" trailing={<Chip tone={selectedFcas.length?'danger':'neutral'}>{selectedFcas.length} pendente(s)</Chip>}/>{selectedFcas.length?<FcaCompactList items={selectedFcas} title={f=>`FCA #${String(f.numero).padStart(5,'0')} · ${f.depositante_nome}`} meta={f=>`${f.indicador_nome} · ${new Date(`${f.data_reuniao}T12:00:00`).toLocaleDateString('pt-BR')}`} onOpen={()=>setFcaReturnContext({type:'supervisor',supervisorId:selected.s.supervisorId})}/>:<EmptyState icon="check_circle" title="Nenhum FCA pendente" description="Este supervisor não possui FCA pendente no filtro atual."/>}</Panel>
