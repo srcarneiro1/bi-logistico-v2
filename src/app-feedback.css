@@ -11,7 +11,101 @@
 .center-state-progress{width:min(280px,100%);height:4px;margin-top:6px;border-radius:999px;background:#eceef1;overflow:hidden}
 .center-state-progress i{display:block;width:42%;height:100%;border-radius:999px;background:var(--brand-primary,#db0812);animation:bi-loading-bar 1.2s ease-in-out infinite}
 .center-state-error .center-state-card{border-color:#ecd8da}
+
+/* Loading inicial — ocupa exatamente o viewport e nunca cria rolagem. */
+.bi-boot-screen{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  width:100%;
+  height:100dvh;
+  min-height:100dvh;
+  max-height:100dvh;
+  display:grid;
+  place-items:center;
+  box-sizing:border-box;
+  padding:max(20px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(20px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));
+  overflow:hidden;
+  overscroll-behavior:none;
+  touch-action:none;
+  background:
+    radial-gradient(circle at 70% 22%,rgba(219,8,18,.05),transparent 32%),
+    var(--unilog-canvas,#f5f6f8);
+}
+.bi-boot-shell{
+  width:min(720px,100%);
+  max-height:calc(100dvh - 40px);
+  display:grid;
+  grid-template-columns:minmax(220px,.8fr) minmax(300px,1.2fr);
+  overflow:hidden;
+  border:1px solid var(--unilog-border,#e2e5e9);
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 22px 58px rgba(18,24,34,.11);
+}
+.bi-boot-brand{
+  min-width:0;
+  display:grid;
+  align-content:center;
+  justify-items:start;
+  gap:15px;
+  padding:34px 30px;
+  background:linear-gradient(160deg,#171b24 0%,#242a36 100%);
+  color:#fff;
+}
+.bi-boot-brand img{width:132px;height:auto;display:block;object-fit:contain}
+.bi-boot-brand-copy{display:grid;gap:3px}
+.bi-boot-brand-copy span{font-size:8px;font-weight:800;letter-spacing:.14em;color:#aeb5c0}
+.bi-boot-brand-copy strong{font-size:18px;line-height:1.15;letter-spacing:-.02em;color:#fff}
+.bi-boot-brand>small{font-size:9px;line-height:1.4;color:#aeb5c0}
+.bi-boot-content{
+  min-width:0;
+  display:grid;
+  align-content:center;
+  justify-items:start;
+  gap:9px;
+  padding:36px 34px;
+  background:#fff;
+}
+.bi-boot-eyebrow{font-size:8px;font-weight:800;letter-spacing:.12em;color:var(--unilog-muted,#8a9099)}
+.bi-boot-spinner{margin:5px 0 4px;font-size:22px;color:var(--unilog-red,#db0812)}
+.bi-boot-content>strong{font-size:19px;line-height:1.2;letter-spacing:-.02em;color:var(--unilog-ink,#171b24)}
+.bi-boot-content>p{max-width:330px;margin:0;font-size:11px;line-height:1.5;color:var(--unilog-graphite-2,#676d77)}
+.bi-boot-content>small{font-size:9px;color:var(--unilog-muted,#8a9099)}
+.bi-boot-progress{width:min(290px,100%);height:3px;margin:9px 0 3px;overflow:hidden;border-radius:999px;background:#eceef1}
+.bi-boot-progress i{display:block;width:36%;height:100%;border-radius:inherit;background:var(--unilog-red,#db0812);animation:bi-loading-bar 1.15s ease-in-out infinite}
+
 @keyframes bi-spin{to{transform:rotate(360deg)}}
-@keyframes bi-loading-bar{0%{transform:translateX(-120%)}50%{transform:translateX(80%)}100%{transform:translateX(240%)}}
+@keyframes bi-loading-bar{0%{transform:translateX(-120%)}50%{transform:translateX(85%)}100%{transform:translateX(280%)}}
+
+@media(max-width:600px){
+  .bi-boot-screen{padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom))}
+  .bi-boot-shell{
+    width:min(390px,100%);
+    max-height:calc(100dvh - 32px);
+    grid-template-columns:1fr;
+    grid-template-rows:auto auto;
+    border-radius:16px;
+  }
+  .bi-boot-brand{gap:9px;padding:22px 22px 19px}
+  .bi-boot-brand img{width:108px}
+  .bi-boot-brand-copy{display:flex;align-items:baseline;gap:7px}
+  .bi-boot-brand-copy span{font-size:7px}
+  .bi-boot-brand-copy strong{font-size:14px}
+  .bi-boot-brand>small{display:none}
+  .bi-boot-content{gap:7px;padding:25px 22px 24px}
+  .bi-boot-spinner{font-size:20px;margin:3px 0}
+  .bi-boot-content>strong{font-size:17px}
+  .bi-boot-content>p{font-size:10.5px}
+  .bi-boot-progress{margin-top:7px}
+}
+
+@media(max-width:380px), (max-height:620px){
+  .bi-boot-brand{padding:18px 20px 16px}
+  .bi-boot-content{padding:20px}
+  .bi-boot-content>p{line-height:1.4}
+  .bi-boot-content>small{display:none}
+}
+
 @media(max-width:520px){.center-state{padding:18px}.center-state-card{padding:24px 18px;border-radius:14px}.center-state-actions{width:100%}.center-state-actions>.p-button{flex:1}}
-@media(prefers-reduced-motion:reduce){.loading-spinner,.center-state-progress i{animation:none}}
+@media(prefers-reduced-motion:reduce){.loading-spinner,.center-state-progress i,.bi-boot-progress i{animation:none}}
