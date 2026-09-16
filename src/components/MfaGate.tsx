@@ -1,5 +1,6 @@
 import { type FormEvent, type ReactNode, useEffect, useState } from 'react'
 import { Button } from 'primereact/button'
+import { Card } from 'primereact/card'
 import { InputText } from 'primereact/inputtext'
 import { supabase } from '../lib/supabase'
 
@@ -121,5 +122,46 @@ export function MfaGate({ required, children }: Props) {
 
   if (!required || mode === 'ready') return <>{children}</>
 
-  return <div className="mfa-page"><section className="mfa-card" aria-live="polite"><div className="mfa-badge">ACESSO ADMINISTRATIVO</div><h1>Verificação em duas etapas</h1>{mode === 'checking' ? <><p>Verificando o nível de segurança da sua sessão.</p><div className="mfa-loading"/></> : mode === 'setup' ? <>{enrollment ? <><p>Escaneie o QR Code com Google Authenticator, Microsoft Authenticator, Authy, 1Password ou outro aplicativo TOTP.</p><div className="mfa-qr"><img src={enrollment.qrCode} alt="QR Code para cadastrar o autenticador"/></div><div className="mfa-secret"><span>Não consegue escanear?</span><code>{enrollment.secret}</code></div><form onSubmit={verify} className="mfa-form"><label htmlFor="mfa-code">Código do autenticador</label><InputText id="mfa-code" value={code} onChange={event=>setCode(event.target.value.replace(/\D/g,'').slice(0,6))} inputMode="numeric" autoComplete="one-time-code" placeholder="000000" maxLength={6} autoFocus/><Button label="Ativar e continuar" type="submit" loading={busy}/></form></> : <><p>Como sua conta possui privilégio de Owner/Admin, é obrigatório cadastrar um segundo fator antes de acessar funções administrativas.</p><Button label="Configurar aplicativo autenticador" type="button" icon="pi pi-shield" loading={busy} onClick={()=>void beginEnrollment()}/></>}</> : <><p>Abra seu aplicativo autenticador e informe o código atual para concluir o acesso administrativo.</p><form onSubmit={verify} className="mfa-form"><label htmlFor="mfa-code">Código de 6 dígitos</label><InputText id="mfa-code" value={code} onChange={event=>setCode(event.target.value.replace(/\D/g,'').slice(0,6))} inputMode="numeric" autoComplete="one-time-code" placeholder="000000" maxLength={6} autoFocus/><Button label="Verificar e continuar" type="submit" loading={busy}/></form></>}{error&&<div className="notice notice-error">{error}</div>}<Button label="Sair da conta" type="button" text severity="secondary" icon="pi pi-sign-out" className="mfa-signout" onClick={()=>void signOut()} disabled={busy}/><div className="mfa-note">O código muda periodicamente e nunca deve ser compartilhado. O BI não armazena o segredo do seu autenticador.</div></section></div>
+  const title = mode === 'setup' ? (enrollment ? 'Ative a verificação em duas etapas' : 'Proteja seu acesso administrativo') : mode === 'checking' ? 'Validando segurança da sessão' : 'Confirme sua identidade'
+  const description = mode === 'setup'
+    ? enrollment
+      ? 'Escaneie o QR Code no seu aplicativo autenticador e informe o código gerado para concluir a configuração.'
+      : 'Contas Owner e Administrador precisam de um segundo fator antes de acessar funções administrativas.'
+    : mode === 'checking'
+      ? 'Estamos confirmando o nível de segurança exigido para este acesso.'
+      : 'Informe o código atual do seu aplicativo autenticador para continuar.'
+
+  return <div className="mfa-page">
+    <Card className="mfa-card">
+      <div className="mfa-security-header">
+        <div className="mfa-security-icon"><i className="pi pi-shield" aria-hidden="true"/></div>
+        <div className="mfa-security-copy">
+          <span className="mfa-badge">ACESSO ADMINISTRATIVO</span>
+          <h1>{title}</h1>
+          <p>{description}</p>
+        </div>
+      </div>
+
+      {mode === 'checking' ? <div className="mfa-checking" role="status"><i className="pi pi-spin pi-spinner" aria-hidden="true"/><span>Verificando autenticação...</span></div> : mode === 'setup' ? <>{enrollment ? <>
+        <div className="mfa-qr"><img src={enrollment.qrCode} alt="QR Code para cadastrar o autenticador"/></div>
+        <div className="mfa-secret"><span>Não consegue escanear?</span><code>{enrollment.secret}</code></div>
+        <form onSubmit={verify} className="mfa-form">
+          <label htmlFor="mfa-code">Código de 6 dígitos</label>
+          <InputText id="mfa-code" value={code} onChange={event=>setCode(event.target.value.replace(/\D/g,'').slice(0,6))} inputMode="numeric" autoComplete="one-time-code" placeholder="000000" maxLength={6} autoFocus/>
+          <Button label="Ativar e continuar" icon="pi pi-check" type="submit" loading={busy}/>
+        </form>
+      </> : <Button label="Configurar aplicativo autenticador" type="button" icon="pi pi-mobile" loading={busy} onClick={()=>void beginEnrollment()} className="mfa-primary-action"/>}</> : <form onSubmit={verify} className="mfa-form">
+        <label htmlFor="mfa-code">Código de 6 dígitos</label>
+        <InputText id="mfa-code" value={code} onChange={event=>setCode(event.target.value.replace(/\D/g,'').slice(0,6))} inputMode="numeric" autoComplete="one-time-code" placeholder="000000" maxLength={6} autoFocus/>
+        <Button label="Verificar e continuar" icon="pi pi-arrow-right" iconPos="right" type="submit" loading={busy}/>
+      </form>}
+
+      {error&&<div className="mfa-error" role="alert"><i className="pi pi-exclamation-circle" aria-hidden="true"/><span>{error}</span></div>}
+
+      <div className="mfa-card-footer">
+        <div className="mfa-note"><i className="pi pi-lock" aria-hidden="true"/><span>O código muda periodicamente e nunca deve ser compartilhado. O BI não armazena o segredo do seu autenticador.</span></div>
+        <Button label="Sair da conta" type="button" text severity="secondary" icon="pi pi-sign-out" className="mfa-signout" onClick={()=>void signOut()} disabled={busy}/>
+      </div>
+    </Card>
+  </div>
 }
