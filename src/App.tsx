@@ -27,21 +27,19 @@ import { AdminAccessPage } from './pages/AdminAccessPage'
 const emptyFilters:DashboardFilters={periodo:'',fcaPeriodo:'ALL',supervisorId:'',moduloId:''}
 const BRAND_LOGO='/brand/unilog-logo-white-transparent.svg'
 
-function BiBootLoading({title,description}:{title:string;description:string}){
+function BiBootLoading({eyebrow,title,description}:{eyebrow:string;title:string;description:string}){
  return <div className="bi-boot-screen" role="status" aria-live="polite" aria-busy="true">
    <div className="bi-boot-shell">
      <div className="bi-boot-brand" aria-hidden="true">
        <img src={BRAND_LOGO} alt=""/>
-       <div className="bi-boot-brand-copy"><span>UNILOG EXPRESS</span><strong>BI LOGÍSTICO</strong></div>
-       <small>Performance · Financeiro · FCA</small>
+       <strong>BI LOGÍSTICO</strong>
      </div>
      <div className="bi-boot-content">
-       <span className="bi-boot-eyebrow">PREPARANDO AMBIENTE</span>
+       <span className="bi-boot-eyebrow">{eyebrow}</span>
        <i className="pi pi-spin pi-spinner bi-boot-spinner" aria-hidden="true"/>
        <strong>{title}</strong>
        <p>{description}</p>
        <div className="bi-boot-progress" aria-hidden="true"><i/></div>
-       <small>Aguarde um instante.</small>
      </div>
    </div>
  </div>
@@ -69,10 +67,10 @@ export default function App(){
  async function signOut(){await supabase.auth.signOut();setHub(null);setFilters(emptyFilters)}
  function abandonRecovery(){window.history.replaceState(null,'','/');setPasswordRecovery(false);setError(null)}
  function finishRecovery(){setPasswordRecovery(false);setHub(null);setLoading(true);setError(null)}
- if(!authReady)return <BiBootLoading title="Validando seu acesso" description="Confirmando a sessão segura antes de abrir o ambiente."/>
+ if(!authReady)return <BiBootLoading eyebrow="ACESSO SEGURO" title="Validando seu acesso" description="Confirmando sua sessão antes de abrir o ambiente."/>
  if(passwordRecovery){if(session)return <SetPasswordPage onComplete={finishRecovery}/>;return <div className="center-state center-state-error"><div className="center-state-card"><i className="pi pi-link center-state-icon" aria-hidden="true"/><strong>Link de acesso inválido ou expirado</strong><p>Solicite um novo link de primeiro acesso ou recuperação de senha.</p><div className="center-state-actions"><Button type="button" label="Voltar ao login" outlined severity="secondary" onClick={abandonRecovery}/></div></div></div>}
  if(!session)return <LoginPage/>
- if(loading)return <BiBootLoading title="Carregando BI Logístico" description="Conectando à base e preparando os indicadores do seu escopo."/>
+ if(loading)return <BiBootLoading eyebrow="SINCRONIZANDO DADOS" title="Preparando seu ambiente" description="Conectando à base e organizando os indicadores do seu escopo."/>
  if(error||!hub)return <div className="center-state center-state-error"><div className="center-state-card"><i className="pi pi-exclamation-circle center-state-icon" aria-hidden="true"/><strong>Não foi possível carregar o BI</strong><p>{error??'Seu e-mail não possui um perfil válido na HUB.'}</p><div className="center-state-actions"><Button type="button" label="Tentar novamente" onClick={()=>void refreshHub(true)}/><Button type="button" label="Voltar ao login" outlined severity="secondary" onClick={()=>void signOut()}/></div></div></div>
  const isGovernanceAdmin=hub.profile.governanceRole==='OWNER'||hub.profile.governanceRole==='ADMIN'
  const isOwner=hub.profile.governanceRole==='OWNER'
