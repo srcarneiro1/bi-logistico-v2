@@ -35,6 +35,7 @@ import './chart-final-polish.css'
 import './responsive-final-polish.css'
 import './final-parity.css'
 import './filter-parity.css'
+import './depositor-interactions.css'
 
 const primeReactConfig = {
   ripple: true,
