@@ -15,7 +15,7 @@ import { SectionHeader } from '../components/ui/SectionHeader'
 import { SummaryMetrics } from '../components/ui/SummaryMetrics'
 import { avg, indicatorMeta, metricStatus, pct, periodKey, scoped } from '../lib/dashboard'
 import { deriveFcaDisplayStatus, listFcas } from '../lib/fca'
-import { consumeSupervisorReturn, setFcaReturnContext } from '../lib/navigationContext'
+import { consumeSupervisorReturn, openDepositorFrom, setFcaReturnContext } from '../lib/navigationContext'
 import type { FcaWithActions } from '../types/fca'
 import type { DashboardFilters, MetricStatus } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
@@ -71,7 +71,11 @@ export function SupervisorsPage({hub,filters}:{hub:HubBootstrap;filters:Dashboar
    return status==='ABERTO'||status==='EM_ANDAMENTO'||status==='VENCIDO'
  }).sort((a,b)=>Number(deriveFcaDisplayStatus(b)==='VENCIDO')-Number(deriveFcaDisplayStatus(a)==='VENCIDO')||b.data_reuniao.localeCompare(a.data_reuniao)||b.numero-a.numero):[],[scopedFcas,selected])
  const cardBadge=(critCount:number,warnCount:number,status:MetricStatus)=>critCount?`${critCount} crítico${critCount>1?'s':''}`:warnCount?`${warnCount} em atenção`:label[status]
- function openDepositante(cnpj:string){sessionStorage.setItem('bi-logistico-v2:depositante',cnpj);navigate('/depositantes')}
+ function openDepositante(cnpj:string){
+   const supervisorId=selected?.s.supervisorId||selectedSupervisorId
+   openDepositorFrom(cnpj,{type:'supervisor',supervisorId})
+   navigate('/depositantes')
+ }
  const depositanteBody=(row:SupervisorDetailRow)=><Button label={row.d.nome} text className="nx-table-link" onClick={()=>openDepositante(row.d.cnpj)}/>
  const moduleBody=(row:SupervisorDetailRow)=><Chip>{row.d.moduloId}</Chip>
  const prodBody=(row:SupervisorDetailRow)=><span className={`metric-cell metric-cell-${metricStatus(row.op?.producaoPct,metaProd)}`}>{pct(row.op?.producaoPct)}</span>
