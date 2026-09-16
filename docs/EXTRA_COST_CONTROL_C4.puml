@@ -1,0 +1,84 @@
+' C4 — Extra Cost Control e arquitetura-alvo recomendada para o BI Logístico V2
+' Gerado a partir do estado de main do Extra Cost Control em 14/09/2026.
+
+@startuml ExtraCost_Context
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+LAYOUT_LEFT_RIGHT()
+title Extra Cost Control — C4 Nível 1 / Contexto
+
+Person(operacional, "Usuário Operacional", "Registra e acompanha solicitações dentro do seu escopo de operação.")
+Person(administrativo, "Administrativo", "Triagem, atendimento, cadastros e fechamento financeiro.")
+Person(owner, "Owner", "Governança, gestão de usuários e visão administrativa completa.")
+
+System(extraCost, "Extra Cost Control", "Sistema web Unilog para gestão de custos extras, solicitações, cadastros, analytics e fechamento financeiro.")
+System_Ext(googleWorkspace, "Google Workspace", "Apps Script Web App + Google Sheets usados como API de domínio e persistência operacional.")
+
+Rel(operacional, extraCost, "Usa", "HTTPS")
+Rel(administrativo, extraCost, "Usa", "HTTPS")
+Rel(owner, extraCost, "Usa", "HTTPS")
+Rel(extraCost, googleWorkspace, "Executa regras e persiste dados", "HTTPS / API protegida")
+
+SHOW_LEGEND()
+@enduml
+
+@startuml ExtraCost_Containers
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_LEFT_RIGHT()
+title Extra Cost Control — C4 Nível 2 / Containers
+
+Person(user, "Usuário Unilog", "Operacional, Administrativo ou Owner")
+
+System_Boundary(extra, "Extra Cost Control") {
+  Container(web, "Web UI", "Next.js 15 App Router + React 19 + PrimeReact 10 + PrimeIcons + Chart.js", "Aplicação client-side exportada estaticamente; login, shell, dashboards, solicitações, cadastros, usuários, dialogs, tabelas e gráficos.")
+  Container(gateway, "API Gateway / BFF", "Cloudflare Pages Functions / TypeScript", "Autenticação da sessão, autorização por perfil/operação, cookie JWT HttpOnly/Secure, edge cache de leituras e proxy seguro para Apps Script.")
+  Container(appsScript, "API de Domínio", "Google Apps Script Web App", "Regras operacionais e financeiras, validações, cálculos, consultas, mutações e serviços de domínio.")
+  ContainerDb(sheets, "Persistência Operacional", "Google Sheets", "Solicitações, cadastros, preços, usuários, fechamentos e demais dados operacionais.")
+}
+
+Rel(user, web, "Usa", "HTTPS")
+Rel(web, gateway, "Consome /api/*", "HTTPS")
+Rel(gateway, web, "Mantém sessão", "JWT em cookie HttpOnly/Secure")
+Rel(gateway, appsScript, "Chama API protegida", "HTTPS + segredo serviço-a-serviço")
+Rel(appsScript, sheets, "Lê e grava", "Google Apps Script APIs")
+
+UpdateElementStyle(web, $bgColor="#242a36", $fontColor="#ffffff", $borderColor="#171b24")
+UpdateElementStyle(gateway, $bgColor="#494a56", $fontColor="#ffffff", $borderColor="#242a36")
+UpdateElementStyle(appsScript, $bgColor="#db0812", $fontColor="#ffffff", $borderColor="#b8070f")
+UpdateElementStyle(sheets, $bgColor="#f8f9fb", $fontColor="#242a36", $borderColor="#e2e5e9")
+
+SHOW_LEGEND()
+@enduml
+
+@startuml BiLogistico_Target
+!includeurl https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_LEFT_RIGHT()
+title BI Logístico V2 — arquitetura-alvo recomendada para o PR #69
+
+Person(userBi, "Usuário BI", "Usuário operacional, Admin ou Owner")
+
+System_Boundary(bi, "BI Logístico V2") {
+  Container(biWeb, "Web UI Modernizada", "React 19 + TypeScript + Vite + React Router + PrimeReact 10 + PrimeIcons + Chart.js", "Mantém a arquitetura SPA e as rotas atuais; adota a linguagem visual, os wrappers e os padrões de gráficos do Extra Cost Control.")
+  Container(biGateway, "API / BFF", "Cloudflare Pages Functions", "Valida JWT Supabase, aplica escopo/autorização, integra HUB e mantém secrets no servidor.")
+  ContainerDb(supabase, "Supabase", "Auth + PostgreSQL + RLS + Storage", "Sessão, perfis, governança, FCA, auditoria, substituições e dados técnicos do BI.")
+  Container(hubApi, "HUB API", "Google Apps Script", "Ponte somente leitura para dados operacionais e analíticos da HUB.")
+  ContainerDb(hubSheets, "HUB", "Google Sheets", "Supervisores, depositantes, indicadores, metas, KPIs, inventário, receita e despesa.")
+}
+
+Rel(userBi, biWeb, "Usa", "HTTPS")
+Rel(biWeb, supabase, "Autentica com chave publicável", "HTTPS")
+Rel(biWeb, biGateway, "Consome /api/*", "HTTPS + Bearer JWT")
+Rel(biGateway, supabase, "Valida identidade, perfis e dados técnicos", "HTTPS / secrets server-side")
+Rel(biGateway, hubApi, "Obtém dados HUB no escopo autorizado", "HTTPS / segredo server-side")
+Rel(hubApi, hubSheets, "Lê", "Google Apps Script APIs")
+
+UpdateElementStyle(biWeb, $bgColor="#242a36", $fontColor="#ffffff", $borderColor="#171b24")
+UpdateElementStyle(biGateway, $bgColor="#494a56", $fontColor="#ffffff", $borderColor="#242a36")
+UpdateElementStyle(supabase, $bgColor="#f8f9fb", $fontColor="#242a36", $borderColor="#e2e5e9")
+UpdateElementStyle(hubApi, $bgColor="#db0812", $fontColor="#ffffff", $borderColor="#b8070f")
+UpdateElementStyle(hubSheets, $bgColor="#f8f9fb", $fontColor="#242a36", $borderColor="#e2e5e9")
+
+SHOW_LEGEND()
+@enduml

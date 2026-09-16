@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Card } from 'primereact/card'
 
 interface PanelProps {
   children: ReactNode
@@ -13,13 +14,12 @@ interface PanelHeaderProps {
   trailing?: ReactNode
 }
 
-export function Panel({children,className='',as='section'}:PanelProps){
-  const Component=as
-  return <Component className={`ui-panel ${className}`.trim()}>{children}</Component>
+export function Panel({children,className=''}:PanelProps){
+  return <Card className={`ui-panel nx-prime-panel ${className}`.trim()}>{children}</Card>
 }
 
 export function PanelHeader({eyebrow,title,description,trailing}:PanelHeaderProps){
-  return <header className="ui-panel-header">
+  return <header className="ui-panel-header nx-prime-panel-header">
     <div className="ui-panel-header-copy">
       {eyebrow&&<span className="ui-eyebrow">{eyebrow}</span>}
       <h2>{title}</h2>

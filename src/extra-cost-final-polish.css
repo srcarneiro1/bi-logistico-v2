@@ -1,0 +1,266 @@
+/* Último passe de paridade visual com o Extra Cost Control.
+   Carregado após extra-cost-alignment.css para resolver somente a composição final. */
+
+/* Tipografia canônica do Extra Cost também prevalece nos componentes PrimeReact. */
+.p-component{font-family:Roboto,Arial,Helvetica,sans-serif!important}
+
+/* PageHeader PrimeReact: mesma estrutura do Extra Cost. */
+.page-header.nx-prime-page-header.p-toolbar{
+  min-width:0;
+  margin:0 0 16px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  align-items:flex-start!important;
+}
+.nx-prime-page-header .p-toolbar-group-start,
+.nx-prime-page-header .p-toolbar-group-end{min-width:0}
+.nx-prime-page-header .p-toolbar-group-start{flex:1 1 auto}
+.nx-page-title-copy{display:grid;gap:3px;min-width:0}
+.nx-page-title-copy .ui-eyebrow{font-size:10px;font-weight:800;letter-spacing:.1em;color:var(--unilog-muted)}
+.nx-page-title-copy h1{margin:2px 0 3px;font-size:28px;line-height:1.15;letter-spacing:-.035em;color:var(--unilog-ink);overflow-wrap:anywhere}
+.nx-page-title-copy p{margin:0;max-width:780px;font-size:12px;line-height:1.5;color:#6e747e}
+.page-actions.nx-modern-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;min-width:0}
+
+/* O filtro agora pertence à página, imediatamente após o heading. */
+.global-filter-stage{max-width:none;margin:0 0 18px;padding:0}
+
+/* Mesmo ritmo vertical do dashboard do Extra Cost. */
+.home-dashboard,.kpis-page{gap:16px}
+.home-kpi-section,.kpis-overview{gap:10px}
+
+/* PrimeReact Card deve ser o único owner do padding interno das métricas. */
+.nx-dashboard-metric-card.p-card,
+.ui-summary-metric.nx-prime-metric.p-card{
+  display:block!important;
+  padding:0!important;
+}
+
+/* Todos os cards métricos do BI preservam a superfície semântica,
+   mas nunca usam a faixa vertical lateral. */
+.nx-dashboard-metric-card.dashboard-metric-success,
+.nx-dashboard-metric-card.dashboard-metric-warning,
+.nx-dashboard-metric-card.dashboard-metric-danger,
+.ui-summary-metric-success.nx-prime-metric,
+.ui-summary-metric-warning.nx-prime-metric,
+.ui-summary-metric-danger.nx-prime-metric,
+.ui-summary-metric-info.nx-prime-metric{
+  border-left-width:1px!important;
+  border-left-color:var(--metric-border)!important;
+}
+
+/* Variações em pontos percentuais têm semântica própria, independente do card. */
+.nx-dashboard-metric-card .metric-card-comparison{
+  display:flex!important;
+  align-items:center!important;
+  gap:5px!important;
+  flex-wrap:wrap!important;
+}
+.nx-dashboard-metric-card .metric-card-pp{font-weight:800!important}
+.nx-dashboard-metric-card .metric-card-pp-positive{color:var(--unilog-success)!important}
+.nx-dashboard-metric-card .metric-card-pp-negative{color:var(--unilog-danger)!important}
+.nx-dashboard-metric-card .metric-card-pp-neutral{color:var(--unilog-muted)!important}
+.nx-dashboard-metric-card .metric-card-pp-separator{color:var(--unilog-muted)!important;font-weight:700!important}
+
+/* Taxonomia de cards do BI:
+   - métricas: mesma anatomia e paleta semântica;
+   - conteúdo/entidade: superfície neutra compartilhada;
+   - callouts/alertas ficam fora desta normalização. */
+.ui-detail-metrics{
+  display:grid!important;
+  gap:10px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+.ui-detail-metric{
+  --metric-bg:#fff;
+  --metric-border:var(--unilog-border);
+  --metric-label:var(--unilog-muted);
+  --metric-value:var(--unilog-ink-2);
+  --metric-detail:var(--unilog-graphite-2);
+  min-height:108px!important;
+  align-content:center!important;
+  gap:6px!important;
+  padding:16px 18px!important;
+  border:1px solid var(--metric-border)!important;
+  border-radius:var(--unilog-radius)!important;
+  background:var(--metric-bg)!important;
+  box-shadow:var(--unilog-shadow)!important;
+}
+.ui-detail-metric>span{
+  color:var(--metric-label)!important;
+  font-size:9px!important;
+  line-height:1.25!important;
+  font-weight:800!important;
+  letter-spacing:.065em!important;
+  text-transform:uppercase!important;
+}
+.ui-detail-metric>strong{
+  color:var(--metric-value)!important;
+  font-size:22px!important;
+  line-height:1.08!important;
+  font-weight:800!important;
+  letter-spacing:-.025em!important;
+  font-variant-numeric:tabular-nums;
+}
+.ui-detail-metric>small{
+  color:var(--metric-detail)!important;
+  font-size:10px!important;
+  line-height:1.35!important;
+}
+.ui-detail-metric-success{
+  --metric-bg:#edf8f2;
+  --metric-border:#cce6d6;
+  --metric-label:#317552;
+  --metric-value:#2f7650;
+  --metric-detail:#5d7f6c;
+}
+.ui-detail-metric-warning{
+  --metric-bg:#fff7e8;
+  --metric-border:#f1ddae;
+  --metric-label:#9b6500;
+  --metric-value:#a46a00;
+  --metric-detail:#8d7447;
+}
+.ui-detail-metric-danger{
+  --metric-bg:#fff0f1;
+  --metric-border:#efc9cc;
+  --metric-label:#ad1b23;
+  --metric-value:#b51b24;
+  --metric-detail:#956166;
+}
+
+.supervisor-card,
+.admin-supervisor-card,
+.coverage-card,
+.finance-hero,
+.fca-form-stepper,
+.fca-editor-page .fca-form .form-section,
+.supervisor-detail-mobile-record,
+.depositor-mobile-record,
+.finance-expense-mobile-record,
+.fca-mobile-record,
+.admin-access-mobile-record{
+  border:1px solid var(--unilog-border)!important;
+  border-radius:var(--unilog-radius)!important;
+  background:var(--unilog-surface)!important;
+  box-shadow:var(--unilog-shadow)!important;
+}
+.supervisor-card.selected,
+.depositor-mobile-record.is-selected{
+  border-color:var(--border-strong)!important;
+  background:var(--unilog-surface-soft)!important;
+}
+.coverage-card:hover,
+.supervisor-card:hover{
+  box-shadow:0 8px 22px rgba(18,24,34,.07)!important;
+}
+
+/* Autenticação: ícones usam centralização geométrica própria, sem depender do baseline
+   da fonte ou dos offsets internos do tema Lara. */
+.login-form .login-field-icon{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+}
+.login-form .login-field-icon>i.pi{
+  position:absolute!important;
+  left:14px!important;
+  top:0!important;
+  bottom:0!important;
+  width:16px!important;
+  height:100%!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:0!important;
+  transform:none!important;
+  line-height:1!important;
+  pointer-events:none!important;
+}
+.login-form .login-field-icon>.p-inputtext{padding-left:40px!important}
+
+.login-form .login-password.p-password{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+}
+.login-form .login-password .p-icon-field{
+  display:block!important;
+  position:relative!important;
+  width:100%!important;
+}
+.login-form .login-password .p-password-input{
+  width:100%!important;
+  min-height:46px!important;
+  padding-right:44px!important;
+}
+.login-form .login-password .p-password-toggle-mask-icon,
+.login-form .login-password .p-password-show-icon,
+.login-form .login-password .p-password-hide-icon{
+  position:absolute!important;
+  right:14px!important;
+  top:50%!important;
+  width:16px!important;
+  height:16px!important;
+  display:grid!important;
+  place-items:center!important;
+  margin:0!important;
+  transform:translateY(-50%)!important;
+  line-height:1!important;
+}
+.login-proof i.pi,
+.login-security-note i.pi{
+  width:14px;
+  height:14px;
+  display:inline-grid;
+  place-items:center;
+  flex:0 0 14px;
+  margin:0;
+  line-height:1;
+}
+.login-form .p-button .p-button-icon{
+  display:inline-grid!important;
+  place-items:center!important;
+  line-height:1!important;
+}
+
+/* Dropdowns de filtro seguem a mesma altura e densidade do Extra Cost. */
+.nx-dashboard-filter-grid>.nx-field{font-size:9px!important;font-weight:700!important;line-height:1.3!important;color:#646a74!important}
+.nx-dashboard-filter-grid .p-dropdown{height:42px!important;min-height:42px!important}
+.nx-dashboard-filter-grid .p-dropdown-label{height:40px!important;min-height:40px!important;padding:0 10px!important}
+.nx-dashboard-filter-grid .p-dropdown-trigger{width:36px!important}
+
+/* Empty/loading states também usam PrimeIcons e PrimeReact Skeleton. */
+.ui-empty-state.nx-prime-empty>.nx-prime-empty-icon{
+  width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:#f2f3f5;color:#6d737c;font-size:17px
+}
+.ui-empty-state.nx-prime-empty>.nx-prime-empty-icon>i{font-size:17px}
+.ui-empty-state-error.nx-prime-empty>.nx-prime-empty-icon{background:var(--danger-soft);color:var(--danger)}
+.ui-skeleton.nx-prime-skeleton{display:grid;gap:10px;padding:var(--space-4);overflow:hidden}
+.ui-skeleton.nx-prime-skeleton>.p-skeleton{border-radius:6px}
+
+@media(max-width:900px){
+  .ui-detail-metric{min-height:96px!important;padding:14px 15px!important}
+  .ui-detail-metric>strong{font-size:20px!important}
+}
+
+@media(max-width:760px){
+  .page-header.nx-prime-page-header.p-toolbar{margin-bottom:14px!important;gap:10px;flex-wrap:wrap}
+  .nx-prime-page-header .p-toolbar-group-start,.nx-prime-page-header .p-toolbar-group-end{width:100%}
+  .nx-page-title-copy h1{font-size:23px}
+  .nx-page-title-copy p{font-size:11px}
+  .page-actions.nx-modern-actions{width:100%;justify-content:stretch}
+  .page-actions.nx-modern-actions>.p-button,.page-actions.nx-modern-actions>.button{flex:1 1 auto}
+  .global-filter-stage{margin-bottom:16px}
+  .nx-dashboard-filter-grid .p-dropdown{height:46px!important;min-height:46px!important}
+  .nx-dashboard-filter-grid .p-dropdown-label{height:44px!important;min-height:44px!important;font-size:12px!important}
+}
+
+@media(max-width:600px){
+  .ui-detail-metric{min-height:88px!important;padding:12px!important}
+}

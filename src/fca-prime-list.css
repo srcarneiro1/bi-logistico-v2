@@ -1,0 +1,34 @@
+.fca-status-dropdown{width:190px;min-width:190px;min-height:42px}
+.fca-status-dropdown .p-dropdown-label{display:flex;align-items:center;min-height:40px;font-size:11px}
+
+.fca-prime-table{display:block;min-width:0}
+.fca-prime-table .p-datatable-wrapper{max-width:100%;overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+.fca-record-cell{display:grid;gap:3px;min-width:0}
+.fca-record-cell>a{font-size:12px;font-weight:800;letter-spacing:.015em;color:var(--unilog-ink-2)}
+.fca-record-cell>a:hover{color:var(--unilog-red)}
+.fca-record-cell>small{font-size:8.5px;color:var(--unilog-muted)}
+.fca-entity-cell,.fca-owner-cell{display:grid;gap:2px;min-width:0}
+.fca-entity-cell>strong,.fca-owner-cell>strong{font-size:11px;color:var(--unilog-ink-2);overflow-wrap:anywhere}
+.fca-entity-cell>span,.fca-owner-cell>span{font-size:9px;color:var(--unilog-muted)}
+.fca-open-prime.p-button{justify-content:flex-start;min-height:0;padding:4px 6px!important;font-size:10px;font-weight:750}
+.fca-mobile-records{display:none}
+
+@media(max-width:760px){
+  .fca-status-dropdown{width:100%;min-width:0;min-height:46px}
+  .fca-status-dropdown .p-dropdown-label{min-height:44px;font-size:12px}
+  .fca-prime-table{display:none}
+  .fca-mobile-records{display:grid;gap:10px;padding:12px;background:var(--canvas)}
+  .fca-mobile-record{display:grid;gap:12px;padding:14px;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);box-shadow:var(--shadow-card)}
+  .fca-mobile-record>header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:11px;border-bottom:1px solid var(--border-soft)}
+  .fca-mobile-record>header>div{min-width:0}
+  .fca-mobile-entity{display:grid;gap:3px}
+  .fca-mobile-entity>strong{font-size:12px;line-height:1.35;color:var(--ink);overflow-wrap:anywhere}
+  .fca-mobile-entity>span{font-size:9px;color:var(--muted)}
+  .fca-mobile-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .fca-mobile-meta>div{display:grid;gap:6px;padding:10px;border:1px solid var(--border-soft);border-radius:var(--radius-control);background:var(--surface-soft)}
+  .fca-mobile-meta>div>span{font-size:8px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .fca-mobile-meta>div>strong{font-size:10px;color:var(--ink-2);overflow-wrap:anywhere}
+  .fca-mobile-record>.p-button{width:100%;justify-content:center;min-height:44px}
+}
+
+@media(max-width:480px){.fca-mobile-meta{grid-template-columns:1fr}}

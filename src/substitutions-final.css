@@ -1,0 +1,327 @@
+/* Substituições — composição administrativa final alinhada ao restante do BI. */
+
+.admin-substitutions-page .coverage-panel.p-card{
+  overflow:hidden;
+}
+
+.admin-substitutions-page .coverage-head-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.admin-substitutions-page .substitution-notice{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin:14px 16px 0;
+  padding:10px 12px;
+  border:1px solid #d8e8de;
+  border-radius:var(--unilog-control-radius);
+  background:#f2f8f4;
+  color:#37664b;
+  font-size:10px;
+  line-height:1.4;
+}
+
+.admin-substitutions-page .substitution-editor{
+  margin:14px 16px 0;
+  border:1px solid var(--unilog-border);
+  border-radius:var(--unilog-radius);
+  background:var(--unilog-surface);
+  box-shadow:var(--unilog-shadow);
+  overflow:hidden;
+}
+
+.admin-substitutions-page .substitution-editor-head{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:16px;
+  padding:16px 18px;
+  border-bottom:1px solid var(--unilog-border-soft);
+  background:#fbfcfd;
+}
+.admin-substitutions-page .substitution-editor-head>div{
+  display:grid;
+  gap:3px;
+  min-width:0;
+}
+.admin-substitutions-page .substitution-editor-head h3{
+  margin:0;
+  color:var(--unilog-ink);
+  font-size:15px;
+  line-height:1.25;
+}
+.admin-substitutions-page .substitution-editor-head p{
+  margin:0;
+  max-width:680px;
+  color:#676d77;
+  font-size:10px;
+  line-height:1.45;
+}
+
+.admin-substitutions-page .substitution-form.nx-admin-prime-form.is-single{
+  display:grid;
+  gap:14px;
+  margin:0;
+  padding:18px;
+  border:0;
+  border-radius:0;
+  background:#fff;
+}
+.admin-substitutions-page .substitution-form-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:13px 14px;
+}
+.admin-substitutions-page .substitution-field-wide{
+  grid-column:1/-1;
+}
+.admin-substitutions-page .substitution-form.nx-admin-prime-form label{
+  gap:6px;
+  color:#59616c;
+  font-size:9px;
+  font-weight:750;
+}
+.admin-substitutions-page .substitution-form.nx-admin-prime-form .p-inputtext,
+.admin-substitutions-page .substitution-form.nx-admin-prime-form .p-dropdown{
+  min-height:42px;
+  border:1px solid #d9dde3;
+  border-radius:var(--unilog-control-radius);
+  box-shadow:none;
+  background:#fff;
+}
+.admin-substitutions-page .substitution-form.nx-admin-prime-form .p-inputtext:enabled:focus,
+.admin-substitutions-page .substitution-form.nx-admin-prime-form .p-dropdown:not(.p-disabled).p-focus{
+  border-color:var(--unilog-red);
+  box-shadow:0 0 0 3px rgba(219,8,18,.08);
+}
+.admin-substitutions-page .substitution-form .form-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  padding-top:4px;
+}
+.admin-substitutions-page .substitute-photo-preview{
+  margin:0;
+  background:#f8f9fb;
+}
+
+.admin-substitutions-page .substitute-registry{
+  margin-top:14px;
+  border-top:1px solid var(--unilog-border-soft);
+  border-bottom:1px solid var(--unilog-border-soft);
+  background:#fff;
+}
+.admin-substitutions-page .substitute-registry-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:14px 16px 12px;
+}
+.admin-substitutions-page .substitute-registry-head>div{
+  display:grid;
+  gap:2px;
+}
+.admin-substitutions-page .substitute-registry-head strong{
+  color:var(--unilog-ink);
+  font-size:12px;
+}
+.admin-substitutions-page .substitute-registry-head small{
+  color:#8a9099;
+  font-size:9px;
+}
+.admin-substitutions-page .substitute-registry-list{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  padding:0 16px 16px;
+}
+.admin-substitutions-page .substitute-registry-row{
+  width:100%;
+  min-width:0;
+  display:grid;
+  grid-template-columns:36px minmax(0,1fr) auto 24px;
+  align-items:center;
+  gap:10px;
+  padding:10px 11px;
+  border:1px solid var(--unilog-border-soft);
+  border-radius:var(--unilog-control-radius);
+  background:#fff;
+  color:inherit;
+  text-align:left;
+  cursor:pointer;
+  transition:background-color .12s ease,border-color .12s ease,box-shadow .12s ease;
+}
+.admin-substitutions-page .substitute-registry-row:hover{
+  border-color:#d2d6dc;
+  background:#fbfcfd;
+}
+.admin-substitutions-page .substitute-registry-row:focus-visible{
+  outline:none;
+  border-color:var(--unilog-red);
+  box-shadow:0 0 0 3px rgba(219,8,18,.08);
+}
+.admin-substitutions-page .substitute-registry-avatar{
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:#f1f3f5;
+  color:#494a56;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.02em;
+}
+.admin-substitutions-page .substitute-registry-copy{
+  display:grid;
+  gap:2px;
+  min-width:0;
+}
+.admin-substitutions-page .substitute-registry-copy strong{
+  overflow:hidden;
+  color:var(--unilog-ink);
+  font-size:11px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.admin-substitutions-page .substitute-registry-copy small{
+  overflow:hidden;
+  color:#8a9099;
+  font-size:9px;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.admin-substitutions-page .substitute-registry-row>i{
+  color:#8a9099;
+  font-size:11px;
+}
+
+.admin-substitutions-page .coverage-card-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  padding:16px;
+  background:#f8f9fb;
+}
+.admin-substitutions-page .coverage-card.p-card{
+  border:1px solid var(--unilog-border);
+  border-radius:var(--unilog-radius);
+  box-shadow:var(--unilog-shadow);
+  background:#fff;
+}
+.admin-substitutions-page .coverage-card.p-card>.p-card-body>.p-card-content{
+  padding:14px;
+}
+.admin-substitutions-page .coverage-card-top{
+  margin-bottom:13px;
+}
+.admin-substitutions-page .coverage-people{
+  grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr);
+  gap:8px;
+}
+.admin-substitutions-page .coverage-people>i{
+  justify-self:center;
+  color:#8a9099;
+}
+.admin-substitutions-page .coverage-card strong{
+  line-height:1.35;
+  white-space:normal;
+}
+.admin-substitutions-page .coverage-meta{
+  grid-template-columns:.7fr 1.3fr;
+  gap:12px;
+}
+.admin-substitutions-page .coverage-reason{
+  border:1px solid var(--unilog-border-soft);
+  background:#f8f9fb;
+}
+
+@media(max-width:1180px){
+  .admin-substitutions-page .coverage-card-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}
+
+@media(max-width:820px){
+  .admin-substitutions-page .coverage-head-actions{
+    justify-content:flex-start;
+  }
+  .admin-substitutions-page .substitution-form-grid,
+  .admin-substitutions-page .substitute-registry-list{
+    grid-template-columns:1fr;
+  }
+  .admin-substitutions-page .coverage-card-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:600px){
+  .admin-substitutions-page .coverage-head-actions{
+    width:100%;
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .admin-substitutions-page .coverage-head-actions>.p-button{
+    width:100%;
+    justify-content:center;
+  }
+  .admin-substitutions-page .coverage-head-actions>.ui-chip{
+    justify-self:start;
+  }
+  .admin-substitutions-page .substitution-editor,
+  .admin-substitutions-page .substitution-notice{
+    margin-left:12px;
+    margin-right:12px;
+  }
+  .admin-substitutions-page .substitution-editor-head{
+    padding:14px;
+  }
+  .admin-substitutions-page .substitution-form.nx-admin-prime-form.is-single{
+    padding:14px;
+  }
+  .admin-substitutions-page .substitution-form .form-actions{
+    display:grid;
+    grid-template-columns:1fr;
+  }
+  .admin-substitutions-page .substitution-form .form-actions>.p-button{
+    width:100%;
+    justify-content:center;
+  }
+  .admin-substitutions-page .substitute-registry-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .admin-substitutions-page .substitute-registry-head>.p-button{
+    width:100%;
+    justify-content:flex-start;
+  }
+  .admin-substitutions-page .substitute-registry-list{
+    padding:0 12px 12px;
+  }
+  .admin-substitutions-page .substitute-registry-row{
+    grid-template-columns:36px minmax(0,1fr) auto;
+  }
+  .admin-substitutions-page .substitute-registry-row>i{
+    display:none;
+  }
+  .admin-substitutions-page .coverage-card-grid{
+    padding:12px;
+  }
+  .admin-substitutions-page .coverage-people{
+    grid-template-columns:1fr;
+  }
+  .admin-substitutions-page .coverage-people>i{
+    justify-self:start;
+    transform:rotate(90deg);
+  }
+  .admin-substitutions-page .coverage-meta{
+    grid-template-columns:1fr;
+  }
+}

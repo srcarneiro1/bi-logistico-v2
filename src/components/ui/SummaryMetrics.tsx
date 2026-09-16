@@ -1,4 +1,6 @@
 import type { ReactNode } from 'react'
+import { Button } from 'primereact/button'
+import { Card } from 'primereact/card'
 
 export type SummaryMetricTone='neutral'|'success'|'warning'|'danger'|'info'
 export type SummaryMetricsVariant='default'|'filters'
@@ -15,17 +17,21 @@ export interface SummaryMetricItem {
   ariaLabel?:string
 }
 
+const metricPrimeIcon:Record<string,string>={
+  dataset:'pi pi-database',pending_actions:'pi pi-clock',groups:'pi pi-users',group:'pi pi-users',error:'pi pi-exclamation-triangle',manage_accounts:'pi pi-users',verified_user:'pi pi-shield',shield_person:'pi pi-shield',admin_panel_settings:'pi pi-lock',badge:'pi pi-id-card',inventory_2:'pi pi-box',payments:'pi pi-wallet',local_shipping:'pi pi-truck',receipt_long:'pi pi-receipt',category:'pi pi-tags',calendar_month:'pi pi-calendar',account_balance_wallet:'pi pi-wallet',check_circle:'pi pi-check-circle',warning:'pi pi-exclamation-triangle',trending_up:'pi pi-chart-line',target:'pi pi-bullseye',difference:'pi pi-arrows-h',add_card:'pi pi-plus-circle',radio_button_unchecked:'pi pi-circle',autorenew:'pi pi-sync',cloud_done:'pi pi-cloud',link:'pi pi-link',person_off:'pi pi-user-minus',person:'pi pi-user',event_available:'pi pi-calendar-plus',event_upcoming:'pi pi-calendar',history:'pi pi-history'
+}
+
 export function SummaryMetrics({items,ariaLabel='Resumo da página',className='',variant='default'}:{items:SummaryMetricItem[];ariaLabel?:string;className?:string;variant?:SummaryMetricsVariant}){
-  return <div className={`ui-summary-metrics ui-summary-metrics-${variant} ${className}`.trim()} role="group" aria-label={ariaLabel}>
+  return <div className={`ui-summary-metrics ui-summary-metrics-${variant} nx-prime-metrics ${className}`.trim()} role="group" aria-label={ariaLabel}>
     {items.map(item=>{
       const tone=item.tone??'neutral'
       const content=<>
-        {item.icon&&<span className="ui-summary-metric-icon material-symbols-rounded" aria-hidden="true">{item.icon}</span>}
+        {item.icon&&<span className={`ui-summary-metric-icon ${metricPrimeIcon[item.icon]||'pi pi-chart-bar'}`} aria-hidden="true"/>}
         <div className="ui-summary-metric-copy"><span>{item.label}</span><strong>{item.value}</strong>{item.detail&&<small>{item.detail}</small>}</div>
       </>
       return item.onClick?
-        <button key={item.key} type="button" className={`ui-summary-metric ui-summary-metric-${tone} ${item.active?'is-active':''}`.trim()} aria-pressed={item.active} aria-label={item.ariaLabel} onClick={item.onClick}>{content}</button>:
-        <div key={item.key} className={`ui-summary-metric ui-summary-metric-${tone}`}>{content}</div>
+        <Button key={item.key} type="button" text className={`ui-summary-metric ui-summary-metric-${tone} nx-prime-metric ${item.active?'is-active':''}`.trim()} aria-pressed={item.active} aria-label={item.ariaLabel} onClick={item.onClick}>{content}</Button>:
+        <Card key={item.key} className={`ui-summary-metric ui-summary-metric-${tone} nx-prime-metric`}>{content}</Card>
     })}
   </div>
 }

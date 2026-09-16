@@ -1,0 +1,48 @@
+/* Interação padronizada para superfícies que representam depositantes.
+   Regra UX: linha/card inteiro é clicável; nome continua como alvo acessível. */
+
+.nx-depositor-table .p-datatable-tbody>tr{
+  cursor:pointer!important;
+}
+.nx-depositor-table .p-datatable-tbody>tr:hover>td{
+  background:#fbfcfd!important;
+}
+
+.nx-depositor-record{
+  cursor:pointer;
+}
+.nx-depositor-record:focus-visible{
+  outline:none;
+  box-shadow:0 0 0 3px rgba(219,8,18,.09),var(--unilog-shadow)!important;
+  border-color:var(--unilog-red)!important;
+}
+
+/* Links textuais de depositante nunca desenham uma segunda moldura. */
+.nx-table-link.p-button,
+.nx-table-link.p-button:hover,
+.nx-table-link.p-button:active{
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.nx-table-link.p-button:focus:not(:focus-visible){
+  box-shadow:none!important;
+}
+.nx-table-link.p-button:focus-visible{
+  outline:2px solid rgba(219,8,18,.34)!important;
+  outline-offset:2px!important;
+  box-shadow:none!important;
+}
+
+/* Linhas financeiras clicáveis mantêm a mesma anatomia das linhas informativas. */
+.finance-depositors-panel button.revenue-row.nx-depositor-record{
+  width:100%;
+  appearance:none;
+  font:inherit;
+  color:inherit;
+  text-align:left;
+}
+.finance-depositors-panel button.revenue-row.nx-depositor-record:hover{
+  background:var(--surface-secondary);
+  border-color:#e8eaed;
+}

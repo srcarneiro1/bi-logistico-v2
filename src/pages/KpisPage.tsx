@@ -1,11 +1,16 @@
+import { useNavigate } from 'react-router-dom'
+import { Column } from 'primereact/column'
+import { DataTable } from 'primereact/datatable'
 import { MetricCard } from '../components/MetricCard'
 import { PageHeader } from '../components/PageHeader'
 import { SimpleLineChart } from '../components/SimpleLineChart'
 import { MetricStatusBadge } from '../components/ui/Badge'
 import { Chip } from '../components/ui/Chip'
+import { EmptyState } from '../components/ui/Feedback'
 import { Panel, PanelHeader } from '../components/ui/Panel'
 import { SectionHeader } from '../components/ui/SectionHeader'
 import { indicatorMeta, inventoryAggregate, kpiComparison, mainKpis, metricStatus, operationalRows, pct, periodKey, periodLabel, trendGlobal, trendInventory, trendScopedInventory, trendScopedOperational } from '../lib/dashboard'
+import { openDepositorFrom } from '../lib/navigationContext'
 import type { DashboardFilters, MetricStatus } from '../types/dashboard'
 import type { HubBootstrap } from '../types/hub'
 
@@ -14,6 +19,7 @@ const rank:Record<MetricStatus,number>={crit:3,warn:2,neutral:1,ok:0}
 function historyWindow<T extends {periodo:string}>(series:T[],periodo:string,max=18){const key=periodKey(periodo);return series.filter(x=>!key||periodKey(x.periodo)<=key).slice(-max)}
 
 export function KpisPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilters}){
+ const navigate=useNavigate()
  const kpis=mainKpis(hub,filters),inv=inventoryAggregate(hub,filters),ops=operationalRows(hub,filters)
  const isGlobal=hub.profile.perfil==='ADMIN'&&!filters.supervisorId&&!filters.moduloId
  const prod=historyWindow(isGlobal?trendGlobal(hub.facts.kpiGeral,'Lead Time Produção'):trendScopedOperational(hub.facts.kpiOperacional,'producaoPct',filters),filters.periodo)
@@ -28,9 +34,15 @@ export function KpisPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
  const invSeries=inventorySeriesConfig.map(item=>({label:item.label,values:historyWindow(isGlobal?trendInventory(hub.facts.kpiInventario,item.official):trendScopedInventory(hub.facts.kpiInventarioDepositante,filters,item.field),filters.periodo),tone:item.tone}))
  const hasInventoryHistory=invSeries.some(series=>series.values.some(point=>point.value!=null))
  const metaProd=indicatorMeta(hub,'Lead Time Produção'),metaRec=indicatorMeta(hub,'Lead Time Recebimento'),metaInv=indicatorMeta(hub,'Inventário')
- const rows=ops.map(r=>{const statuses=[metricStatus(r.producaoPct,metaProd),metricStatus(r.recebimentoPct,metaRec),metricStatus(r.inventario?.totalPct,metaInv)];const worst=statuses.reduce((a,b)=>rank[b]>rank[a]?b:a,'ok' as MetricStatus);return {...r,statusProd:statuses[0],statusRec:statuses[1],statusInv:statuses[2],status:worst}}).sort((a,b)=>rank[b.status]-rank[a.status])
+ const rows=ops.map(r=>{const statuses=[metricStatus(r.producaoPct,metaProd),metricStatus(r.recebimentoPct,metaRec),metricStatus(r.inventario?.totalPct,metaInv)];const worst=statuses.reduce((a,b)=>rank[b]>rank[a]?b:a,'ok' as MetricStatus);return {...r,rowId:[r.cnpj,r.supervisorId,r.moduloId].join(':'),statusProd:statuses[0],statusRec:statuses[1],statusInv:statuses[2],status:worst}}).sort((a,b)=>rank[b.status]-rank[a.status])
+ type KpiRow=(typeof rows)[number]
  const inventoryScoreMeta=indicatorMeta(hub,'Pontuação Total')??metaInv
  const periodText=filters.periodo?periodLabel(filters.periodo):'último período'
+ const metricBody=(field:'producaoPct'|'recebimentoPct',statusField:'statusProd'|'statusRec')=>(row:KpiRow)=><span className={`metric-cell metric-cell-${row[statusField]}`}>{pct(row[field])}</span>
+ const inventoryBody=(row:KpiRow)=><span className={`metric-cell metric-cell-${row.statusInv}`}>{pct(row.inventario?.totalPct)}</span>
+ const statusBody=(row:KpiRow)=><MetricStatusBadge status={row.status} label={statusLabel[row.status]}/>
+ function openDepositor(row:KpiRow){openDepositorFrom(row.cnpj,{type:'kpis'});navigate('/depositantes')}
+ function handleMobileKey(event:React.KeyboardEvent<HTMLElement>,row:KpiRow){if(event.key==='Enter'||event.key===' '){event.preventDefault();openDepositor(row)}}
  return <section className="kpis-page">
   <PageHeader eyebrow="INDICADORES" title="KPIs operacionais" description="Metas, criticidade e evolução dos indicadores no escopo selecionado."/>
 
@@ -46,6 +58,29 @@ export function KpisPage({hub,filters}:{hub:HubBootstrap;filters:DashboardFilter
 
   {hasInventoryHistory&&<Panel as="article" className="kpis-history-panel"><PanelHeader eyebrow="HISTÓRICO ATÉ O PERÍODO" title="Evolução do inventário" trailing={<Chip>{isGlobal?'Consolidado oficial':'Média do escopo'}</Chip>}/><div className="panel-body"><SimpleLineChart series={invSeries}/></div></Panel>}
 
-  <Panel as="article" className="kpis-table-panel"><PanelHeader eyebrow="BASE OPERACIONAL" title="Performance por depositante" trailing={<Chip>{rows.length} depositantes</Chip>}/><div className="table-wrap embedded"><table className="status-table responsive-data-table"><thead><tr><th scope="col">Depositante</th><th scope="col">Módulo</th><th scope="col">Produção</th><th scope="col">Recebimento</th><th scope="col">Inventário</th><th scope="col">Status</th></tr></thead><tbody>{rows.map(r=><tr key={r.cnpj}><td data-label="Depositante" data-primary="true"><strong>{r.nomeDepositante}</strong></td><td data-label="Módulo">{r.moduloId}</td><td data-label="Produção"><span className={`metric-cell metric-cell-${r.statusProd}`}>{pct(r.producaoPct)}</span></td><td data-label="Recebimento"><span className={`metric-cell metric-cell-${r.statusRec}`}>{pct(r.recebimentoPct)}</span></td><td data-label="Inventário"><span className={`metric-cell metric-cell-${r.statusInv}`}>{pct(r.inventario?.totalPct)}</span></td><td data-label="Status"><MetricStatusBadge status={r.status} label={statusLabel[r.status]}/></td></tr>)}{!rows.length&&<tr><td colSpan={6} className="table-empty">Sem dados para o escopo atual.</td></tr>}</tbody></table></div></Panel>
+  <Panel as="article" className="kpis-table-panel">
+   <PanelHeader eyebrow="BASE OPERACIONAL" title="Performance por depositante" trailing={<Chip>{rows.length} depositantes</Chip>}/>
+   <div className="kpis-prime-table" aria-label="Performance por depositante">
+    <DataTable value={rows} dataKey="rowId" size="small" rowHover responsiveLayout="scroll" className="nx-prime-table nx-depositor-table" onRowClick={event=>openDepositor(event.data as KpiRow)} emptyMessage="Sem dados para o escopo atual." tableStyle={{minWidth:'720px'}}>
+     <Column field="nomeDepositante" header="Depositante" sortable body={(row:KpiRow)=><strong>{row.nomeDepositante}</strong>}/>
+     <Column field="moduloId" header="Módulo" sortable body={(row:KpiRow)=><Chip>{row.moduloId}</Chip>}/>
+     <Column field="producaoPct" header="Produção" sortable body={metricBody('producaoPct','statusProd')}/>
+     <Column field="recebimentoPct" header="Recebimento" sortable body={metricBody('recebimentoPct','statusRec')}/>
+     <Column field="inventario.totalPct" header="Inventário" sortable body={inventoryBody}/>
+     <Column header="Status" body={statusBody}/>
+    </DataTable>
+   </div>
+   <div className="kpis-mobile-records" role="list" aria-label="Performance por depositante">
+    {rows.map(row=><article key={row.rowId} className="kpis-mobile-record nx-depositor-record" role="button" tabIndex={0} aria-label={`Abrir visão 360º de ${row.nomeDepositante}`} onClick={()=>openDepositor(row)} onKeyDown={event=>handleMobileKey(event,row)}>
+     <header><div><strong>{row.nomeDepositante}</strong><Chip>{row.moduloId}</Chip></div>{statusBody(row)}</header>
+     <div className="kpis-mobile-metrics">
+      <div><span>Produção</span>{metricBody('producaoPct','statusProd')(row)}</div>
+      <div><span>Recebimento</span>{metricBody('recebimentoPct','statusRec')(row)}</div>
+      <div><span>Inventário</span>{inventoryBody(row)}</div>
+     </div>
+    </article>)}
+    {!rows.length&&<EmptyState icon="table_rows" title="Sem dados no escopo" description="Não há depositantes com indicadores para os filtros atuais."/>}
+   </div>
+  </Panel>
  </section>
 }

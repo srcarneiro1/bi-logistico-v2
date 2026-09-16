@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { Chart } from 'primereact/chart'
 import { pct, periodKey, periodLabel } from '../lib/dashboard'
 import { EmptyState } from './ui/Feedback'
 import './SimpleLineChart.css'
@@ -14,23 +15,18 @@ interface Series {
   tone?: 'red' | 'gray' | 'blue' | 'yellow' | 'green'
 }
 
-interface ActivePoint {
-  id: string
-  label: string
-  periodo: string
-  value: number
-  color: string
-  leftPct: number
-  topPct: number
-  align: 'left' | 'center' | 'right'
-}
-
 interface SimpleLineChartProps {
   series: Series[]
   height?: number
 }
 
-const colors = { red:'#DB0812', gray:'#494A56', blue:'#719c9a', yellow:'#b78a00', green:'#3f7c59' }
+const colors = {
+  red:'#DB0812',
+  gray:'#494A56',
+  blue:'#8B9099',
+  yellow:'#A87900',
+  green:'#3F7C59',
+}
 const fallbackTones: Array<keyof typeof colors> = ['red','gray','blue','yellow','green']
 
 function axisLabel(periodo:string,index:number){
@@ -48,8 +44,7 @@ function shouldShowAxisLabel(periodo:string,index:number,total:number){
   return index%step===0
 }
 
-export function SimpleLineChart({series,height=230}:SimpleLineChartProps){
-  const [activePoint,setActivePoint]=useState<ActivePoint|null>(null)
+export function SimpleLineChart({series,height=248}:SimpleLineChartProps){
   const [hiddenSeries,setHiddenSeries]=useState<Set<string>>(()=>new Set())
 
   useEffect(()=>{
@@ -58,23 +53,103 @@ export function SimpleLineChart({series,height=230}:SimpleLineChartProps){
   },[series])
 
   const visibleSeries=series.filter(item=>!hiddenSeries.has(item.label))
-  const all=visibleSeries.flatMap(s=>s.values.map(v=>v.value).filter((v):v is number=>v!=null))
   const hasData=series.some(s=>s.values.some(v=>v.value!=null))
-  if(!hasData)return <EmptyState icon="query_stats" title="Sem histórico disponível" description="Não há pontos de série para o período e o escopo selecionados. Ajuste os filtros para consultar outro recorte."/>
 
-  const periods=Array.from(new Set(series.flatMap(s=>s.values.map(v=>v.periodo))))
-  const scaleValues=all.length?all:[0,1]
-  const min=Math.max(0,Math.min(...scaleValues)-.04), max=Math.max(1,Math.max(...scaleValues)+.02)
-  const W=720,H=height,padX=42,padY=24
-  const x=(i:number)=>periods.length<=1?W/2:padX+i*(W-2*padX)/(periods.length-1)
-  const y=(v:number)=>padY+(max-v)*(H-2*padY)/(max-min||1)
+  const periods=useMemo(
+    ()=>Array.from(new Set(series.flatMap(s=>s.values.map(v=>v.periodo)))),
+    [series],
+  )
+  const scaleValues=visibleSeries.flatMap(s=>s.values.map(v=>v.value).filter((v):v is number=>v!=null))
+  const safeScaleValues=scaleValues.length?scaleValues:[0,1]
+  const min=Math.max(0,Math.min(...safeScaleValues)-.04)
+  const max=Math.max(1,Math.max(...safeScaleValues)+.02)
 
-  function activatePoint(label:string,periodo:string,value:number,color:string,px:number,py:number,id:string){
-    setActivePoint({id,label,periodo,value,color,leftPct:(px/W)*100,topPct:(py/H)*100,align:px<150?'left':px>W-150?'right':'center'})
-  }
+  const seriesByPeriod=useMemo(()=>series.map(item=>({
+    label:item.label,
+    values:new Map(item.values.map(point=>[point.periodo,point.value])),
+  })),[series])
+
+  const chartData=useMemo(()=>({
+    labels:periods,
+    datasets:visibleSeries.map((item,visibleIndex)=>{
+      const originalIndex=series.findIndex(candidate=>candidate.label===item.label)
+      const tone=item.tone??fallbackTones[(originalIndex>=0?originalIndex:visibleIndex)%fallbackTones.length]
+      const color=colors[tone]
+      const byPeriod=new Map(item.values.map(point=>[point.periodo,point.value]))
+      return {
+        label:item.label,
+        data:periods.map(period=>byPeriod.get(period)??null),
+        borderColor:color,
+        backgroundColor:color,
+        pointBackgroundColor:color,
+        pointBorderColor:color,
+        pointBorderWidth:1,
+        pointRadius:2.5,
+        pointHoverRadius:4,
+        borderWidth:2.5,
+        tension:.25,
+        spanGaps:true,
+      }
+    }),
+  }),[periods,series,visibleSeries])
+
+  const chartOptions=useMemo(()=>({
+    responsive:true,
+    maintainAspectRatio:false,
+    animation:false as const,
+    normalized:true,
+    interaction:{mode:'index' as const,intersect:false},
+    layout:{padding:{top:4,right:6,bottom:2,left:2}},
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        backgroundColor:'#242a36',
+        titleColor:'#fff',
+        bodyColor:'#fff',
+        borderColor:'rgba(255,255,255,.08)',
+        borderWidth:1,
+        padding:10,
+        displayColors:true,
+        usePointStyle:true,
+        callbacks:{
+          title:(contexts:any[])=>periodLabel(String(contexts[0]?.label??'')),
+          label:(context:any)=>` ${context.dataset.label}: ${pct(context.parsed.y)}`,
+        },
+      },
+    },
+    scales:{
+      x:{
+        grid:{display:false},
+        border:{display:false},
+        ticks:{
+          color:'#858A93',
+          font:{size:9,family:'Roboto, Arial, sans-serif'},
+          padding:7,
+          autoSkip:false,
+          maxRotation:0,
+          minRotation:0,
+          callback:(_value:any,index:number)=>{
+            const period=periods[index]
+            return period&&shouldShowAxisLabel(period,index,periods.length)?axisLabel(period,index):''
+          },
+        },
+      },
+      y:{
+        min,
+        max,
+        grid:{color:'#ECEEF1'},
+        border:{display:false},
+        ticks:{
+          color:'#858A93',
+          font:{size:9,family:'Roboto, Arial, sans-serif'},
+          padding:6,
+          callback:(value:any)=>pct(Number(value)),
+        },
+      },
+    },
+  }),[max,min,periods])
 
   function toggleSeries(label:string){
-    setActivePoint(null)
     setHiddenSeries(current=>{
       const next=new Set(current)
       if(next.has(label)){
@@ -88,32 +163,22 @@ export function SimpleLineChart({series,height=230}:SimpleLineChartProps){
     })
   }
 
+  if(!hasData)return <EmptyState icon="query_stats" title="Sem histórico disponível" description="Não há pontos de série para o período e o escopo selecionados. Ajuste os filtros para consultar outro recorte."/>
+
   return <div className="simple-chart">
-    <div className="simple-chart-plot">
-      <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Evolução dos indicadores em ${periods.length} período(s)`}>
-        <title>Evolução histórica dos indicadores</title>
-        {[0,.25,.5,.75,1].map(t=>{const yy=padY+t*(H-2*padY); const v=max-t*(max-min);return <g key={t}><line x1={padX} x2={W-padX} y1={yy} y2={yy} className="chart-grid"/><text x={4} y={yy+4} className="chart-axis">{pct(v)}</text></g>})}
-        {visibleSeries.map((s,si)=>{
-          const pts=s.values.map(v=>({i:periods.indexOf(v.periodo),v:v.value,periodo:v.periodo})).filter((p):p is {i:number;v:number;periodo:string}=>p.v!=null)
-          const d=pts.map((p,i)=>`${i?'L':'M'} ${x(p.i)} ${y(p.v)}`).join(' ')
-          const originalIndex=series.findIndex(item=>item.label===s.label)
-          const tone=s.tone??fallbackTones[(originalIndex>=0?originalIndex:si)%fallbackTones.length]
-          const c=colors[tone]
-          return <g key={s.label}>
-            <path d={d} fill="none" stroke={c} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            {pts.map((p,pointIndex)=>{
-              const px=x(p.i),py=y(p.v),id=`${s.label}-${p.periodo}-${pointIndex}`
-              return <g key={id}>
-                <circle cx={px} cy={py} r="4" fill="#fff" stroke={c} strokeWidth="2" aria-hidden="true"/>
-                <circle cx={px} cy={py} r="12" fill="transparent" className="chart-point-hit" tabIndex={0} role="button" aria-label={`${s.label}, ${periodLabel(p.periodo)}, ${pct(p.v)}`} onMouseEnter={()=>activatePoint(s.label,p.periodo,p.v,c,px,py,id)} onMouseLeave={()=>setActivePoint(current=>current?.id===id?null:current)} onFocus={()=>activatePoint(s.label,p.periodo,p.v,c,px,py,id)} onBlur={()=>setActivePoint(current=>current?.id===id?null:current)}/>
-              </g>
-            })}
-          </g>
-        })}
-        {periods.map((p,i)=>shouldShowAxisLabel(p,i,periods.length)?<text key={p} x={x(i)} y={H-4} textAnchor="middle" className={`chart-axis chart-x ${periodKey(p).endsWith('-01')?'chart-year-start':''}`}>{axisLabel(p,i)}</text>:null)}
-      </svg>
-      {activePoint&&<div className={`chart-tooltip chart-tooltip-${activePoint.align}`} role="tooltip" style={{left:`${activePoint.leftPct}%`,top:`${activePoint.topPct}%`}}><div className="chart-tooltip-head"><i style={{background:activePoint.color}}/><strong>{activePoint.label}</strong></div><span>{periodLabel(activePoint.periodo)}</span><b>{pct(activePoint.value)}</b></div>}
+    <div className="simple-chart-stage nx-chart-stage" style={{height}} aria-hidden="true">
+      <Chart type="line" data={chartData} options={chartOptions}/>
     </div>
-    <div className="chart-legend" aria-label="Séries do gráfico">{series.map((s,i)=>{const tone=s.tone??fallbackTones[i%fallbackTones.length];const visible=!hiddenSeries.has(s.label);const canHide=visibleSeries.length>1||!visible;return <button type="button" key={s.label} className={visible?'is-visible':'is-hidden'} aria-pressed={visible} aria-label={`${visible?'Ocultar':'Exibir'} série ${s.label}`} disabled={!canHide} onClick={()=>toggleSeries(s.label)}><i style={{background:colors[tone]}} />{s.label}</button>})}</div>
+    <table className="sr-only">
+      <caption>Evolução histórica dos indicadores</caption>
+      <thead><tr><th scope="col">Período</th>{seriesByPeriod.map(item=><th scope="col" key={item.label}>{item.label}</th>)}</tr></thead>
+      <tbody>{periods.map(period=><tr key={period}><th scope="row">{periodLabel(period)}</th>{seriesByPeriod.map(item=>{const value=item.values.get(period);return <td key={item.label}>{value==null?'Sem dado':pct(value)}</td>})}</tr>)}</tbody>
+    </table>
+    <div className="chart-legend" aria-label="Séries do gráfico">{series.map((item,index)=>{
+      const tone=item.tone??fallbackTones[index%fallbackTones.length]
+      const visible=!hiddenSeries.has(item.label)
+      const canHide=visibleSeries.length>1||!visible
+      return <button type="button" key={item.label} className={visible?'is-visible':'is-hidden'} aria-pressed={visible} aria-label={`${visible?'Ocultar':'Exibir'} série ${item.label}`} disabled={!canHide} onClick={()=>toggleSeries(item.label)}><i style={{background:colors[tone]}} />{item.label}</button>
+    })}</div>
   </div>
 }

@@ -16,8 +16,9 @@
 .finance-page{display:grid;gap:var(--space-4)}
 .finance-page .page-header{margin-bottom:0}
 
-/* Headline financeiro é uma especialização legítima; status fica no valor, não em rail decorativo. */
-.finance-hero{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,.7fr);gap:0;border:1px solid var(--border-default);border-radius:var(--radius-card);background:var(--surface-primary);box-shadow:var(--shadow-card);overflow:hidden}
+.finance-hero.p-card{overflow:hidden}
+.finance-hero.p-card>.p-card-body{height:100%;padding:0}
+.finance-hero.p-card>.p-card-body>.p-card-content{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(260px,.7fr);gap:0;height:100%;padding:0}
 .finance-hero-main,.finance-hero-attainment{display:grid;gap:5px;padding:22px 24px}
 .finance-hero-main{border-right:1px solid var(--border-default)}
 .finance-hero span{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--text-secondary)}
@@ -46,10 +47,13 @@
 .finance-depositors-panel .revenue-attainment{display:grid;justify-items:end;gap:3px;min-width:88px;padding-left:12px;border-left:1px solid #eceef1}
 .finance-depositors-panel .revenue-attainment span{font-size:9px;color:var(--text-muted)}
 .finance-depositors-panel .revenue-attainment strong{font-size:14px}
-.finance-expenses-panel .table-wrap{border:0;border-radius:0;box-shadow:none}
+
+.finance-expenses-prime-table{display:block}
+.finance-expenses-prime-table .p-datatable-wrapper{border:0;border-radius:0;box-shadow:none}
+.finance-expenses-mobile-records{display:none}
 
 @media(max-width:900px){
-  .finance-hero{grid-template-columns:1fr}
+  .finance-hero.p-card>.p-card-body>.p-card-content{grid-template-columns:1fr}
   .finance-hero-main{border-right:0;border-bottom:1px solid var(--border-default)}
   .finance-depositors-panel .revenue-row{grid-template-columns:minmax(150px,.9fr) minmax(240px,1.4fr) 100px;gap:12px}
 }
@@ -62,6 +66,15 @@
   .finance-depositors-panel .revenue-row{grid-template-columns:1fr auto;gap:12px;margin:0;padding:13px;border:1px solid var(--border-default);border-radius:11px;background:var(--surface-primary);box-shadow:var(--shadow-card)}
   .finance-depositors-panel .revenue-bars{grid-column:1/-1}
   .finance-depositors-panel .revenue-attainment{min-width:0;padding-left:0;border-left:0;text-align:right}
+  .finance-expenses-prime-table{display:none}
+  .finance-expenses-mobile-records{display:grid;gap:10px;padding:12px;background:var(--canvas)}
+  .finance-expense-mobile-record{display:grid;gap:11px;padding:14px;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);box-shadow:var(--shadow-card)}
+  .finance-expense-mobile-record>header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-bottom:10px;border-bottom:1px solid var(--border-soft)}
+  .finance-expense-mobile-record>header>strong{font-size:12px;color:var(--ink)}
+  .finance-expense-mobile-record>header>span{font-size:11px;font-weight:800}
+  .finance-expense-mobile-record>div{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .finance-expense-mobile-record>div>span{display:grid;gap:5px;padding:10px;border:1px solid var(--border-soft);border-radius:var(--radius-control);background:var(--surface-soft);font-size:8px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .finance-expense-mobile-record>div strong{font-size:12px;letter-spacing:0;text-transform:none;color:var(--ink-2)}
 }
 
 @media(max-width:480px){
@@ -69,6 +82,7 @@
   .finance-depositors-panel .revenue-attainment{justify-items:start;text-align:left}
   .finance-depositors-panel .revenue-bars>div{grid-template-columns:32px minmax(80px,1fr);gap:7px}
   .finance-depositors-panel .revenue-bars em{grid-column:2;text-align:left}
+  .finance-expense-mobile-record>div{grid-template-columns:1fr}
 }
 
 @media(prefers-reduced-motion:reduce){.finance-depositors-panel .revenue-bars i b{transition:none}}

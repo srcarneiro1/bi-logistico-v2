@@ -1,27 +1,55 @@
 /* Unilog BI Design System V2
-   Somente tokens, base global e controles compartilhados. Componentes e páginas possuem owners próprios. */
+   Fonte canônica de tokens compartilhados. Componentes e páginas possuem owners próprios. */
 
 :root{
+  /* Marca */
   --brand-primary:#db0812;
   --brand-primary-hover:#b8070f;
   --brand-primary-soft:#fdecee;
-  --status-success:#3f7c59;
-  --status-success-soft:#edf6f0;
-  --status-warning:#a87900;
-  --status-warning-soft:#fff6d8;
-  --status-danger:#c91a23;
-  --status-danger-soft:#fff0f1;
+
+  /* Neutros canônicos, alinhados ao Extra Cost Control */
+  --ink:#171b24;
+  --ink-2:#242a36;
+  --graphite:#494a56;
+  --graphite-2:#676d77;
+  --muted:#8a9099;
+  --border:#e2e5e9;
+  --border-soft:#edf0f2;
+  --border-strong:#d7dbe0;
+  --canvas:#f5f6f8;
+  --surface:#fff;
+  --surface-soft:#f8f9fb;
+  --surface-muted:#f1f2f4;
+
+  /* Estados semânticos */
+  --success:#3f7c59;
+  --success-soft:#edf6f0;
+  --warning:#a87900;
+  --warning-soft:#fff6d8;
+  --danger:#c91a23;
+  --danger-soft:#fff0f1;
+  --info:#59616c;
+  --info-soft:#f1f2f4;
+
+  /* Nomes históricos preservados durante a migração */
+  --status-success:var(--success);
+  --status-success-soft:var(--success-soft);
+  --status-warning:var(--warning);
+  --status-warning-soft:var(--warning-soft);
+  --status-danger:var(--danger);
+  --status-danger-soft:var(--danger-soft);
   --status-neutral:#6f747d;
   --status-neutral-soft:#f1f2f4;
-  --surface-canvas:#f5f6f8;
-  --surface-primary:#fff;
-  --surface-secondary:#f8f9fa;
-  --surface-tertiary:#f2f3f5;
-  --text-primary:#2f3136;
-  --text-secondary:#5f636b;
-  --text-muted:#858a93;
-  --border-default:#e2e4e8;
-  --border-strong:#cdd0d5;
+  --surface-canvas:var(--canvas);
+  --surface-primary:var(--surface);
+  --surface-secondary:var(--surface-soft);
+  --surface-tertiary:var(--surface-muted);
+  --text-primary:var(--ink-2);
+  --text-secondary:var(--graphite-2);
+  --text-muted:var(--muted);
+  --border-default:var(--border);
+
+  /* Escala de espaçamento */
   --space-1:4px;
   --space-2:8px;
   --space-3:12px;
@@ -30,41 +58,66 @@
   --space-6:32px;
   --space-7:40px;
   --space-8:48px;
-  --radius-control:8px;
-  --radius-card:11px;
-  --radius-pill:999px;
-  --shadow-card:0 1px 3px rgba(29,31,35,.035);
-  --shadow-raised:0 12px 32px rgba(29,31,35,.10);
 
-  /* Aliases de transição ainda consumidos pelo shell/login. */
+  /* Geometria */
+  --radius-control:10px;
+  --radius-card:14px;
+  --radius-dialog:18px;
+  --radius-pill:999px;
+
+  /* Elevação */
+  --shadow-card:0 6px 22px rgba(18,24,34,.045);
+  --shadow-raised:0 12px 32px rgba(18,24,34,.10);
+  --shadow-overlay:0 18px 44px rgba(18,24,34,.12);
+
+  /* Interação */
+  --control-min-height:40px;
+  --touch-min-height:44px;
+  --focus-ring:0 0 0 3px rgba(219,8,18,.09);
+
+  /* Tipografia canônica do Extra Cost */
+  font-family:Roboto,Arial,Helvetica,sans-serif;
+  font-synthesis:none;
+  text-rendering:optimizeLegibility;
+
+  /* Aliases de transição ainda consumidos por telas legadas. */
   --red:var(--brand-primary);
   --red-dark:var(--brand-primary-hover);
   --red-soft:var(--brand-primary-soft);
-  --gray:#494a56;
-  --ok:var(--status-success);
-  --warn:var(--status-warning);
-  --crit:var(--status-danger);
-  --bg:var(--surface-canvas);
-  --surface:var(--surface-primary);
-  --surface-alt:var(--surface-secondary);
-  --text:var(--text-primary);
-  --muted:var(--text-secondary);
-  --subtle:var(--text-muted);
-  --line:var(--border-default);
+  --gray:var(--graphite);
+  --ok:var(--success);
+  --warn:var(--warning);
+  --crit:var(--danger);
+  --bg:var(--canvas);
+  --surface-alt:var(--surface-soft);
+  --text:var(--ink-2);
+  --subtle:var(--muted);
+  --line:var(--border);
   --line-strong:var(--border-strong);
 }
 
-html{background:var(--surface-canvas)}
-body{font-size:13px;line-height:1.45;background:var(--surface-canvas);color:var(--text-primary)}
+html{background:var(--canvas)}
+body{font-size:13px;line-height:1.45;background:var(--canvas);color:var(--ink-2)}
 
-/* Controles globais: geometria única; variações de contexto ficam nos owners específicos. */
-input,select,textarea{width:100%;padding:10px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-control);background:var(--surface-primary);color:var(--text-primary);font-size:12px}
-input,select{min-height:40px}
+/* Controles globais legados: permanecem durante a migração. Os componentes PrimeReact
+   passam a ser controlados por primereact.css e wrappers compartilhados. */
+input,select,textarea{width:100%;padding:10px 11px;border:1px solid var(--border-strong);border-radius:var(--radius-control);background:var(--surface);color:var(--ink-2);font-size:12px}
+input,select{min-height:var(--control-min-height)}
 textarea{line-height:1.5;resize:vertical}
-label{font-size:12px;font-weight:600;color:var(--text-secondary)}
+label{font-size:12px;font-weight:600;color:var(--graphite)}
 
-.button{min-height:38px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-control);background:var(--surface-primary);color:var(--text-primary);font-size:12px;font-weight:700;text-decoration:none;box-shadow:none;transition:background .15s ease,border-color .15s ease,color .15s ease,box-shadow .15s ease}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,a:focus-visible,[tabindex]:focus-visible{
+  outline:none;
+  box-shadow:var(--focus-ring);
+}
+
+.button{min-height:38px;display:inline-flex;align-items:center;justify-content:center;gap:7px;padding:9px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-control);background:var(--surface);color:var(--ink-2);font-size:12px;font-weight:700;text-decoration:none;box-shadow:none;transition:background .15s ease,border-color .15s ease,color .15s ease,box-shadow .15s ease}
 .button-primary{background:var(--brand-primary);border-color:var(--brand-primary);color:#fff}
 .button-primary:hover{background:var(--brand-primary-hover);border-color:var(--brand-primary-hover)}
 .button-ghost{background:transparent}
-.button-ghost:hover,.button:hover:not(.button-primary){background:var(--surface-secondary);border-color:var(--border-strong)}
+.button-ghost:hover,.button:hover:not(.button-primary){background:var(--surface-soft);border-color:var(--border-strong)}
+
+@media (max-width:767px){
+  input,select{min-height:var(--touch-min-height)}
+  .button{min-height:var(--touch-min-height)}
+}

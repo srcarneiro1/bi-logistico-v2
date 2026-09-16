@@ -1,0 +1,39 @@
+.admin-role-filter.p-dropdown{width:210px;min-height:42px}
+.admin-confirmation>div:first-child>i{font-size:20px;color:var(--status-warning);margin-top:1px}
+.admin-confirmation-actions>.p-button{min-height:40px}
+.admin-access-prime-table{display:block;min-width:0}
+.admin-access-mobile-records{display:none}
+
+.admin-supervisor-file-input{position:absolute!important;width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important}
+.admin-supervisor-actions>.p-button{min-height:40px}
+
+.nx-admin-prime-form label{display:grid;gap:5px;font-size:9px;font-weight:700;color:var(--text-secondary)}
+.nx-admin-prime-form .p-inputtext,
+.nx-admin-prime-form .p-dropdown{width:100%;min-width:0;min-height:42px;border-radius:var(--radius-control)}
+.nx-admin-prime-form .p-dropdown .p-dropdown-label{display:flex;align-items:center;padding:.7rem .8rem;font-size:11px}
+.nx-admin-prime-form .p-inputtext:enabled:focus,
+.nx-admin-prime-form .p-dropdown:not(.p-disabled).p-focus{border-color:#c5c9cf;box-shadow:0 0 0 3px rgba(73,74,86,.07)}
+.nx-admin-prime-form .check-label{display:flex;align-items:center;gap:8px}
+.nx-admin-prime-form .check-label>span{font-size:10px;color:var(--text-secondary)}
+.nx-admin-prime-form .form-actions>.p-button{min-height:40px}
+.form-title>i{width:32px;height:32px;display:grid;place-items:center;flex:0 0 32px;border-radius:8px;background:var(--surface-tertiary);color:var(--text-primary);font-size:16px}
+.substitute-chips>.p-button{min-height:30px;padding:5px 8px;border-radius:var(--radius-pill);font-size:9px}
+.coverage-people>i{font-size:15px;color:var(--text-muted)}
+.coverage-card-top>.p-button{width:32px;height:32px;padding:0}
+
+@media(max-width:760px){
+  .admin-role-filter.p-dropdown{width:100%}
+  .admin-access-prime-table{display:none}
+  .admin-access-mobile-records{display:grid;gap:10px;padding:12px;background:var(--canvas)}
+  .admin-access-mobile-record{display:grid;gap:12px;padding:14px;border:1px solid var(--border);border-radius:var(--radius-card);background:var(--surface);box-shadow:var(--shadow-card)}
+  .admin-access-mobile-record>header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding-bottom:11px;border-bottom:1px solid var(--border-soft)}
+  .admin-access-mobile-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .admin-access-mobile-meta>div{display:grid;gap:5px;padding:10px;border:1px solid var(--border-soft);border-radius:var(--radius-control);background:var(--surface-soft)}
+  .admin-access-mobile-meta span:first-child{font-size:8px;font-weight:750;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .admin-access-mobile-record>footer>.p-button{width:100%;justify-content:center}
+  .admin-confirmation-actions>.p-button{width:100%;justify-content:center}
+  .admin-supervisor-actions>.p-button{width:100%;justify-content:center}
+  .nx-admin-prime-form .form-actions{display:grid;grid-template-columns:1fr}
+  .nx-admin-prime-form .form-actions>.p-button{width:100%}
+  .substitute-chips>.p-button{min-height:40px;padding:8px 10px}
+}

@@ -20,7 +20,7 @@ export function AdminSubstitutionsPage({hub,onRefresh}:{hub:HubBootstrap;onRefre
      {key:'future',label:'Futuras',value:future,detail:'coberturas programadas',icon:'event_upcoming',tone:future?'info':'neutral'},
      {key:'closed',label:'Encerradas',value:closed,detail:'histórico no cadastro',icon:'history'},
    ]}/>
-   <ContextNotice title="Fluxo de cadastro" description="Cadastre primeiro a pessoa substituta com ID, nome e e-mail. Depois crie a cobertura associando supervisor titular, módulo e período. O e-mail é a chave usada para liberar o acesso temporário."/>
-   <SubstitutionManager hub={hub} onRefresh={onRefresh} startOpen/>
+   <ContextNotice title="Como funciona" description="Cadastre a pessoa substituta apenas uma vez. Depois, crie coberturas vinculando supervisor titular, módulo e período. O e-mail do substituto é usado para liberar o acesso temporário durante a vigência."/>
+   <SubstitutionManager hub={hub} onRefresh={onRefresh}/>
  </section>
 }

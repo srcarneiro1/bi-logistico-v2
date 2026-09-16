@@ -1,0 +1,341 @@
+/* BI Logístico V2 — rodada final de paridade visual/UX com Extra Cost Control.
+   Esta folha é carregada por último e resolve somente apresentação/interação visual.
+   Nenhuma regra de domínio, cálculo, autorização ou integração é alterada aqui. */
+
+/* --------------------------------------------------------------------------
+   FILTROS — anatomia final do dashboard Extra Cost
+   -------------------------------------------------------------------------- */
+.global-filter-stage{
+  width:100%;
+  max-width:none!important;
+  margin:0 0 18px!important;
+  padding:0!important;
+}
+.nx-dashboard-filter-card.global-filter-card.p-card{
+  overflow:visible!important;
+  border:1px solid var(--unilog-border)!important;
+  border-radius:var(--unilog-radius)!important;
+  background:var(--unilog-surface)!important;
+  box-shadow:var(--unilog-shadow)!important;
+}
+.nx-dashboard-filter-card.global-filter-card.p-card>.p-card-body{padding:0!important}
+.nx-dashboard-filter-card.global-filter-card.p-card>.p-card-body>.p-card-content{padding:18px!important}
+.nx-dashboard-filter-grid{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(170px,1fr))!important;
+  gap:12px!important;
+  align-items:end!important;
+}
+.nx-dashboard-filter-grid>.nx-field{
+  display:grid!important;
+  gap:7px!important;
+  min-width:0!important;
+  color:#646a74!important;
+  font-size:9px!important;
+  font-weight:700!important;
+  line-height:1.3!important;
+}
+.nx-dashboard-filter-grid .p-dropdown{
+  width:100%!important;
+  min-width:0!important;
+  height:42px!important;
+  min-height:42px!important;
+}
+.nx-dashboard-filter-grid .p-dropdown-label{
+  display:flex!important;
+  align-items:center!important;
+  min-width:0!important;
+  height:40px!important;
+  min-height:40px!important;
+  padding:0 10px!important;
+  overflow:hidden!important;
+  color:var(--unilog-ink-2)!important;
+  font-size:11px!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.nx-dashboard-filter-grid .p-dropdown-trigger{width:36px!important;color:var(--unilog-muted)!important}
+.nx-dashboard-filter-actions{
+  display:flex!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  flex-wrap:wrap!important;
+  margin-top:12px!important;
+}
+.nx-dashboard-filter-actions>.p-button{min-height:42px!important}
+
+/* --------------------------------------------------------------------------
+   TOPBAR — estado de conexão igual ao Extra Cost
+   -------------------------------------------------------------------------- */
+.topbar-access-tag{display:none!important}
+.topbar-sync{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  min-width:0;
+  padding:7px 10px!important;
+  border:1px solid #e2e7e4!important;
+  border-radius:999px!important;
+  background:#f7faf8!important;
+  color:#53645a!important;
+  font-size:9px!important;
+  font-weight:700!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.topbar-sync .sync-dot{
+  width:7px!important;
+  height:7px!important;
+  flex:0 0 7px!important;
+  border-radius:50%!important;
+  background:#3f7c59!important;
+  box-shadow:0 0 0 3px rgba(63,124,89,.11)!important;
+}
+.topbar-sync>span:last-child{font-size:0!important}
+.topbar-sync>span:last-child::after{content:'Base conectada';font-size:9px!important;line-height:1!important}
+
+/* --------------------------------------------------------------------------
+   BOOT / LOADING — estado de carregamento mais limpo e institucional
+   -------------------------------------------------------------------------- */
+.center-state:not(.center-state-error){
+  min-height:100dvh!important;
+  background:
+    radial-gradient(circle at 50% 35%,rgba(219,8,18,.035),transparent 36%),
+    var(--unilog-canvas)!important;
+}
+.center-state:not(.center-state-error) .center-state-card{
+  width:min(420px,100%)!important;
+  gap:10px!important;
+  padding:30px 30px 28px!important;
+  border:1px solid var(--unilog-border)!important;
+  border-radius:var(--unilog-radius)!important;
+  background:var(--unilog-surface)!important;
+  box-shadow:0 18px 46px rgba(18,24,34,.08)!important;
+}
+.center-state:not(.center-state-error) .center-state-card::before{
+  content:'BI LOGÍSTICO';
+  color:var(--unilog-muted);
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.12em;
+}
+.center-state:not(.center-state-error) .loading-brand{
+  min-height:0!important;
+  display:grid!important;
+  justify-items:center!important;
+  gap:14px!important;
+  margin:3px 0 5px;
+}
+.center-state:not(.center-state-error) .loading-brand img{
+  width:138px!important;
+  height:46px!important;
+  padding:9px 14px!important;
+  border-radius:11px!important;
+  background:linear-gradient(180deg,#171b24 0%,#242a36 100%)!important;
+  object-fit:contain!important;
+}
+.center-state:not(.center-state-error) .loading-spinner{
+  width:22px!important;
+  height:22px!important;
+  border:2px solid #e1e4e8!important;
+  border-top-color:var(--unilog-red)!important;
+}
+.center-state:not(.center-state-error) .center-state-card>strong{
+  margin-top:2px;
+  color:var(--unilog-ink)!important;
+  font-size:15px!important;
+  letter-spacing:-.01em;
+}
+.center-state:not(.center-state-error) .center-state-card>p{
+  max-width:330px!important;
+  color:var(--unilog-graphite-2)!important;
+  font-size:11px!important;
+}
+.center-state-progress{
+  width:min(260px,100%)!important;
+  height:3px!important;
+  margin-top:8px!important;
+  background:#eceef1!important;
+}
+.center-state-progress i{background:var(--unilog-red)!important}
+
+/* --------------------------------------------------------------------------
+   TABELAS / LISTAS — uma linguagem única de densidade e separadores
+   -------------------------------------------------------------------------- */
+.nx-prime-table.p-datatable{border:0!important;border-radius:0!important;background:#fff!important}
+.nx-prime-table .p-datatable-wrapper{border:0!important;border-radius:0!important;box-shadow:none!important}
+.nx-prime-table .p-datatable-thead>tr>th{
+  min-height:42px!important;
+  padding:12px 14px!important;
+  border-width:0 0 1px!important;
+  border-color:var(--unilog-border-soft)!important;
+  background:#f8f9fb!important;
+  color:#59616c!important;
+  font-size:9px!important;
+  font-weight:800!important;
+  letter-spacing:.055em!important;
+  text-transform:uppercase!important;
+}
+.nx-prime-table .p-datatable-tbody>tr>td{
+  min-height:46px!important;
+  padding:12px 14px!important;
+  border-width:0 0 1px!important;
+  border-color:var(--unilog-border-soft)!important;
+  background:inherit!important;
+  color:#444b55!important;
+  font-size:11px!important;
+  line-height:1.4!important;
+}
+.nx-prime-table .p-datatable-tbody>tr:hover>td{background:#fbfcfd!important}
+
+/* Nome de depositante é ação textual, nunca uma caixa de botão. */
+.depositor-open-button.p-button,
+.depositor-open-button.p-button:hover,
+.depositor-open-button.p-button:active,
+.depositor-open-button.p-button:focus{
+  min-height:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  outline:none!important;
+}
+.depositor-open-button.p-button:focus-visible{
+  outline:2px solid rgba(219,8,18,.58)!important;
+  outline-offset:2px!important;
+}
+
+/* Listas operacionais desktop seguem o mesmo ritmo de uma tabela compacta. */
+@media(min-width:761px){
+  .home-attention-panel .attention-list,
+  .finance-depositors-panel .revenue-list,
+  .fca-compact-list{padding:0 14px 10px!important}
+
+  .home-attention-panel .attention-row,
+  .finance-depositors-panel .revenue-row,
+  .fca-compact-list>a{
+    min-height:50px!important;
+    margin:0!important;
+    border:0!important;
+    border-bottom:1px solid var(--unilog-border-soft)!important;
+    border-radius:0!important;
+    background:#fff!important;
+    box-shadow:none!important;
+  }
+  .home-attention-panel .attention-row:last-child,
+  .finance-depositors-panel .revenue-row:last-child,
+  .fca-compact-list>a:last-child{border-bottom:0!important}
+
+  .home-attention-panel .attention-row:hover,
+  .finance-depositors-panel .revenue-row:hover,
+  .fca-compact-list>a:hover{background:#fbfcfd!important}
+}
+
+/* A gestão à vista agora é uma ação de navegação real. */
+.home-attention-panel button.attention-row{
+  width:100%;
+  color:inherit;
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+  appearance:none;
+  -webkit-appearance:none;
+}
+.home-attention-panel button.attention-row:focus-visible{
+  outline:none!important;
+  box-shadow:inset 0 0 0 2px rgba(219,8,18,.18)!important;
+}
+
+/* --------------------------------------------------------------------------
+   HOME — resumo executivo e equalização de blocos vizinhos
+   -------------------------------------------------------------------------- */
+.home-executive-summary.p-card{
+  overflow:hidden!important;
+  border-left-width:4px!important;
+}
+.home-executive-summary.p-card>.p-card-body>.p-card-content{
+  grid-template-columns:44px minmax(0,1fr) minmax(330px,.9fr)!important;
+  gap:16px!important;
+  padding:18px 20px!important;
+}
+.home-executive-icon{
+  width:42px!important;
+  height:42px!important;
+  border:1px solid rgba(255,255,255,.78)!important;
+  border-radius:12px!important;
+  background:rgba(255,255,255,.72)!important;
+}
+.home-executive-copy{gap:5px!important}
+.home-executive-copy>strong{font-size:16px!important;line-height:1.25!important}
+.home-executive-copy>p{max-width:720px!important;font-size:10.5px!important;line-height:1.5!important}
+.home-executive-values{
+  min-width:0!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+.home-executive-values>div{
+  min-width:0;
+  align-content:center;
+  padding:9px 10px!important;
+  border:1px solid rgba(255,255,255,.8)!important;
+  background:rgba(255,255,255,.62)!important;
+}
+.home-executive-values strong{font-size:12px!important}
+
+@media(min-width:1181px){
+  .home-main-grid{align-items:stretch!important}
+  .home-trend-panel,.home-side-stack{height:100%!important;min-height:0}
+  .home-side-stack{grid-template-rows:repeat(2,minmax(0,1fr))!important}
+  .home-side-stack>.ui-panel{height:100%!important;min-height:0}
+  .home-trend-panel>.p-card-body,
+  .home-trend-panel>.p-card-body>.p-card-content{height:100%!important}
+  .home-trend-panel .simple-chart{height:100%!important;grid-template-rows:minmax(248px,1fr) auto!important}
+  .home-trend-panel .nx-chart-stage{height:auto!important;min-height:248px!important}
+}
+
+/* --------------------------------------------------------------------------
+   RESPONSIVO — preserva a mesma lógica do Extra Cost
+   -------------------------------------------------------------------------- */
+@media(max-width:1180px){
+  .home-executive-summary.p-card>.p-card-body>.p-card-content{
+    grid-template-columns:42px minmax(0,1fr)!important;
+  }
+  .home-executive-values{grid-column:2!important}
+}
+
+@media(max-width:760px){
+  .nx-dashboard-filter-card.global-filter-card.p-card>.p-card-body>.p-card-content{padding:14px!important}
+  .nx-dashboard-filter-grid{grid-template-columns:1fr!important}
+  .nx-dashboard-filter-grid .p-dropdown{height:46px!important;min-height:46px!important}
+  .nx-dashboard-filter-grid .p-dropdown-label{height:44px!important;min-height:44px!important;font-size:12px!important}
+  .nx-dashboard-filter-actions{justify-content:stretch!important}
+  .nx-dashboard-filter-actions>.p-button{width:100%!important;min-height:44px!important}
+  .topbar-sync{display:none!important}
+
+  .home-executive-summary.p-card>.p-card-body>.p-card-content{
+    grid-template-columns:38px minmax(0,1fr)!important;
+    gap:10px 12px!important;
+    padding:15px!important;
+  }
+  .home-executive-icon{width:36px!important;height:36px!important;border-radius:10px!important}
+  .home-executive-copy>strong{font-size:14px!important}
+  .home-executive-values{grid-column:1/-1!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+
+  .home-attention-panel button.attention-row{
+    border:1px solid var(--unilog-border)!important;
+    border-radius:var(--unilog-radius)!important;
+    background:var(--unilog-surface)!important;
+    box-shadow:var(--unilog-shadow)!important;
+  }
+}
+
+@media(max-width:520px){
+  .center-state:not(.center-state-error){padding:18px!important}
+  .center-state:not(.center-state-error) .center-state-card{padding:26px 18px 24px!important}
+}
+
+@media(max-width:480px){
+  .home-executive-values{grid-template-columns:1fr!important}
+}

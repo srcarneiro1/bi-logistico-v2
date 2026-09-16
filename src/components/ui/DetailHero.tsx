@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Card } from 'primereact/card'
 
 export interface DetailHeroMetaItem{
   label:string
@@ -30,6 +31,20 @@ export interface DetailMetricItem{
   tone?:DetailMetricTone
 }
 
+const toneClass:Record<DetailMetricTone,string>={
+  neutral:'dashboard-metric-neutral',
+  success:'dashboard-metric-success',
+  warning:'dashboard-metric-warning',
+  danger:'dashboard-metric-danger',
+}
+
 export function DetailMetrics({items,className=''}:{items:DetailMetricItem[];className?:string}){
-  return <div className={`ui-detail-metrics ${className}`.trim()}>{items.map(item=><div key={item.key} className={`ui-detail-metric ui-detail-metric-${item.tone??'neutral'}`}><span>{item.label}</span><strong>{item.value}</strong>{item.detail&&<small>{item.detail}</small>}</div>)}</div>
+  return <div className={`ui-detail-metrics nx-detail-metrics ${className}`.trim()}>{items.map(item=>{
+    const tone=item.tone??'neutral'
+    return <Card key={item.key} className={`dashboard-metric ${toneClass[tone]} nx-dashboard-metric-card ui-detail-metric ui-detail-metric-${tone}`}>
+      <span>{item.label}</span>
+      <strong>{item.value}</strong>
+      {item.detail&&<small>{item.detail}</small>}
+    </Card>
+  })}</div>
 }
