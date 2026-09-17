@@ -86,9 +86,6 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
 
   const modules=Array.from(new Set(hub.supervisorModules.filter(x=>!filters.supervisorId||x.supervisorId===filters.supervisorId).map(x=>x.moduloId))).sort()
   const current=items.find(i=>i.to==='/'?location.pathname==='/':location.pathname.startsWith(i.to))
-  const supervisorName=filters.supervisorId?hub.supervisors.find(s=>s.supervisorId===filters.supervisorId)?.nomeExibicao:''
-  const visiblePeriod=isFcaRoute?(filters.fcaPeriodo==='ALL'?'Todos os meses':periodLabel(filters.fcaPeriodo)):periodLabel(filters.periodo)
-  const scope=[visiblePeriod,supervisorName,filters.moduloId].filter(Boolean).join(' · ')||'Escopo completo'
   const accessLabel=isOwner?'OWNER':hub.profile.governanceRole==='ADMIN'?'ADMINISTRADOR':hub.profile.perfil
   const periodOptions=isFcaList?[{label:'Todos os meses',value:'ALL'},...fcaPeriods.map(period=>({label:periodLabel(period),value:period}))]:periods.map(period=>({label:period.label,value:period.value}))
   const supervisorOptions=isOperationalAdmin?[{label:'Todos os supervisores',value:''},...hub.supervisors.map(supervisor=>({label:supervisor.nomeExibicao,value:supervisor.supervisorId}))]:[{label:hub.profile.nome,value:''}]
@@ -121,7 +118,7 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
     <div className="workspace">
       <header className="topbar">
         <div className="topbar-title"><button ref={mobileMenuButtonRef} type="button" className="mobile-menu-button" onClick={()=>setMobileOpen(true)} title="Abrir menu" aria-label="Abrir menu de navegação" aria-expanded={mobileOpen} aria-controls={MOBILE_SIDEBAR_ID}><MenuIcon menu/></button><div><span className="topbar-kicker">BI LOGÍSTICO</span><strong>{current?.label??'Visão geral'}</strong></div></div>
-        <div className="topbar-profile" title={scope}><span className="topbar-scope"><small>Escopo ativo</small><strong>{scope}</strong></span><Tag value={accessLabel} severity="secondary" rounded className="topbar-access-tag"/><span className="topbar-sync"><span className="sync-dot"/><span>HUB conectada</span></span></div>
+        <div className="topbar-profile"><Tag value={accessLabel} severity="secondary" rounded className="topbar-access-tag"/><span className="topbar-sync"><span className="sync-dot"/><span>HUB conectada</span></span></div>
       </header>
       <main className="content">
         <PageFilterProvider value={pageFilter}>
