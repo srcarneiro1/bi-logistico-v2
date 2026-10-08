@@ -48,6 +48,17 @@ export function AppShell({hub,filters,onFiltersChange,onSignOut,children}:{hub:H
   const mobileMenuButtonRef=useRef<HTMLButtonElement>(null)
   const wasMobileOpen=useRef(false)
 
+  useEffect(()=>{
+    const html=document.documentElement
+    const body=document.body
+    html.classList.add('bi-shell-active')
+    body.classList.add('bi-shell-active')
+    return()=>{
+      html.classList.remove('bi-shell-active')
+      body.classList.remove('bi-shell-active')
+    }
+  },[])
+
   useEffect(()=>setMobileOpen(false),[location.pathname])
   useEffect(()=>{
     if(!isFcaRoute)return
