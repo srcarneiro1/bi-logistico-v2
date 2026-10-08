@@ -1,6 +1,6 @@
 # MEMÓRIA DE IDENTIDADE VISUAL E UX — BI LOGÍSTICO V2
 
-Última atualização: 2026-09-16
+Última atualização: 2026-10-08
 Estado: **fonte de verdade visual/UX do BI Logístico V2**.
 
 ## 1. Finalidade desta memória
@@ -554,3 +554,32 @@ Estado base consolidado em 16/09/2026:
 - drawer mobile alinhado ao Extra Cost no PR #72;
 - responsividade iOS/mobile revisada;
 - futuras decisões visuais devem ser registradas aqui.
+
+
+## Paridade com a família Unilog (Extra Cost Control + Retrabalho Controle) — 2026-10-08
+
+Medição objetiva com Playwright: BI e Extra rodando lado a lado, elemento a elemento, em 13 larguras (1440 a 360 px).
+Correções em `src/unilog-family-parity.css`, **importado por último** em `main.tsx` (não reordenar).
+
+| Elemento | Antes (BI) | Agora (= Extra) |
+|---|---|---|
+| Itens do menu | 40 px | 44 px |
+| Botão sair (rodapé) | sem fundo/contorno | fundo 3,5%, contorno 8%; 40×40 (desktop) / 40×44 (≤1180) |
+| Barra superior | 60 px (58 no celular), fundo 97% | 62 px (64 no ≤760), fundo 94%, padding 14 px no ≤760 |
+| Kicker da barra ("BI LOGÍSTICO") | peso 800 | peso 400, `#959aa3` |
+| Seção na barra | peso 750 | peso 700 (13 px no ≤760) |
+| Título da página | 28 px `#171b24` | 26 px `#242a36` (22 px no ≤760), tracking −0,025em |
+| Eyebrow / descrição | peso 800 / `#6e747e` | peso 700 / `#5f636b` |
+| Filtros (dropdown/multiselect) | 42 px | 46 px |
+| Margem do conteúdo | 18 px em todo ≤1180 | 20 (1101–1180), 24 (901–1100), 18 (761–900), 12 (481–760), 10 (≤480) |
+| Menu gaveta | 276 px, logo 92 px | 292 px, logo 96×42, sombra do Extra |
+| Botão ☰ / fechar | 44 px / fundo cinza | 38×44 / transparente `#aeb4be` |
+| Fundo atrás do menu | — | `rgba(13,16,22,.44)` |
+| Login: ícone de senha | desalinhado (top 0) | centralizado (top 50%) |
+| Login no celular | campos 12 px (zoom no iOS) | 16 px |
+
+Já eram iguais e foram mantidos: largura do menu (244/72 px), gradiente, item ativo com barra vermelha, menu gaveta a partir de 1180 px, barra superior de ponta a ponta, margem do desktop (34 px), cartão de login, paleta e raios.
+
+Tipografia: mantida **Roboto** (fonte oficial da marca, também no Retrabalho). O Extra é o único que ainda usa Inter.
+
+Resultado medido: margens e barra superior idênticas ao Extra nas 13 larguras; menu e cabeçalhos alinhados no desktop e no celular; build e testes (vitest 6/6) aprovados.

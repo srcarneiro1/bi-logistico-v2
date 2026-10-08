@@ -1,0 +1,88 @@
+/* Paridade visual com Extra Cost Control e Retrabalho Controle (família Unilog) — 08/10/2026.
+   Carregado POR ÚLTIMO em main.tsx. Valores medidos no Extra rodando no navegador (Playwright),
+   elemento a elemento, em 13 larguras (1440 a 360 px). Tipografia mantida em Roboto (fonte oficial
+   da marca, também usada no Retrabalho); só o Extra usa Inter. */
+
+/* ---------- Menu lateral ---------- */
+.sidebar .sidebar-nav a{min-height:44px!important;height:44px!important}
+
+/* Botão de sair no rodapé: fundo sutil e contorno discreto; no hover só o fundo intensifica. */
+.sidebar .sidebar-user button{
+  width:40px!important;
+  height:40px!important;
+  min-width:40px!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid rgba(255,255,255,.08)!important;
+  border-radius:10px!important;
+  background:rgba(255,255,255,.035)!important;
+  color:#d6dae0!important;
+}
+.sidebar .sidebar-user button:hover{background:rgba(255,255,255,.09)!important;color:#d6dae0!important}
+
+/* ---------- Barra superior ---------- */
+.topbar{
+  height:62px!important;
+  min-height:62px!important;
+  background:rgba(255,255,255,.94)!important;
+}
+.topbar .topbar-kicker{
+  font-weight:400!important;
+  color:#959aa3!important;
+  letter-spacing:.1em!important;
+}
+.topbar .topbar-title strong{font-weight:700!important}
+
+/* ---------- Cabeçalho da página ---------- */
+.nx-page-title-copy h1,
+.page-header h1{
+  font-size:26px!important;
+  color:#242a36!important;
+  letter-spacing:-.025em!important;
+}
+.nx-page-title-copy .ui-eyebrow{font-weight:700!important}
+.nx-page-title-copy p{color:#5f636b!important}
+
+/* ---------- Filtros ---------- */
+.content .p-dropdown,
+.content .p-multiselect{min-height:46px!important;height:46px!important}
+.content .p-dropdown .p-dropdown-label,
+.content .p-multiselect .p-multiselect-label{display:flex!important;align-items:center!important}
+
+/* ---------- Login: ícone de mostrar senha centralizado ---------- */
+.login-password > svg,
+.login-password > i,
+.login-password .p-password-show-icon,
+.login-password .p-password-hide-icon,
+.login-password .p-input-icon{
+  top:50%!important;
+  margin-top:0!important;
+  transform:translateY(-50%)!important;
+}
+
+/* ---------- Margens do conteúdo por faixa (iguais às do Extra) ---------- */
+@media(max-width:1180px){
+  .content{padding-left:20px!important;padding-right:20px!important}
+  /* Menu gaveta */
+  .sidebar{width:min(292px,86vw)!important;box-shadow:14px 0 40px rgba(10,14,20,.22)!important}
+  .sidebar .sidebar-brand img{width:96px!important;height:42px!important;object-fit:contain!important;object-position:left center!important}
+  .sidebar-mobile-close{
+    width:38px!important;height:44px!important;min-width:38px!important;
+    background:transparent!important;border:0!important;box-shadow:none!important;color:#aeb4be!important;
+  }
+  .sidebar-mobile-close:hover{background:rgba(255,255,255,.07)!important;color:#fff!important}
+  .mobile-menu-button{width:38px!important;height:44px!important;min-width:38px!important;border-radius:9px!important;color:#171b24!important}
+  .sidebar-backdrop{background:rgba(13,16,22,.44)!important}
+  .sidebar .sidebar-user button{height:44px!important}
+}
+@media(max-width:1100px){.content{padding-left:24px!important;padding-right:24px!important}}
+@media(max-width:900px){.content{padding-left:18px!important;padding-right:18px!important}}
+@media(max-width:760px){
+  .topbar{height:64px!important;min-height:64px!important;padding-left:14px!important;padding-right:14px!important}
+  .content{padding-left:12px!important;padding-right:12px!important}
+  .nx-page-title-copy h1,.page-header h1{font-size:22px!important}
+  .topbar .topbar-title strong{font-size:13px!important}
+  /* iOS dá zoom ao tocar em campos com texto menor que 16 px. */
+  .login-card input,.login-password input,.p-password input,input[type=email],input[type=password]{font-size:16px!important}
+}
+@media(max-width:480px){.content{padding-left:10px!important;padding-right:10px!important}}
